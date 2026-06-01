@@ -1,0 +1,63 @@
+title: "Set ArizenOS Wallpapers"
+description: "Deploys ArizenOS branded wallpapers to the system directory and activates the default 4K wallpaper on the desktop. Also sets the ArizenOS lockscreen image via Group Policy."
+privilege: TrustedInstaller
+condition: "{{Wallpaper}}"
+actions:
+  - !createDirectory:
+      path: "%SystemDrive%\\ArizenOS\\Wallpapers"
+
+  - !copyFile:
+      source: assets\wallpapers\arizenOS_default.jpg
+      destination: "%SystemDrive%\\ArizenOS\\Wallpapers\\arizenOS_default.jpg"
+      overwrite: true
+
+  - !copyFile:
+      source: assets\wallpapers\arizenOS_lockscreen.jpg
+      destination: "%SystemDrive%\\ArizenOS\\Wallpapers\\arizenOS_lockscreen.jpg"
+      overwrite: true
+
+  - !copyFile:
+      source: assets\wallpapers\arizenOS_dark.jpg
+      destination: "%SystemDrive%\\ArizenOS\\Wallpapers\\arizenOS_dark.jpg"
+      overwrite: true
+
+  # Set desktop wallpaper via registry
+  - !registryValue:
+      path: "HKCU:\Control Panel\Desktop"
+      value: "Wallpaper"
+      data: "C:\\ArizenOS\\Wallpapers\\arizenOS_default.jpg"
+      type: String
+
+  - !registryValue:
+      path: "HKCU:\Control Panel\Desktop"
+      value: "WallpaperStyle"
+      data: "10"
+      type: String
+
+  - !registryValue:
+      path: "HKCU:\Control Panel\Desktop"
+      value: "TileWallpaper"
+      data: "0"
+      type: String
+
+  # Lock screen via Group Policy
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
+      value: "LockScreenImage"
+      data: "C:\\ArizenOS\\Wallpapers\\arizenOS_lockscreen.jpg"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
+      value: "LockScreenOverlaysDisabled"
+      data: 1
+      type: DWord
+
+  # Apply via SystemParametersInfo
+  - !powerShell:
+      script: scripts\wallpaper.ps1
+
+  - !powerShell:
+      script: |
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] Wallpapers deployed" |
+          Add-Content "$env:SystemDrive\ArizenOS\Logs\install.log"
