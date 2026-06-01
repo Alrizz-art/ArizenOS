@@ -1,0 +1,73 @@
+---
+title: ArizenOS
+description: "A privacy-focused, developer-friendly Windows customization playbook delivering a clean, debloated, and branded experience on Windows 10 and Windows 11."
+username: ArizenOS
+shortDescription: "Privacy-first. Developer-ready. Visually refined."
+details: |
+  ArizenOS is an AME Wizard playbook that transforms a stock Windows installation
+  into a lightweight, secure, and aesthetically consistent desktop environment.
+  
+  Designed for developers, power users, and privacy-conscious individuals who
+  demand control over their OS without sacrificing usability.
+
+  Supports: Windows 10 (22H2+) | Windows 11 (22H2, 23H2, 24H2)
+
+version: "2.0.0"
+minWindowsBuild: 19045
+updateWeight: 2
+
+configuration:
+  - name: Edition
+    description: "Choose your Windows edition target."
+    options:
+      - name: Windows 10 (22H2+)
+        image: assets/logos/arizenOS_w10.png
+      - name: Windows 11 (22H2+)
+        image: assets/logos/arizenOS_w11.png
+
+  - name: DeveloperMode
+    description: "Enable full developer environment setup (WSL2, WinGet, Git, VS Code, Node.js)."
+    type: checkbox
+    default: true
+
+  - name: DebloatLevel
+    description: "Choose how aggressively to remove pre-installed apps."
+    options:
+      - name: Safe (Recommended)
+        description: "Removes telemetry, ads, and non-essential Microsoft apps. Keeps core functionality."
+      - name: Minimal
+        description: "Only removes telemetry and advertising components."
+
+  - name: OEMBranding
+    description: "Apply ArizenOS OEM identity (System Info, About page, lock screen branding)."
+    type: checkbox
+    default: true
+
+  - name: Wallpaper
+    description: "Set ArizenOS branded wallpapers."
+    type: checkbox
+    default: true
+
+  - name: RollbackPoint
+    description: "Create a system restore point before applying changes (Recommended)."
+    type: checkbox
+    default: true
+
+requirements:
+  - name: "Windows 10 Build 19045 or Windows 11 Build 22000+"
+    type: windowsBuild
+    build: 19045
+  - name: "Administrator Privileges"
+    type: admin
+  - name: "Internet Connection (for Developer Setup)"
+    type: optional
+
+entries:
+  - !include: entries/restore-point.yaml
+  - !include: entries/oem-branding.yaml
+  - !include: entries/dark-theme.yaml
+  - !include: entries/transparency.yaml
+  - !include: entries/debloat.yaml
+  - !include: entries/wallpaper.yaml
+  - !include: entries/developer-setup.yaml
+  - !include: entries/final-cleanup.yaml
