@@ -1,0 +1,43 @@
+# Rust
+target/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.mypy_cache/
+
+# Node / Tauri
+node_modules/
+dist/
+build/
+.tauri/
+ui/command-nexus/src-tauri/target/
+
+# Models (download separately)
+*.gguf
+models/*.gguf
+
+# ArizenOS runtime data
+*.arizen.db
+*.arizen-vectors/
+logs/
+.arizen-session/
+
+# Secrets
+*.key
+*.pem
+*.p12
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,66 @@
+name: ArizenOS CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+env:
+  RUST_VERSION: "1.79"
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "20"
+
+jobs:
+  daemon:
+    name: Daemon (Rust)
+    runs-on: windows-2022
+    defaults:
+      run:
+        working-directory: core/arizen-daemon
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.79"
+          components: "clippy,rustfmt"
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --check
+      - run: cargo clippy -- -D warnings
+      - run: cargo build --release
+      - run: cargo test
+
+  agents:
+    name: Agents (Python)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install uv
+      - run: uv pip install -r requirements.txt --system
+      - run: ruff check .
+      - run: mypy agents/ core/ --ignore-missing-imports
+      - run: pytest tests/unit/ tests/integration/ -v
+
+  nexus:
+    name: Command Nexus (Tauri)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: "1.79"
+      - name: Install deps
+        run: npm ci
+        working-directory: ui/command-nexus
+      - name: TypeScript check
+        run: npx tsc --noEmit
+        working-directory: ui/command-nexus
+      - name: ESLint
+        run: npx eslint src/
+        working-directory: ui/command-nexus
