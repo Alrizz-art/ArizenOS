@@ -1,212 +1,197 @@
-# Architecture Overview
+# Architecture Overview — ArizenOS
 
-ArizenOS is built as a **pnpm monorepo** with a Turborepo build pipeline. This document describes the high-level architecture, the relationship between components, and the key design decisions that shape the system.
-
-For implementation detail on specific components, see the [API Reference](../api/README.md). For the reasoning behind major decisions, see the [Architecture Decision Records](ADR-0001-monorepo.md).
-
----
-
-## System Layers
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        User Experience Layer                     │
-│  ┌──────────────┐ ┌─────────────┐ ┌──────────┐ ┌───────────┐  │
-│  │   Launcher   │ │  Assistant  │ │  Voice   │ │    Hub    │  │
-│  │ @arizen/     │ │ @arizen/    │ │ @arizen/ │ │ @arizen/  │  │
-│  │ launcher     │ │ assistant   │ │ voice    │ │ hub       │  │
-│  └──────┬───────┘ └──────┬──────┘ └────┬─────┘ └─────┬─────┘  │
-│         │                │             │              │         │
-│  ┌──────▼────────────────▼─────────────▼──────────────▼──────┐ │
-│  │                   @arizen/ui (component library)           │ │
-│  └───────────────────────────────────┬────────────────────────┘ │
-└──────────────────────────────────────┼──────────────────────────┘
-                                       │
-┌──────────────────────────────────────▼──────────────────────────┐
-│                       Platform Services Layer                    │
-│  ┌──────────────┐ ┌─────────────┐ ┌──────────┐ ┌───────────┐  │
-│  │ @arizen/mind │ │@arizen/glass│ │@arizen/  │ │ @arizen/  │  │
-│  │ (local AI)   │ │ (rendering) │ │ shell    │ │ flow      │  │
-│  └──────┬───────┘ └──────┬──────┘ └────┬─────┘ └─────┬─────┘  │
-│         │                │             │              │         │
-│  ┌──────▼────────────────▼─────────────▼──────────────▼──────┐ │
-│  │                   @arizen/core (primitives)                │ │
-│  └──────────────────────────────────────────────────────────┘ │
-└───────────────────────────────────────────────────────────────────┘
-                                       │
-┌──────────────────────────────────────▼──────────────────────────┐
-│                         Windows Platform                         │
-│  Win32 API · DWM · DirectComposition · Direct2D · WinRT         │
-└───────────────────────────────────────────────────────────────────┘
-```
+**Document version:** 0.1  
+**Last updated:** 2026-06-01  
+**Status:** Living document — updated as design evolves
 
 ---
 
-## Monorepo Structure
+## Design Philosophy
+
+ArizenOS is a **monolithic kernel** with a modular internal structure.
+
+Key principles:
+1. **Correctness first** — a kernel that crashes is worse than a slow one
+2. **Explicit over implicit** — no magic, every behavior is documented
+3. **Minimal surface area** — fewer lines of kernel code = fewer bugs
+4. **POSIX-compatible** syscall interface where practical
+5. **No unnecessary abstractions** — abstract when it pays off, not by default
+
+---
+
+## Target Architecture
+
+| Property     | Value         |
+|--------------|---------------|
+| Architecture | x86_64        |
+| Boot modes   | BIOS (stage 1→2), UEFI (future) |
+| CPU mode     | 64-bit long mode |
+| Paging       | 4-level (PML4 → PDPT → PD → PT) |
+| Min RAM      | 32 MB         |
+
+---
+
+## System Architecture Diagram
 
 ```
-ArizenOS/
-├── apps/                    # End-user Electron applications
-│   ├── launcher/            # @arizen/launcher
-│   ├── assistant/           # @arizen/assistant
-│   ├── voice/               # @arizen/voice
-│   ├── hub/                 # @arizen/hub
-│   └── agent/               # @arizen/agent
-│
-├── packages/                # Shared libraries (internal + public SDK)
-│   ├── core/                # @arizen/core       — zero-dep primitives
-│   ├── glass/               # @arizen/glass      — GPU rendering
-│   ├── mind/                # @arizen/mind       — local AI inference
-│   ├── shell/               # @arizen/shell      — Win32 bindings
-│   ├── flow/                # @arizen/flow       — animation engine
-│   ├── skin/                # @arizen/skin       — theming SDK
-│   ├── ui/                  # @arizen/ui         — component library
-│   ├── widgets/             # @arizen/widgets    — widget runtime
-│   ├── sync/                # @arizen/sync       — cross-device sync
-│   ├── agent-sdk/           # @arizen/agent-sdk  — public plugin API
-│   └── config/              # @arizen/config     — shared tooling config
-│
-├── branding/                # Design tokens, logos, fonts, press assets
-├── docs/                    # This documentation tree
-├── tests/                   # E2E, integration, visual regression, a11y
-├── tools/                   # Internal build scripts and scaffolding
-├── turbo.json               # Turborepo pipeline definition
-└── pnpm-workspace.yaml      # pnpm workspace manifest
+ User Applications
+ ┌──────────────────────────────────────────────────────────┐
+ │  /bin/init    /bin/sh    /usr/bin/*    User Programs     │
+ └──────────────────────────┬───────────────────────────────┘
+                            │ System Calls (int 0x80 / syscall)
+ ┌──────────────────────────▼───────────────────────────────┐
+ │                  SYSCALL DISPATCHER                       │
+ │              kernel/core/syscall.c                        │
+ └───┬──────────┬──────────┬──────────┬──────────┬──────────┘
+     │          │          │          │          │
+ ┌───▼──┐  ┌───▼──┐  ┌───▼──┐  ┌───▼──┐  ┌───▼──┐
+ │SCHED │  │  MM  │  │  VFS │  │ NET  │  │SECUR │
+ │      │  │      │  │      │  │      │  │      │
+ │Round │  │Paging│  │mount/│  │TCP/IP│  │Caps/ │
+ │Robin │  │Heap  │  │open/ │  │UDP   │  │Perms │
+ │→ CFS │  │VMM   │  │read/ │  │DHCP  │  │      │
+ └───┬──┘  └───┬──┘  │write │  └───┬──┘  └──────┘
+     │         │     └───┬──┘      │
+ ┌───▼─────────▼─────────▼─────────▼──────────────────────┐
+ │                    KERNEL CORE                           │
+ │  GDT  IDT  Interrupts  Timer (PIT/APIC)  Printk  Panic │
+ │              kernel/core/                               │
+ └──────────────────────────┬──────────────────────────────┘
+                            │
+ ┌──────────────────────────▼──────────────────────────────┐
+ │                      DRIVERS                            │
+ │  VGA/Framebuf  PS/2 Kbd  AHCI  NVMe  RTL8139  Serial  │
+ │                    drivers/                             │
+ └──────────────────────────┬──────────────────────────────┘
+                            │
+ ┌──────────────────────────▼──────────────────────────────┐
+ │                     HARDWARE                            │
+ │            x86_64 CPU   RAM   PCI   I/O Ports          │
+ └─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Dependency Rules
-
-The dependency graph is strictly enforced by CI. Violations cause build failures.
+## Boot Sequence
 
 ```
-@arizen/core          → (no internal dependencies)
-      ↓
-@arizen/glass         → @arizen/core
-@arizen/mind          → @arizen/core
-@arizen/shell         → @arizen/core
-@arizen/flow          → @arizen/core
-@arizen/skin          → @arizen/core
-      ↓
-@arizen/ui            → @arizen/core, @arizen/glass, @arizen/flow, @arizen/skin
-      ↓
-@arizen/widgets       → @arizen/ui, @arizen/core
-@arizen/sync          → @arizen/core
-@arizen/agent-sdk     → @arizen/core
-      ↓
-apps/*                → any packages/* (never each other)
+Power On
+  │
+  ▼
+BIOS POST
+  │
+  ▼
+Stage 1 Bootloader (512B, MBR)
+  │  Loads Stage 2 from disk
+  ▼
+Stage 2 Bootloader (GRUB / custom)
+  │  1. Enable A20 line
+  │  2. Load GDT (32-bit protected mode)
+  │  3. Enter protected mode
+  │  4. Set up page tables
+  │  5. Enter long mode (64-bit)
+  │  6. Load kernel ELF into memory
+  ▼
+Kernel Entry Point  (arch/x86_64/kernel/entry.asm)
+  │  Stack setup, BSS clear
+  ▼
+kernel_main()  (kernel/core/main.c)
+  │  1. Initialize serial / VGA output
+  │  2. Initialize GDT
+  │  3. Initialize IDT + ISRs
+  │  4. Initialize PIC / APIC
+  │  5. Initialize PIT timer
+  │  6. Initialize physical memory manager
+  │  7. Initialize virtual memory (paging)
+  │  8. Initialize heap allocator
+  │  9. Initialize VFS
+  │  10. Initialize scheduler
+  │  11. Launch /sbin/init (PID 1)
+  ▼
+Userspace (/sbin/init → /bin/sh)
 ```
 
-**Rules:**
-- `@arizen/core` has no internal dependencies. It is the foundation everything else builds on.
-- Apps may not import each other. They communicate through IPC channels managed by `@arizen/core`.
-- `@arizen/agent-sdk` is the only package with a public stability guarantee. All other packages are internal APIs subject to change.
-
 ---
 
-## Key Components
+## Memory Layout (x86_64)
 
-### @arizen/core — Primitives
+```
+Virtual Address Space (48-bit canonical)
+─────────────────────────────────────────
 
-The foundation layer. Every other package depends on it.
+0xFFFF_FFFF_FFFF_FFFF ┐
+                       │  Kernel space (higher half)
+0xFFFF_8000_0000_0000 ─┤
+                       │
+  Kernel code/data     │  Mapped at link time
+  Kernel heap          │  Dynamic allocation
+  Physical memory map  │  1:1 mapped (HHDM)
+                       │
+0xFFFF_8000_0000_0000 ─┘
 
-- **Logger** — structured logging with log-level filtering and rotation
-- **EventBus** — typed pub/sub used for cross-component communication
-- **IPC** — Electron main/renderer bridge with typed message schemas
-- **Config** — hierarchical configuration system (user → machine → defaults)
-- **Error types** — typed error hierarchy used across all packages
-
-Stability level: **Stable**. No breaking changes without a major version bump.
-
-### @arizen/glass — GPU Rendering Engine
-
-The visual differentiation of ArizenOS.
-
-Built on DirectComposition and Direct2D via N-API bindings. Key capabilities:
-- **Real-time gaussian blur** — rendered at native resolution on supported GPUs
-- **Depth layers** — UI elements cast depth shadows computed from the Z-order
-- **Light response** — ambient light simulation based on window position
-- **Fallback renderer** — CSS `backdrop-filter` fallback for unsupported hardware
-
-### @arizen/mind — Local AI Inference
-
-The AI brain of ArizenOS.
-
-Wraps `llama.cpp` with a Node.js N-API binding. Key capabilities:
-- **Streaming inference** — tokens stream as they are generated, not all-at-once
-- **Multi-model** — multiple models loaded simultaneously at configurable memory budgets
-- **Context management** — automatic context window management with priority-based eviction
-- **Tool calling** — structured output for LLM function calling (used by Arizen Agent)
-- **Embeddings** — vector embedding for semantic search (used by Arizen Hub)
-
-### @arizen/shell — Windows Integration
-
-The layer that connects ArizenOS to Windows.
-
-N-API bindings to:
-- **DWM (Desktop Window Manager)** — window composition, thumbnail generation
-- **Win32 Shell APIs** — taskbar, start menu, system tray, jump lists
-- **DirectComposition** — off-screen surface management for glass rendering
-- **WinRT** — Windows 10/11 native APIs for notifications, calendar, and system state
-- **Windows Search** — deep integration with Windows Search index
-
-### @arizen/agent-sdk — Public Plugin API
-
-The extension point for third-party tools in Arizen Agent.
-
-Provides:
-- **Tool registration** — declare a tool's name, description, schema, and handler
-- **Permission declarations** — tools declare the permissions they require
-- **Sandboxed execution** — tools run in a restricted context
-- **Result types** — typed return values for text, files, UI, and errors
-
-This is the only package with a public stability SemVer guarantee.
-
----
-
-## Build Pipeline
-
-Turborepo manages the build pipeline with task dependency resolution and aggressive caching.
-
-```json
-// turbo.json (simplified)
-{
-  "pipeline": {
-    "build":     { "dependsOn": ["^build"], "outputs": ["dist/**"] },
-    "dev":       { "dependsOn": ["^build"], "persistent": true },
-    "test":      { "dependsOn": ["^build"] },
-    "lint":      { "outputs": [] },
-    "typecheck": { "dependsOn": ["^build"] }
-  }
-}
+0x0000_7FFF_FFFF_FFFF ┐
+                       │  User space (lower half)
+  User stack           │  Grows downward
+  User heap            │  mmap / brk
+  User code/data       │  ELF segments
+  NULL guard page      │  No mapping at 0x0
+0x0000_0000_0000_0000 ─┘
 ```
 
-**Build order** (resolved automatically by Turborepo):
-1. `@arizen/core`
-2. `@arizen/glass`, `@arizen/mind`, `@arizen/shell`, `@arizen/flow`, `@arizen/skin` (parallel)
-3. `@arizen/ui`, `@arizen/sync`, `@arizen/agent-sdk`, `@arizen/widgets` (parallel)
-4. `apps/*` (parallel)
+---
+
+## Key Subsystems
+
+### Memory Management (`kernel/mm/`)
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Physical MM | `pmm.c` | Page frame allocator (bitmap-based) |
+| Virtual MM | `vmm.c` | Page table management |
+| Heap | `heap.c` | `kmalloc` / `kfree` (slab-like) |
+| Paging | `paging.c` | Map/unmap virtual pages |
+
+### Scheduler (`kernel/sched/`)
+
+- **v0.3.0:** Simple round-robin (fixed time quantum)
+- **v0.4.0+:** Priority-based preemptive scheduler (CFS-inspired)
+
+### Virtual Filesystem (`kernel/fs/` + `fs/`)
+
+The VFS provides a unified interface over all filesystem implementations:
+
+```
+vfs_open() → looks up mount point → calls fs->open()
+vfs_read() → dispatches to mounted fs implementation
+```
+
+Implementations: `tmpfs` (ram disk), `ext2` (persistent)
+
+### Syscall Interface (`kernel/core/syscall.c`)
+
+Linux-compatible syscall numbers where practical (eases porting tools).
+Dispatched via the `syscall` instruction (MSR-based fast path).
 
 ---
 
-## Inter-Process Communication
+## Inter-Subsystem Communication
 
-ArizenOS apps are Electron applications. Each app has a main process (Node.js) and renderer process(es) (Chromium). Communication uses Electron's `ipcMain` / `ipcRenderer`, wrapped by `@arizen/core` IPC utilities with:
-
-- **Typed channels** — TypeScript schemas enforced at compile time
-- **Request-response** — for operations with a single response
-- **Streaming** — for AI token streaming and real-time data
-- **Broadcast** — for system-wide events (theme change, model loaded, etc.)
-
-Apps communicate with each other through a **Hub process** that acts as the system broker — apps do not call each other directly.
+- All subsystems communicate via **well-defined C interfaces** (header files in `kernel/include/`)
+- No global mutable state outside designated subsystem-owned structures
+- Subsystem init order is **explicit** in `kernel_main()` — no constructor magic
 
 ---
 
-## Further Reading
+## Future Architecture Directions
 
-- [ADR-0001 — Monorepo Architecture](ADR-0001-monorepo.md)
-- [ADR-0002 — Glass Rendering Engine](ADR-0002-glass-rendering.md)
-- [ADR-0003 — Local AI Inference Stack](ADR-0003-local-ai.md)
-- [Dependency Graph](dependency-graph.md)
-- [API Reference](../api/README.md)
+| Feature | Target Version | Notes |
+|---------|---------------|-------|
+| SMP (multi-core) | v1.1.0+ | Per-CPU structures, spinlocks |
+| UEFI boot | v0.4.0+ | Alongside BIOS support |
+| ACPI | v0.4.0+ | Power management, device discovery |
+| USB | v1.0.0+ | XHCI controller |
+| GPU | Long-term | DRM/KMS-inspired |
+
+---
+
+*This document is maintained alongside the codebase. If you find it outdated, please open an issue or submit a PR.*
