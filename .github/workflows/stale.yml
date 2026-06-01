@@ -1,0 +1,67 @@
+name: Stale Issues & PRs
+
+on:
+  schedule:
+    # Run at 03:00 UTC every day
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: Mark Stale Issues and PRs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Issues
+          days-before-issue-stale: 60
+          days-before-issue-close: 14
+          stale-issue-label: "status: stale"
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has had no activity
+            for **60 days**.
+
+            If this issue is still relevant, please:
+            - Leave a comment with updated context
+            - Remove the `status: stale` label
+
+            Otherwise, it will be **closed in 14 days**.
+
+            *Thank you for contributing to ArizenOS!*
+          close-issue-message: |
+            This issue has been automatically closed due to inactivity (60 + 14 days).
+
+            If the problem still exists, please open a new issue with updated information.
+          exempt-issue-labels: "priority: critical,priority: high,status: in-progress,status: blocked,type: security"
+
+          # Pull Requests
+          days-before-pr-stale: 30
+          days-before-pr-close: 14
+          stale-pr-label: "status: stale"
+          stale-pr-message: |
+            This pull request has been automatically marked as stale because it has had
+            no activity for **30 days**.
+
+            If this PR is still relevant, please:
+            - Rebase on the latest `develop`
+            - Leave a comment explaining the current status
+            - Remove the `status: stale` label
+
+            Otherwise, it will be **closed in 14 days**.
+          close-pr-message: |
+            This pull request has been automatically closed due to inactivity.
+
+            The branch and commits are preserved — feel free to reopen or reference them in a new PR.
+          exempt-pr-labels: "status: in-progress,status: blocked,status: needs-review"
+
+          # Limits
+          operations-per-run: 100
+          remove-stale-when-updated: true
+          ascending: true
