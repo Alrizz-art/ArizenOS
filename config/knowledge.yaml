@@ -1,0 +1,67 @@
+# Arizen Knowledge Engine — Source Configuration
+engine:
+  chroma_path:   memory/chroma
+  sqlite_path:   memory/persistent/knowledge.db
+  embed_model:   nomic-embed-text
+  chunk_size:    1200
+  chunk_overlap: 200
+  rag_top_k:     8
+  rag_threshold: 0.30
+  rag_tokens:    3000
+
+sources:
+  github:
+    enabled: true
+    since_days: 365
+    max_documents: 10000
+    credentials:
+      token: "${GITHUB_TOKEN}"
+      repos: ["Alrizz-art/ArizenOS"]
+      ingest: [readme, files, issues, prs, commits]
+      file_exts: [.py, .rs, .ts, .tsx, .md, .yaml, .toml, .json]
+
+  markdown:
+    enabled: true
+    credentials:
+      paths: ["docs/", "README.md"]
+      recursive: true
+      exclude: [node_modules, .git, __pycache__, target]
+
+  local:
+    enabled: true
+    credentials:
+      paths: ["."]
+      recursive: true
+      extensions: [.py, .rs, .ts, .tsx, .md, .yaml, .toml, .sql, .sh]
+      exclude: [node_modules, .git, __pycache__, target, dist, build, .venv]
+
+  telegram:
+    enabled: false
+    since_days: 90
+    credentials:
+      api_id: "${TELEGRAM_API_ID}"
+      api_hash: "${TELEGRAM_API_HASH}"
+      session: "${TELEGRAM_SESSION}"
+      targets: ["me"]
+
+  discord:
+    enabled: false
+    since_days: 60
+    credentials:
+      token: "Bot ${DISCORD_TOKEN}"
+      guild_ids: []
+      channels: []
+
+  notion:
+    enabled: false
+    credentials:
+      token: "${NOTION_TOKEN}"
+      page_ids: []
+      database_ids: []
+
+  pdf:
+    enabled: false
+    credentials:
+      paths: []
+      recursive: false
+      ocr: false
