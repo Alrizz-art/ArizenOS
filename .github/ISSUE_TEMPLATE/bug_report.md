@@ -1,60 +1,36 @@
 ---
 name: Bug Report
-about: Something is broken. Help us fix it.
-labels: kind/bug, status/needs-triage
-assignees: ''
+about: Report a bug or unexpected behavior in ArizenOS
+title: "[bug] "
+labels: "type: bug, status: needs-triage, priority: medium"
+assignees: ""
 ---
 
-## What happened?
-
-<!-- A clear, one-paragraph description of the bug. What did you expect? What happened instead? -->
-
-**Expected behavior:**
-
-**Actual behavior:**
+## Bug Description
+<!-- A clear and concise description of the bug -->
 
 ## Steps to Reproduce
+1. 
+2. 
+3. 
 
-<!-- The exact steps to reproduce this bug. Be specific — "it doesn't work" is not reproducible. -->
+## Expected Behavior
+<!-- What you expected to happen -->
 
-1.
-2.
-3.
+## Actual Behavior
+<!-- What actually happened -->
 
 ## Environment
+- **ArizenOS Version / Commit:** <!-- e.g. v0.1.0 or commit hash -->
+- **Architecture:** x86_64
+- **Emulator/Hardware:** <!-- e.g. QEMU 8.x, bare metal -->
+- **Host OS:** <!-- e.g. Ubuntu 24.04 -->
+- **QEMU Command:** <!-- If applicable -->
 
-<!-- Fill in all fields. We cannot diagnose without this. -->
-
-| Field | Value |
-|---|---|
-| ArizenOS version | `v0.X.Y` |
-| Windows version | Windows 10 / 11, Build XXXXX |
-| GPU | e.g. NVIDIA RTX 3070, Intel Iris Xe |
-| Display setup | e.g. Single 1080p, Dual 4K @ 150% DPI |
-| Module affected | e.g. ArizenGlass, ArizenMind, ArizenShell |
-| Installed via | GitHub release / nightly / built from source |
-
-## Logs
-
-<!-- Paste relevant logs here. Find them at: %APPDATA%\ArizenOS\logs\ -->
-
-<details>
-<summary>ArizenOS logs</summary>
-
+## Kernel Log / Stack Trace
 ```
-paste logs here
+<!-- Paste relevant kernel output here -->
 ```
-
-</details>
-
-## Screenshots or Recordings
-
-<!-- A picture is worth a thousand words. Attach if relevant. -->
 
 ## Additional Context
-
-<!-- Anything else that might help: other software running, recent Windows update, extensions installed, etc. -->
-
-## Possible Fix
-
-<!-- Optional: if you have a hypothesis about what's causing this, share it. -->
+<!-- Any other context, screenshots, or information -->
