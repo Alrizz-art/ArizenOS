@@ -1,60 +1,32 @@
 ---
 name: Feature Request
-about: Propose a new capability for ArizenOS.
-labels: kind/feature, status/needs-triage
-assignees: ''
+about: Suggest a new feature or capability for ArizenOS
+title: "[feature] "
+labels: "type: feature, status: needs-triage, priority: medium"
+assignees: ""
 ---
 
-## What problem does this solve?
-
-<!-- Describe the problem you are trying to solve, not the solution.
-     "I want X" is less useful than "I can't do Y without Z". -->
+## Problem Statement
+<!-- What problem does this feature solve? Who is it for? -->
 
 ## Proposed Solution
+<!-- Describe what you'd like to see implemented -->
 
-<!-- Describe your proposed solution. What should ArizenOS do that it doesn't today? -->
+## Alternatives Considered
+<!-- Any alternative approaches you've thought about -->
 
-## Alternatives You've Considered
-
-<!-- What other approaches could solve this? Why do you prefer your proposal? -->
-
-## Affected Module(s)
-
-<!-- Which ArizenOS module(s) would this change? -->
-- [ ] ArizenShell
-- [ ] ArizenGlass
-- [ ] ArizenMind
-- [ ] ArizenFlow
-- [ ] ArizenSkin
-- [ ] ArizenWidgets
-- [ ] ArizenAgent
-- [ ] ArizenSync
-- [ ] New module
-- [ ] Cross-cutting / unsure
-
-## User Impact
-
-<!-- Who benefits from this? How many users does this affect? How severely does the current
-     lack of this feature impact them? -->
-
-**Affected audience:**
-- [ ] All users
-- [ ] Developers / extension authors
-- [ ] Accessibility users
-- [ ] Specific workflow (describe below)
-
-## Prior Art
-
-<!-- Does any other product do this well? Link examples. -->
-
-## Willingness to Contribute
-
-<!-- Are you able to implement this yourself, or are you requesting it for someone else to build? -->
-
-- [ ] I can implement this and would like guidance
-- [ ] I can implement part of it (specify below)
-- [ ] I'm requesting this for the team to consider
+## Scope
+<!-- Which part of the OS does this affect? -->
+- [ ] Kernel
+- [ ] Bootloader
+- [ ] Drivers
+- [ ] Filesystem
+- [ ] Memory Management
+- [ ] Networking
+- [ ] Userspace / Shell
+- [ ] Build System / CI
+- [ ] Documentation
+- [ ] Other: ___
 
 ## Additional Context
-
-<!-- Mockups, screenshots, links, references — anything that helps explain the request. -->
+<!-- References, links to specs, prior art, or related issues -->
