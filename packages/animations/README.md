@@ -1,8 +1,8 @@
-# @arizen/flow
+# @arizen/animations
 
 > Physics-based animation engine for ArizenOS.
 
-ArizenFlow drives every motion in the platform. Transitions, entrance animations, hover states, drag physics — all governed by a shared animation system with a consistent physical vocabulary. Nothing snaps unless it should.
+ArizenAnimations drives every motion in the platform. Transitions, entrance animations, hover states, drag physics — all governed by a shared animation system with a consistent physical vocabulary. Nothing snaps unless it should.
 
 ## What's in Here
 
@@ -38,4 +38,4 @@ export const MotionTokens = {
 
 ## Reduced Motion
 
-All ArizenFlow animations respect `prefers-reduced-motion`. When active, durations collapse to ≤50ms and spring animations become instant crossfades. No code required from consumers — the engine handles it.
+All ArizenAnimations animations respect `prefers-reduced-motion`. When active, durations collapse to ≤50ms and spring animations become instant crossfades. No code required from consumers — the engine handles it.

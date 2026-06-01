@@ -1,8 +1,8 @@
-# @arizen/glass
+# @arizen/renderer
 
 > GPU-accelerated blur, depth, translucency, and light simulation for ArizenOS.
 
-ArizenGlass is the rendering engine behind every frosted surface, shadow, and depth cue in ArizenOS. It wraps Windows' Desktop Window Manager (DWM) APIs and extends them with a custom compositing pipeline.
+ArizenRenderer is the rendering engine behind every frosted surface, shadow, and depth cue in ArizenOS. It wraps Windows' Desktop Window Manager (DWM) APIs and extends them with a custom compositing pipeline.
 
 ## What's in Here
 
@@ -17,7 +17,7 @@ ArizenGlass is the rendering engine behind every frosted surface, shadow, and de
 
 ## Architecture
 
-ArizenGlass wraps DWM via N-API native bindings. The blur pipeline runs on the GPU via Direct2D. On systems below the performance budget, effects degrade gracefully (blur radius reduction → opacity fallback → solid fallback).
+ArizenRenderer wraps DWM via N-API native bindings. The blur pipeline runs on the GPU via Direct2D. On systems below the performance budget, effects degrade gracefully (blur radius reduction → opacity fallback → solid fallback).
 
 ## Performance Budgets
 

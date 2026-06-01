@@ -1,8 +1,8 @@
-# @arizen/skin
+# @arizen/themes
 
 > Design token loader, theme engine, and hot-reload system for ArizenOS.
 
-ArizenSkin is the single source of truth for visual configuration across every ArizenOS product. It loads compiled design tokens, applies themes, and pushes updates to all consumers in real time — without a restart.
+ArizenThemes is the single source of truth for visual configuration across every ArizenOS product. It loads compiled design tokens, applies themes, and pushes updates to all consumers in real time — without a restart.
 
 ## What's in Here
 
@@ -44,7 +44,7 @@ scale = 1.0
 branding/tokens/source/*.json
     → tools/tokens/ (compiler)
     → branding/tokens/generated/tokens.css
-    → @arizen/skin (loader)
+    → @arizen/themes (loader)
     → all apps via ThemeProvider
 ```
 

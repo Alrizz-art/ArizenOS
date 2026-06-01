@@ -1,14 +1,14 @@
-# @arizen/mind
+# @arizen/ai
 
 > Local-first AI inference layer for ArizenOS.
 
-ArizenMind is the intelligence backbone of the entire platform. It manages local LLM inference via llama.cpp, handles context, routes streaming output, and exposes a clean API to every product that needs AI.
+ArizenAI is the intelligence backbone of the entire platform. It manages local LLM inference via llama.cpp, handles context, routes streaming output, and exposes a clean API to every product that needs AI.
 
 ## What's in Here
 
 | Export | Description |
 |---|---|
-| `ArizenMind` | Main client — initialize, query, stream |
+| `ArizenAI` | Main client — initialize, query, stream |
 | `ModelManager` | Download, cache, and switch GGUF models |
 | `ContextEngine` | Conversation memory + desktop context injection |
 | `StreamParser` | Token stream → structured output parser |
@@ -26,7 +26,7 @@ ArizenMind is the intelligence backbone of the entire platform. It manages local
 ## API
 
 ```typescript
-const mind = await ArizenMind.create({ model: "llama-3-8b-q4" });
+const mind = await ArizenAI.create({ model: "llama-3-8b-q4" });
 
 // Streaming (preferred)
 const stream = await mind.query("Summarize my open PRs");

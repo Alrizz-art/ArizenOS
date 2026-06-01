@@ -1,8 +1,8 @@
-# @arizen/shell
+# @arizen/platform
 
 > Windows OS integration layer for ArizenOS.
 
-ArizenShell wraps Win32, WinUI3, and DWM APIs into a clean TypeScript interface. Every product that needs to talk to Windows — hotkeys, system tray, window management, process enumeration — does it through this package.
+ArizenPlatform wraps Win32, WinUI3, and DWM APIs into a clean TypeScript interface. Every product that needs to talk to Windows — hotkeys, system tray, window management, process enumeration — does it through this package.
 
 ## What's in Here
 
@@ -24,10 +24,10 @@ ArizenShell wraps Win32, WinUI3, and DWM APIs into a clean TypeScript interface.
 
 ## Native Bindings
 
-ArizenShell uses N-API to call Win32 APIs from Node.js. Native bindings are prebuilt for distribution. To build from source:
+ArizenPlatform uses N-API to call Win32 APIs from Node.js. Native bindings are prebuilt for distribution. To build from source:
 
 ```bash
-pnpm --filter @arizen/shell build:native
+pnpm --filter @arizen/platform build:native
 ```
 
 Requires: Visual Studio Build Tools 2022, Windows SDK 10.0.22621

@@ -1,4 +1,4 @@
-# @arizen/agent-sdk
+# @arizen/sdk
 
 > Public plugin API for ArizenAgent extensions.
 
@@ -11,13 +11,13 @@ Third-party developers use the Agent SDK to register custom tools that ArizenAge
 | `defineTool()` | Register a callable tool with schema + handler |
 | `ToolContext` | Runtime context injected into every tool call |
 | `ToolPermission` | Typed permission declarations |
-| `AgentSDKPlugin` | Plugin manifest interface |
+| `SDKPlugin` | Plugin manifest interface |
 | `z` | Re-exported Zod for tool input schema definition |
 
 ## Writing a Tool
 
 ```typescript
-import { defineTool, z } from "@arizen/agent-sdk";
+import { defineTool, z } from "@arizen/sdk";
 
 export const readFileTool = defineTool({
   name: "read_file",
