@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "v*.*.*-*"
+
+permissions:
+  contents: write
+  discussions: write
+
+jobs:
+  # ─── Validate ────────────────────────────────────────────────────────────────
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      - name: Verify CHANGELOG entry exists
+        run: |
+          if ! grep -q "\[${{ steps.version.outputs.version }}\]" CHANGELOG.md; then
+            echo "ERROR: No CHANGELOG entry found for v${{ steps.version.outputs.version }}"
+            exit 1
+          fi
+      - name: Verify release manifest exists
+        run: |
+          if [ ! -f "releases/manifests/v${{ steps.version.outputs.version }}.json" ]; then
+            echo "ERROR: Release manifest not found for v${{ steps.version.outputs.version }}"
+            exit 1
+          fi
+
+  # ─── Build Windows Artifacts ─────────────────────────────────────────────────
+  build-artifacts:
+    name: Build — ${{ matrix.app }}
+    needs: [validate]
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        app: [launcher, assistant, voice, hub, agent]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with: { version: "8" }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo build --filter=@arizen/${{ matrix.app }}
+      - name: Package installer
+        run: pnpm --filter @arizen/${{ matrix.app }} package
+      - name: Compute SHA256
+        run: |
+          Get-FileHash apps/${{ matrix.app }}/build/*.exe -Algorithm SHA256 |
+            Format-List | Out-File -Append releases/checksums/${{ github.ref_name }}-SHA256SUMS.txt
+        shell: pwsh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.app }}
+          path: apps/${{ matrix.app }}/build/*.exe
+          retention-days: 7
+
+  # ─── Publish GitHub Release ──────────────────────────────────────────────────
+  publish:
+    name: Publish Release
+    needs: [build-artifacts]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+          merge-multiple: true
+      - name: Extract release notes from CHANGELOG
+        id: release-notes
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          NOTES=$(awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | head -n -2 | tail -n +2)
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "ArizenOS ${{ github.ref_name }}"
+          body: ${{ steps.release-notes.outputs.notes }}
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+          files: |
+            release-artifacts/**/*.exe
+            releases/checksums/${{ github.ref_name }}-SHA256SUMS.txt
+
+  # ─── Update Latest Manifest ──────────────────────────────────────────────────
+  update-manifest:
+    name: Update Latest Manifest
+    needs: [publish]
+    if: "!contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-rc')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy manifest to latest.json
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          cp releases/manifests/v${VERSION}.json releases/manifests/latest.json
+      - name: Commit latest.json update
+        run: |
+          git config user.name "arizen-bot"
+          git config user.email "bot@arizenos.dev"
+          git add releases/manifests/latest.json
+          git commit -m "chore(release): update latest manifest to ${{ github.ref_name }}"
+          git push
