@@ -1,0 +1,78 @@
+title: "Apply ArizenOS OEM Branding"
+description: "Sets ArizenOS identity in Windows System Information (Win+Pause / Settings → About), registers OEM logo, and removes pre-loaded OEM suggestions from the Windows content delivery system."
+privilege: TrustedInstaller
+condition: "{{OEMBranding}}"
+actions:
+  - !powerShell:
+      script: scripts\oem-branding.ps1
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+      value: "Manufacturer"
+      data: "ArizenOS Project"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+      value: "Model"
+      data: "ArizenOS Edition"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+      value: "SupportURL"
+      data: "https://github.com/Alrizz-art/ArizenOS"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+      value: "SupportHours"
+      data: "Community Support — GitHub Issues"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+      value: "RegisteredOrganization"
+      data: "ArizenOS"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+      value: "RegisteredOwner"
+      data: "ArizenOS User"
+      type: String
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+      value: "DisableWindowsConsumerFeatures"
+      data: 1
+      type: DWord
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent"
+      value: "DisableThirdPartySuggestions"
+      data: 1
+      type: DWord
+
+  - !registryValue:
+      path: "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+      value: "OemPreInstalledAppsEnabled"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+      value: "PreInstalledAppsEnabled"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+      value: "SilentInstalledAppsEnabled"
+      data: 0
+      type: DWord
+
+  - !powerShell:
+      script: |
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] OEM Branding applied" |
+          Add-Content "$env:SystemDrive\ArizenOS\Logs\install.log"
