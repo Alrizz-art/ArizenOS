@@ -1,0 +1,68 @@
+name: "\U0001F4D6 Documentation Issue"
+description: Report missing, incorrect, or unclear documentation.
+title: "docs: <short description>"
+labels: ["documentation", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Good documentation is a first-class feature of ArizenOS.
+        Thank you for helping us improve it.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight Checklist
+      options:
+        - label: I searched existing issues — this is not a duplicate.
+          required: true
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      options:
+        - Incorrect information
+        - Missing documentation
+        - Unclear or confusing explanation
+        - Broken link
+        - Outdated content
+        - Typo / grammar
+        - Missing code example
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Location
+      description: URL, file path, or section name of the affected documentation.
+      placeholder: "e.g. docs/architecture/ADR-0001-monorepo.md, or https://docs.arizenos.dev/..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong or missing?
+      description: Describe the issue clearly. Quote the incorrect text if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement
+      description: How should it be fixed? A draft of corrected content is very welcome.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Are you willing to open a PR to fix this?
+      options:
+        - label: Yes, I can open a PR for this fix.
+        - label: No, I'm only reporting it.
