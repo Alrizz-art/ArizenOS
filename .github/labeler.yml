@@ -1,79 +1,73 @@
-# Auto-label PRs by changed file paths
-# See: https://github.com/actions/labeler
+# GitHub Labeler Configuration
+# Automatically applies labels to PRs based on changed file paths.
+# Used by .github/workflows/labeler.yml
 
-# ─── Packages ─────────────────────────────────────────────────────────────────
-"pkg/core":
-  - packages/core/**
+"scope: kernel":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "kernel/**"
+      - "arch/**"
 
-"pkg/glass":
-  - packages/glass/**
+"scope: bootloader":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "arch/x86_64/boot/**"
 
-"pkg/mind":
-  - packages/mind/**
+"scope: drivers":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "drivers/**"
 
-"pkg/shell":
-  - packages/shell/**
+"scope: filesystem":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "fs/**"
+      - "kernel/fs/**"
 
-"pkg/flow":
-  - packages/flow/**
+"scope: memory":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "kernel/mm/**"
 
-"pkg/skin":
-  - packages/skin/**
+"scope: network":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "kernel/net/**"
+      - "drivers/net/**"
 
-"pkg/ui":
-  - packages/ui/**
+"scope: userspace":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "userspace/**"
 
-"pkg/widgets":
-  - packages/widgets/**
+"scope: build-system":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "Makefile"
+      - "scripts/**"
+      - "tools/toolchain/**"
+      - "*.mk"
 
-"pkg/sync":
-  - packages/sync/**
+"scope: security":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "kernel/security/**"
+      - "SECURITY.md"
 
-"pkg/agent-sdk":
-  - packages/agent-sdk/**
+"type: documentation":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "docs/**"
+      - "*.md"
+      - ".github/*.md"
 
-# ─── Apps ─────────────────────────────────────────────────────────────────────
-"app/launcher":
-  - apps/launcher/**
+"type: ci-cd":
+  - changed-files:
+    - any-glob-to-any-file:
+      - ".github/workflows/**"
+      - "scripts/ci/**"
 
-"app/assistant":
-  - apps/assistant/**
-
-"app/voice":
-  - apps/voice/**
-
-"app/hub":
-  - apps/hub/**
-
-"app/agent":
-  - apps/agent/**
-
-# ─── Cross-cutting ────────────────────────────────────────────────────────────
-"area/ci":
-  - .github/workflows/**
-  - .github/dependabot.yml
-
-"area/docs":
-  - docs/**
-  - "*.md"
-
-"area/branding":
-  - branding/**
-
-"area/tests":
-  - tests/**
-
-"area/tools":
-  - tools/**
-
-"area/release":
-  - releases/**
-  - RELEASE.md
-  - CHANGELOG.md
-
-"area/governance":
-  - GOVERNANCE.md
-  - CONTRIBUTING.md
-  - CODE_OF_CONDUCT.md
-  - SECURITY.md
-  - MAINTAINERS.md
+"type: test":
+  - changed-files:
+    - any-glob-to-any-file:
+      - "tests/**"
