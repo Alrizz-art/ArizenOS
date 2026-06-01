@@ -1,40 +1,47 @@
 # ArizenOS Branding Assets
 
-> Single source of truth for all ArizenOS visual assets.
+This directory contains official branding assets for ArizenOS.
 
-## Structure
+---
 
-| Directory | Contents |
-|---|---|
-| `logos/` | All logo variants — SVG source + PNG exports (1×, 2×, 3×) |
-| `fonts/` | Licensed typefaces: Inter, Geist Mono, Instrument Serif (OFL) |
-| `icons/` | System icon set (SVG) + per-app icons |
-| `tokens/` | Design tokens: source JSON → compiled CSS/JS |
-| `wallpapers/` | Default + community wallpaper collection |
-| `press/` | Official screenshots, press kit, product descriptions |
+## Logo
 
-## Design Token Pipeline
+| File | Format | Usage |
+|------|--------|-------|
+| `logo/arizenos-logo.svg` | SVG | Primary — use in documentation, websites |
+| `logo/arizenos-logo.png` | PNG 512×512 | General use |
+| `logo/arizenos-logo-dark.svg` | SVG | Dark background variant |
+| `logo/arizenos-icon.svg` | SVG | App icon, favicon |
 
-Tokens flow in one direction — never edit `generated/` by hand:
+## Color Palette
 
-```
-tokens/source/*.json  →  tools/tokens/ (compiler)  →  tokens/generated/
-                                                              ↓
-                                                    @arizen/skin (runtime)
-                                                              ↓
-                                                         all apps
-```
+| Name | Hex | Usage |
+|------|-----|-------|
+| Arizen Blue | `#0F6FFF` | Primary brand color |
+| Deep Space | `#0A0E1A` | Dark background |
+| Kernel Gray | `#1E2332` | Secondary background |
+| Code Teal | `#00D9C0` | Accent, highlights |
+| Alert Red | `#FF4455` | Errors, critical |
+| Pure White | `#F0F4FF` | Text on dark |
 
-To recompile tokens after editing source files:
+## Typography
 
-```bash
-pnpm --filter @arizen/tools token:compile
-```
+| Role | Font | Fallback |
+|------|------|---------|
+| Headings | JetBrains Mono | Fira Mono, monospace |
+| Body | Inter | system-ui, sans-serif |
+| Code | JetBrains Mono | Fira Code, monospace |
 
-## Logo Usage
+## Usage Guidelines
 
-See [`/BRAND_GUIDELINES.md`](../BRAND_GUIDELINES.md) — Logo Rules section for clear space, minimum sizes, color rules, and do/don'ts.
+- Do not stretch or distort the logo
+- Maintain clear space equal to the height of the "A" around the logo
+- Use the dark variant on backgrounds darker than `#808080`
+- Do not recolor the logo — use approved color variants only
+- Do not combine the logo with other logos without permission
 
-## Contributing Assets
+## Assets License
 
-Design contributions (icons, wallpapers, themes) are reviewed by the Design Review Committee. See [`/GOVERNANCE.md`](../GOVERNANCE.md) — Committees section.
+Branding assets are **NOT** covered by the MIT license.  
+All rights reserved — ArizenOS Contributors.  
+Contact the maintainer for permission to use in external projects.
