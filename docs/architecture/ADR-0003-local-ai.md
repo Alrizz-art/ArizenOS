@@ -44,13 +44,13 @@ Wrap `llama.cpp` with a Node.js N-API native module (`arizen-llama-native`), cal
 
 ## Decision
 
-We adopt **Option D — llama.cpp via N-API native binding** as the local AI inference stack, implemented in `@arizen/mind`.
+We adopt **Option D — llama.cpp via N-API native binding** as the local AI inference stack, implemented in `@arizen/ai`.
 
 ### Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
-│           @arizen/mind (TypeScript API)           │
+│           @arizen/ai (TypeScript API)           │
 │  MindEngine · Conversation · StreamingResult      │
 │  ModelManager · ToolCallingParser · EmbeddingsAPI │
 └──────────────────────┬──────────────────────────┘
@@ -144,14 +144,14 @@ ArizenOS runs a multi-tenant context manager for conversations:
 **Mitigations:**
 - Pre-built binaries are distributed via the installer for all major configurations (CUDA 12, ROCm 6, CPU-AVX2)
 - Source builds automatically compile the correct variant for the detected platform
-- `@arizen/mind` TypeScript API shields application code from native module complexity
+- `@arizen/ai` TypeScript API shields application code from native module complexity
 - The C++ layer has a strict boundary — all memory management is isolated within the native module
 
 ---
 
 ## Review
 
-This decision will be reviewed when `@arizen/mind` reaches v1.0.0. The review should assess:
+This decision will be reviewed when `@arizen/ai` reaches v1.0.0. The review should assess:
 - Whether to expose an OpenAI-compatible local server endpoint (enabling third-party tool compatibility)
 - Whether to support multi-GPU inference for larger models
 - Whether Whisper.cpp should share the native binding architecture with llama.cpp

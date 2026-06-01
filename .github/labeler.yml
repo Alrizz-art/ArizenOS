@@ -6,19 +6,19 @@
   - packages/core/**
 
 "pkg/glass":
-  - packages/glass/**
+  - packages/renderer/**
 
 "pkg/mind":
-  - packages/mind/**
+  - packages/ai/**
 
 "pkg/shell":
-  - packages/shell/**
+  - packages/platform/**
 
 "pkg/flow":
-  - packages/flow/**
+  - packages/animations/**
 
 "pkg/skin":
-  - packages/skin/**
+  - packages/themes/**
 
 "pkg/ui":
   - packages/ui/**
@@ -30,7 +30,7 @@
   - packages/sync/**
 
 "pkg/agent-sdk":
-  - packages/agent-sdk/**
+  - packages/sdk/**
 
 # ─── Apps ─────────────────────────────────────────────────────────────────────
 "app/launcher":
@@ -67,7 +67,7 @@
   - tools/**
 
 "area/release":
-  - releases/**
+  - playbook/releases/**
   - RELEASE.md
   - CHANGELOG.md
 

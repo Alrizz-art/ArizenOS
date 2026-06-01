@@ -24,8 +24,8 @@
       "outputs": []
     },
     "token:compile": {
-      "inputs": ["branding/tokens/source/**"],
-      "outputs": ["branding/tokens/generated/**"]
+      "inputs": ["packages/design-system/src/tokens/**", "branding/tokens/source/**"],
+      "outputs": ["packages/design-system/src/generated/**", "branding/tokens/generated/**"]
     },
     "dev": {
       "cache": false,

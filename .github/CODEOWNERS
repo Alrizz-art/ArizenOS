@@ -9,15 +9,15 @@
 # ─── Core Packages ────────────────────────────────────────────────────────────
 /packages/core/                       @Alrizz-art
 /packages/config/                     @Alrizz-art
-/packages/glass/                      @Alrizz-art
-/packages/mind/                       @Alrizz-art
-/packages/shell/                      @Alrizz-art
-/packages/flow/                       @Alrizz-art
-/packages/skin/                       @Alrizz-art
+/packages/renderer/                      @Alrizz-art
+/packages/ai/                       @Alrizz-art
+/packages/platform/                      @Alrizz-art
+/packages/animations/                       @Alrizz-art
+/packages/themes/                       @Alrizz-art
 /packages/ui/                         @Alrizz-art
 /packages/widgets/                    @Alrizz-art
 /packages/sync/                       @Alrizz-art
-/packages/agent-sdk/                  @Alrizz-art
+/packages/sdk/                  @Alrizz-art
 
 # ─── Apps ─────────────────────────────────────────────────────────────────────
 /apps/launcher/                       @Alrizz-art
@@ -53,7 +53,7 @@
 /ARCHITECTURE.md                      @Alrizz-art
 
 # ─── Release Manifests ────────────────────────────────────────────────────────
-/releases/                            @Alrizz-art
+/playbook/releases/                            @Alrizz-art
 
 # ─── Architecture Decision Records ────────────────────────────────────────────
 /docs/architecture/                   @Alrizz-art

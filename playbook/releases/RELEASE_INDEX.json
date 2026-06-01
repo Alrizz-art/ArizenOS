@@ -1,0 +1,29 @@
+{
+  "$schema": "https://arizenos.dev/schemas/release-manifest/v1.json",
+  "_comment": "This file is auto-updated by the release pipeline. Do not edit manually.",
+  "version": "0.1.0-alpha.1",
+  "channel": "alpha",
+  "date": null,
+  "products": {
+    "launcher":  { "version": "0.1.0-alpha.1", "sha256": null, "url": null },
+    "assistant": { "version": "0.1.0-alpha.1", "sha256": null, "url": null },
+    "voice":     { "version": "0.1.0-alpha.1", "sha256": null, "url": null },
+    "hub":       { "version": "0.1.0-alpha.1", "sha256": null, "url": null },
+    "agent":     { "version": "0.1.0-alpha.1", "sha256": null, "url": null }
+  },
+  "packages": {
+    "@arizen/core":      "0.1.0",
+    "@arizen/renderer":     "0.1.0",
+    "@arizen/ai":      "0.1.0",
+    "@arizen/platform":     "0.1.0",
+    "@arizen/animations":      "0.1.0",
+    "@arizen/themes":      "0.1.0",
+    "@arizen/ui":        "0.1.0",
+    "@arizen/widgets":   "0.1.0",
+    "@arizen/sync":      "0.1.0",
+    "@arizen/sdk": "0.1.0"
+  },
+  "minWindows": "10.0.19041",
+  "releaseNotes": "https://github.com/Alrizz-art/ArizenOS/releases",
+  "rollback": null
+}
