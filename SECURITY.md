@@ -1,94 +1,146 @@
 # Security Policy
 
-> Arizen Technologies — ArizenOS Security Policy v1.0
+ArizenOS runs with deep system integration — shell replacement, local AI inference, autonomous agent execution, and Win32 bindings. Security is a first-class priority, not an afterthought.
 
 ---
 
 ## Supported Versions
 
-Only the versions listed below receive security patches. If you are on an unsupported version, upgrade before reporting.
+| Version | Status | Security Fixes |
+|---|---|---|
+| `main` (pre-alpha) | Active development | Best-effort |
+| `0.x.x` (alpha) | Not yet released | Will receive fixes |
+| Older releases | — | Not applicable yet |
 
-| Version | Supported |
-|---|---|
-| Latest stable (`vX.Y.Z`) | ✅ Yes |
-| Previous stable (`vX.Y-1.Z`) | ✅ Yes (critical only) |
-| LTS branch | ✅ Yes (for LTS window) |
-| Pre-release (alpha/beta/rc) | ⚠️ Best effort |
-| `< 0.4.0` | ❌ No |
+Once v1.0.0 ships, the supported version table will be expanded with LTS commitments. See [RELEASE.md](RELEASE.md).
 
 ---
 
 ## Reporting a Vulnerability
 
-**Do not report security vulnerabilities via public GitHub Issues, Discussions, or PRs.**
+**Do not open a public GitHub issue for security vulnerabilities.**
 
-Disclosing a vulnerability publicly before a patch is available puts all ArizenOS users at risk.
+Public disclosure before a fix is available puts all ArizenOS users at risk.
 
-### Private Disclosure
+### Preferred: GitHub Private Vulnerability Reporting
 
-Email **`security@arizenos.dev`** with:
+Use GitHub's built-in private advisory system:
+[https://github.com/Alrizz-art/ArizenOS/security/advisories/new](https://github.com/Alrizz-art/ArizenOS/security/advisories/new)
 
-- Subject: `[SECURITY] <short description>`
-- Affected component(s) and version(s)
-- Description of the vulnerability and impact
-- Steps to reproduce (as detailed as possible)
-- Any proof-of-concept code or screenshots
-- Your preferred credit name/handle for the advisory (optional)
+This creates a private, encrypted thread between you and the maintainers. It is the fastest path to resolution.
 
-You will receive acknowledgment within **48 hours** and a substantive response within **7 days**.
+### Alternative: Email
 
-### GitHub Private Vulnerability Reporting
+Email: [security@arizenos.dev](mailto:security@arizenos.dev)
 
-You may also use GitHub's built-in [private vulnerability reporting](https://github.com/Alrizz-art/ArizenOS/security/advisories/new) feature, available in the **Security** tab of the repository.
+Use the subject line: `[SECURITY] <brief description>`
+
+**Include in your report:**
+
+- A clear description of the vulnerability
+- The affected component(s) and version(s)
+- Steps to reproduce (proof of concept if available)
+- Your assessment of impact and severity (CVSS score if known)
+- Whether you have already disclosed this elsewhere
+
+We accept PGP-encrypted reports. Our public key is available at [https://arizenos.dev/.well-known/security.pgp](https://arizenos.dev/.well-known/security.pgp).
 
 ---
 
-## Disclosure Policy
+## Response Timeline
 
-ArizenOS follows **coordinated disclosure** with a **90-day deadline**:
-
-| Day | Action |
+| Milestone | Target |
 |---|---|
-| 0 | Report received, acknowledged within 48 hours |
-| 7 | Substantive response: confirmed, investigating, or declined |
-| 30 | Status update to reporter |
-| 60 | Patch development complete, testing begins |
-| 75 | Patch released to stable channel |
-| 90 | Public advisory published (CVE if applicable) |
+| Acknowledgement of receipt | **48 hours** |
+| Initial severity assessment | **5 business days** |
+| Status update to reporter | **10 business days** |
+| Fix available (critical/high) | **30 days** |
+| Fix available (medium/low) | **90 days** |
+| Public disclosure | After fix is released |
 
-If a patch cannot be produced within 90 days, we communicate this to the reporter and coordinate an extended timeline. We do not simply ignore the deadline.
-
-**Zero-day exceptions:** If a vulnerability is already publicly known or actively exploited, we accelerate to the shortest safe timeline, typically 24–72 hours.
+We follow a **90-day coordinated disclosure policy**. If a fix cannot be delivered within 90 days, we will negotiate an extension with the reporter or recommend temporary mitigations.
 
 ---
 
 ## Severity Classification
 
-We use the [CVSS v3.1](https://www.first.org/cvss/) scoring system.
+We use [CVSS v3.1](https://www.first.org/cvss/) for severity scoring.
 
-| CVSS Score | Severity | Response SLA |
+| Severity | CVSS Score | Examples |
 |---|---|---|
-| 9.0–10.0 | Critical | 24–48 hours |
-| 7.0–8.9 | High | 72 hours |
-| 4.0–6.9 | Medium | Next patch release |
-| 0.1–3.9 | Low | Next minor release |
+| **Critical** | 9.0–10.0 | Remote code execution, privilege escalation to SYSTEM |
+| **High** | 7.0–8.9 | Local privilege escalation, auth bypass, data exfiltration |
+| **Medium** | 4.0–6.9 | Information disclosure, DoS, sandbox escape (widget/agent) |
+| **Low** | 0.1–3.9 | Minor info leaks, non-exploitable crashes |
 
 ---
 
-## Security Commitments
+## Scope
 
-- **Local-first**: ArizenOS AI inference runs locally by default. No prompt data is sent to external servers without explicit user opt-in.
-- **No telemetry by default**: ArizenOS does not collect usage data, crash reports, or system information unless the user explicitly enables it.
-- **No auto-update code execution**: The update mechanism downloads and verifies signatures before execution. No remote code execution via update channel.
-- **Extension sandboxing**: Third-party extensions run in an isolated context with declared permissions. Extensions cannot access the ArizenMind API without explicit user grant.
+### In Scope
+
+All code in this repository, including:
+
+- `apps/*` — Arizen Launcher, Assistant, Voice, Hub, Agent
+- `packages/*` — all shared libraries, especially `@arizen/agent-sdk`, `@arizen/shell`, `@arizen/mind`, `@arizen/sync`
+- The installer and updater
+- The widget sandbox and permission model
+- The Agent tool execution system (file, shell, browser)
+- The local AI inference layer (`@arizen/mind`)
+
+### Out of Scope
+
+- Third-party Electron vulnerabilities (report to [Electron Security](https://github.com/electron/electron/security/policy))
+- Third-party models downloaded through Arizen Hub
+- Community extensions and themes not authored by ArizenOS maintainers
+- Issues only reproducible on unsupported Windows versions
+- Social engineering attacks on maintainers
+- Theoretical vulnerabilities without a proof of concept
 
 ---
 
-## Hall of Fame
+## Security Architecture Principles
 
-Security researchers who responsibly disclose vulnerabilities are credited in our Security Hall of Fame (published in GitHub Security Advisories) with their preferred name/handle, unless they request anonymity.
+ArizenOS is designed with the following security principles:
+
+1. **Local by default.** AI inference and agent execution run entirely on your machine. No data is sent to any external server without your explicit opt-in action.
+
+2. **Explicit permission model.** The Arizen Agent requires user approval for tool categories (file write, shell execute, browser control). Permissions are displayed before execution, not after.
+
+3. **Widget sandbox.** Widgets run in a sandboxed JavaScript runtime with a capability-based permission model. They cannot access the filesystem, network, or OS APIs without declared and approved permissions.
+
+4. **E2E encrypted sync.** If you enable Arizen Sync, all data is encrypted on your device before transmission. The sync server never has access to plaintext.
+
+5. **No telemetry.** ArizenOS collects no usage data, crash reports, or analytics by default. There is no opt-out because there is no opt-in.
+
+6. **Signed releases.** All official releases are code-signed and include SHA-256 checksums. Verify before installing.
 
 ---
 
-*ArizenOS Security Policy v1.0 — June 2025*
-*Contact: security@arizenos.dev*
+## Security Hall of Fame
+
+We credit all researchers who responsibly disclose security vulnerabilities. With your permission, your name and a description of the finding will be included in the Security Hall of Fame published at [https://arizenos.dev/security/hall-of-fame](https://arizenos.dev/security/hall-of-fame) after the fix is released.
+
+---
+
+## Bug Bounty
+
+A formal bug bounty program is planned for the v1.0.0 release. Until then, we offer:
+
+- Public credit in the Security Hall of Fame
+- A mention in the release notes for the fixing version
+- Our sincere gratitude
+
+---
+
+## Contact
+
+| Purpose | Contact |
+|---|---|
+| Vulnerability reports | [security@arizenos.dev](mailto:security@arizenos.dev) |
+| Security architecture questions | [GitHub Discussions](https://github.com/Alrizz-art/ArizenOS/discussions) |
+| Code of Conduct violations | [conduct@arizenos.dev](mailto:conduct@arizenos.dev) |
+
+---
+
+*This policy is reviewed and updated with each major release.*
