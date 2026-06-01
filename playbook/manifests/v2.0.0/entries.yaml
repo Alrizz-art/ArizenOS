@@ -21,7 +21,7 @@ entries:
   # Always runs. No conditions. Cannot be skipped.
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/restore-point.yaml
+      path: playbook/scripts/build/restore-point.yaml
       id: phase-0-restore-point
       required: true
       onError: abort
@@ -40,7 +40,7 @@ entries:
   # Win10 / Win11: identical behavior
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/oem-branding.yaml
+      path: playbook/registry/tweaks/ux/oem-branding.yaml
       id: phase-1-oem-branding
       required: false
       condition: "{{OEMBranding}}"
@@ -58,7 +58,7 @@ entries:
   # Win11: additionally activates Mica via EnableMicaEffect
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/dark-theme.yaml
+      path: playbook/registry/tweaks/ux/dark-theme.yaml
       id: phase-2a-dark-theme
       required: true
       onError: warn
@@ -82,7 +82,7 @@ entries:
   # Win11: Mica + Acrylic via ImmersiveShell
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/transparency.yaml
+      path: playbook/registry/tweaks/ux/transparency.yaml
       id: phase-2b-transparency
       required: true
       dependsOn: phase-2a-dark-theme
@@ -105,7 +105,7 @@ entries:
   # Win10 / Win11: same AppX targets; Win11 adds GamingApp, Clipchamp
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/debloat.yaml
+      path: playbook/registry/tweaks/debloat/debloat.yaml
       id: phase-3-debloat
       required: true
       onError: warn
@@ -131,7 +131,7 @@ entries:
   # Win10 / Win11: identical — Win32 SystemParametersInfo API
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/wallpaper.yaml
+      path: playbook/registry/tweaks/ux/wallpaper.yaml
       id: phase-4-wallpaper
       required: false
       condition: "{{Wallpaper}}"
@@ -150,7 +150,7 @@ entries:
   # Win11: WSL2 also available via wsl --install (preferred)
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/developer-setup.yaml
+      path: playbook/registry/packages/optional/developer-setup.yaml
       id: phase-5-developer-setup
       required: false
       condition: "{{DeveloperMode}}"
@@ -180,7 +180,7 @@ entries:
   # Always runs. Runs last regardless of previous phase outcomes.
   # ──────────────────────────────────────────────────────────
   - !include:
-      path: entries/final-cleanup.yaml
+      path: playbook/registry/tweaks/ux/final-cleanup.yaml
       id: phase-6-final-cleanup
       required: true
       runAlways: true
