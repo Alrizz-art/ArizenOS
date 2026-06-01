@@ -1,0 +1,48 @@
+version: 2
+
+updates:
+  # ─── Root workspace ──────────────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "kind/dependency"
+      - "status/needs-triage"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      typescript-ecosystem:
+        patterns:
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "ts-*"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "playwright"
+          - "@playwright/*"
+      eslint:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+
+  # ─── GitHub Actions ──────────────────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "UTC"
+    labels:
+      - "kind/dependency"
+      - "area/ci"
+    commit-message:
+      prefix: "chore(ci)"
