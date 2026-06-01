@@ -1,0 +1,69 @@
+title: "Finalize & Cleanup"
+description: "Runs the post-install security audit, archives all logs, restarts Windows Explorer to apply theme changes, and prepares the system for reboot. Displays a summary of all changes applied."
+privilege: TrustedInstaller
+actions:
+  # ── Apply Performance Registry ────────────────────────────────────
+  - !registryImport:
+      path: registry\performance.reg
+
+  # ── Performance: Disable NTFS Last Access ────────────────────────
+  - !registryValue:
+      path: "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem"
+      value: "NtfsDisableLastAccessUpdate"
+      data: 2147483651
+      type: DWord
+
+  # ── Network Throttling ────────────────────────────────────────────
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
+      value: "NetworkThrottlingIndex"
+      data: 4294967295
+      type: DWord
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile"
+      value: "SystemResponsiveness"
+      data: 0
+      type: DWord
+
+  # ── Security Audit ────────────────────────────────────────────────
+  - !powerShell:
+      script: scripts\security-audit.ps1
+
+  # ── Restart Explorer ──────────────────────────────────────────────
+  - !powerShell:
+      script: |
+        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 2
+        Start-Process explorer
+
+  # ── Log Summary ───────────────────────────────────────────────────
+  - !powerShell:
+      script: |
+        $log = "$env:SystemDrive\ArizenOS\Logs\install.log"
+        $summary = @"
+
+        ════════════════════════════════════════════════════
+          ArizenOS Installation Complete
+          Completed: $(Get-Date -f 'yyyy-MM-dd HH:mm:ss')
+        ════════════════════════════════════════════════════
+          Logs:     $env:SystemDrive\ArizenOS\Logs\
+          Backups:  $env:SystemDrive\ArizenOS\Backups\
+          Rollback: Run scripts\rollback.ps1 -Full
+          Support:  https://github.com/Alrizz-art/ArizenOS
+        ════════════════════════════════════════════════════
+
+        ACTION REQUIRED: Reboot your system to complete
+        WSL2 enablement and apply all theme changes.
+"@
+        $summary | Add-Content $log
+        Write-Host $summary -ForegroundColor Cyan
+
+  # ── Archive Logs ──────────────────────────────────────────────────
+  - !powerShell:
+      script: |
+        $archiveDir = "$env:SystemDrive\ArizenOS\Logs"
+        $zipPath    = "$archiveDir\install_$(Get-Date -f 'yyyyMMdd_HHmmss').zip"
+        Compress-Archive -Path "$archiveDir\*.log","$archiveDir\*.csv" `
+          -DestinationPath $zipPath -ErrorAction SilentlyContinue
+        Write-Host "Logs archived: $zipPath" -ForegroundColor Green
