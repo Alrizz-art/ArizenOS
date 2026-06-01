@@ -1,0 +1,35 @@
+title: "Create System Restore Point"
+description: "Creates a Windows System Restore Point named 'ArizenOS Pre-Install' before any changes are applied. This is your safety net — use it to fully revert if needed."
+privilege: TrustedInstaller
+actions:
+  - !restorePoint:
+      name: "ArizenOS Pre-Install"
+      description: "Pre-ArizenOS customization checkpoint. Run rollback.ps1 -UseRestorePoint to revert."
+
+  - !powerShell:
+      script: |
+        $logDir = "$env:SystemDrive\ArizenOS\Logs"
+        New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] Restore point created: ArizenOS Pre-Install" |
+          Add-Content "$logDir\install.log"
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] ArizenOS installation started" |
+          Add-Content "$logDir\install.log"
+
+  - !powerShell:
+      script: |
+        # Export current registry keys for Tier 2 rollback
+        $backupDir = "$env:SystemDrive\ArizenOS\Backups\registry"
+        New-Item -ItemType Directory -Force -Path $backupDir | Out-Null
+        $keys = @(
+          "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+          "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+          "HKCU\SOFTWARE\Microsoft\Windows\DWM",
+          "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation",
+          "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+        )
+        foreach ($key in $keys) {
+          $safeName = $key -replace '[\\:]', '_'
+          reg export "$key" "$backupDir\${safeName}_backup.reg" /y 2>$null
+        }
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] Registry backups saved to $backupDir" |
+          Add-Content "$env:SystemDrive\ArizenOS\Logs\install.log"
