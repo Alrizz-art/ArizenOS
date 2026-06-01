@@ -1,0 +1,137 @@
+name: "\U0001F41B Bug Report"
+description: Report a reproducible bug in ArizenOS.
+title: "bug: <short description>"
+labels: ["bug", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug.
+        Please fill in every section — reports without steps to reproduce will be closed as `needs-info`.
+        For security vulnerabilities, use [private vulnerability reporting](https://github.com/Alrizz-art/ArizenOS/security/advisories/new) instead.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight Checklist
+      description: Please confirm all of the following before submitting.
+      options:
+        - label: I searched existing [open issues](https://github.com/Alrizz-art/ArizenOS/issues) and this is not a duplicate.
+          required: true
+        - label: I searched [GitHub Discussions](https://github.com/Alrizz-art/ArizenOS/discussions) for this topic.
+          required: true
+        - label: I am using an official ArizenOS build (not a fork or modified installation).
+          required: true
+        - label: This is not a security vulnerability (those go to private reporting).
+          required: true
+
+  - type: input
+    id: arizen-version
+    attributes:
+      label: ArizenOS Version
+      description: Run `arizen --version` in a terminal.
+      placeholder: "e.g. 0.1.0-alpha.3"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: windows-version
+    attributes:
+      label: Windows Version
+      options:
+        - Windows 11 24H2
+        - Windows 11 23H2
+        - Windows 11 22H2
+        - Windows 10 22H2
+        - Windows 10 21H2
+        - Other (specify in Additional Context)
+    validations:
+      required: true
+
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU Model & Driver Version
+      description: Required for any bug involving glass effects, rendering, or performance.
+      placeholder: "e.g. NVIDIA RTX 4070 — Driver 551.61"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: affected-component
+    attributes:
+      label: Affected Component
+      multiple: true
+      options:
+        - Arizen Launcher
+        - Arizen Assistant
+        - Arizen Voice
+        - Arizen Hub
+        - Arizen Agent
+        - Glass rendering (arizen/glass)
+        - Local AI / ArizenMind (arizen/mind)
+        - Theming / ArizenSkin (arizen/skin)
+        - Widget runtime (arizen/widgets)
+        - Sync (arizen/sync)
+        - Installer / updater
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: "When I do X, Y happens instead of Z."
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Exact steps to reproduce the behaviour, numbered.
+      placeholder: |
+        1. Open Arizen Launcher
+        2. Click '...'
+        3. Type '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behaviour
+      description: What actually happens. Include screenshots or screen recordings if relevant.
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: |
+        Paste relevant logs from `%LOCALAPPDATA%\ArizenOS\logs\`.
+        Wrap in a code block — they will be automatically formatted.
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem (related issues, workarounds you've tried, etc.)
+    validations:
+      required: false
