@@ -1,12 +1,12 @@
-# @arizen/mind
+# @arizen/ai
 
 **Stability:** Beta | Local AI inference via llama.cpp N-API binding
 
 ```bash
-pnpm add @arizen/mind
+pnpm add @arizen/ai
 ```
 
-`@arizen/mind` provides a TypeScript API for local LLM inference, model management, embeddings, and structured tool calling. It wraps `llama.cpp` via an N-API native module for zero-subprocess, GPU-accelerated inference.
+`@arizen/ai` provides a TypeScript API for local LLM inference, model management, embeddings, and structured tool calling. It wraps `llama.cpp` via an N-API native module for zero-subprocess, GPU-accelerated inference.
 
 ---
 
@@ -17,7 +17,7 @@ The primary class. Manages model lifecycle and exposes inference APIs.
 ### `MindEngine.create(config)`
 
 ```typescript
-import { MindEngine } from '@arizen/mind'
+import { MindEngine } from '@arizen/ai'
 
 const engine = await MindEngine.create({
   modelPath: 'C:/Users/you/.arizen/models/llama-3-8b-instruct-q4_k_m.gguf',
@@ -148,7 +148,7 @@ await engine.dispose()
 Manages the lifecycle of multiple loaded models.
 
 ```typescript
-import { ModelManager } from '@arizen/mind'
+import { ModelManager } from '@arizen/ai'
 
 const manager = ModelManager.getInstance()
 

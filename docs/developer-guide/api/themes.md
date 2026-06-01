@@ -1,19 +1,19 @@
-# @arizen/skin
+# @arizen/themes
 
 **Stability:** Beta | Theming SDK and design token system
 
 ```bash
-pnpm add @arizen/skin
+pnpm add @arizen/themes
 ```
 
-`@arizen/skin` manages the ArizenOS design token system — loading, compiling, applying, and hot-reloading themes across all apps and components.
+`@arizen/themes` manages the ArizenOS design token system — loading, compiling, applying, and hot-reloading themes across all apps and components.
 
 ---
 
 ## SkinEngine
 
 ```typescript
-import { SkinEngine } from '@arizen/skin'
+import { SkinEngine } from '@arizen/themes'
 
 const skin = await SkinEngine.create({
   themesDir: `${process.env.LOCALAPPDATA}/ArizenOS/themes`,
@@ -63,7 +63,7 @@ tokens.font.familySans            // "'Geist', system-ui, sans-serif"
 For renderer processes, tokens are automatically injected as CSS variables:
 
 ```css
-/* Auto-injected by @arizen/skin into every renderer */
+/* Auto-injected by @arizen/themes into every renderer */
 :root {
   --color-base-background:     #0A0A0F;
   --color-accent-primary:      #6C63FF;
@@ -78,7 +78,7 @@ For renderer processes, tokens are automatically injected as CSS variables:
 ### React Hook
 
 ```tsx
-import { useTheme } from '@arizen/skin/react'
+import { useTheme } from '@arizen/themes/react'
 
 function MyComponent() {
   const { tokens, themeId } = useTheme()
@@ -108,7 +108,7 @@ skin.on('theme:file:changed', async (path) => {
 ## Theme Validation
 
 ```typescript
-import { validateTheme } from '@arizen/skin'
+import { validateTheme } from '@arizen/themes'
 
 const result = validateTheme(themeJson)
 if (!result.valid) {

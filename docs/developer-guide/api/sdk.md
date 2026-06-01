@@ -1,12 +1,12 @@
-# @arizen/agent-sdk
+# @arizen/sdk
 
 **Stability:** Beta (public API — SemVer strict) | The public extension API for Arizen Agent
 
 ```bash
-pnpm add @arizen/agent-sdk
+pnpm add @arizen/sdk
 ```
 
-`@arizen/agent-sdk` is the only `@arizen/*` package intended for third-party developers. It provides everything you need to build custom tools for Arizen Agent and publish them to Arizen Hub.
+`@arizen/sdk` is the only `@arizen/*` package intended for third-party developers. It provides everything you need to build custom tools for Arizen Agent and publish them to Arizen Hub.
 
 For a full walkthrough, see [Building Extensions](../guides/developer/building-extensions.md).
 
@@ -17,7 +17,7 @@ For a full walkthrough, see [Building Extensions](../guides/developer/building-e
 Define a single Agent tool.
 
 ```typescript
-import { defineTool } from '@arizen/agent-sdk'
+import { defineTool } from '@arizen/sdk'
 import { z } from 'zod'
 
 export const myTool = defineTool({
@@ -80,7 +80,7 @@ interface ToolConfig<TParams extends ZodSchema> {
 Package one or more tools into a distributable extension.
 
 ```typescript
-import { createExtension } from '@arizen/agent-sdk'
+import { createExtension } from '@arizen/sdk'
 import { myTool, anotherTool } from './tools'
 
 export default createExtension({
@@ -101,7 +101,7 @@ export default createExtension({
 ## Permission API
 
 ```typescript
-import { Permission } from '@arizen/agent-sdk'
+import { Permission } from '@arizen/sdk'
 
 // File system — always scope to specific paths where possible
 Permission.FileSystemRead('/Users/you/Documents')    // Read-only, scoped
@@ -234,7 +234,7 @@ interface ErrorResult {
 ## Testing Your Extension
 
 ```typescript
-import { createTestContext, runTool } from '@arizen/agent-sdk/testing'
+import { createTestContext, runTool } from '@arizen/sdk/testing'
 import { myTool } from './tools/my-tool'
 
 describe('myTool', () => {
@@ -267,4 +267,4 @@ describe('myTool', () => {
 
 ## Changelog
 
-See the [agent-sdk CHANGELOG](https://github.com/Alrizz-art/ArizenOS/blob/main/packages/agent-sdk/CHANGELOG.md) for version history.
+See the [sdk CHANGELOG](https://github.com/Alrizz-art/ArizenOS/blob/main/packages/sdk/CHANGELOG.md) for version history.
