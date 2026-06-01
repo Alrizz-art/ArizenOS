@@ -1,77 +1,114 @@
-# Security Policy
+# Security Policy — ArizenOS
 
-ArizenOS runs with deep system integration — shell replacement, local AI inference, autonomous agent execution, and Win32 bindings. Security is a first-class priority, not an afterthought.
+ArizenOS takes security seriously. This document outlines how to report
+vulnerabilities, what to expect from us, and our commitment to responsible disclosure.
 
 ---
 
 ## Supported Versions
 
-| Version | Status | Security Fixes |
-|---|---|---|
-| `main` (pre-alpha) | Active development | Best-effort |
-| `0.x.x` (alpha) | Not yet released | Will receive fixes |
-| Older releases | — | Not applicable yet |
+| Version       | Supported          |
+|---------------|--------------------|
+| `main` branch | ✅ Yes — latest development |
+| Tagged releases | ✅ Latest stable only |
+| Older releases | ❌ No — please upgrade |
 
-Once v1.0.0 ships, the supported version table will be expanded with LTS commitments. See [RELEASE.md](RELEASE.md).
+During pre-1.0 development (`v0.x.x`), only the most recent release receives
+security patches. Once `v1.0.0` is released, an LTS support policy will be defined.
 
 ---
 
 ## Reporting a Vulnerability
 
-**Do not open a public GitHub issue for security vulnerabilities.**
+**Please do NOT report security vulnerabilities as public GitHub Issues.**
+Public disclosure before a fix is available puts all users at risk.
 
-Public disclosure before a fix is available puts all ArizenOS users at risk.
+### Preferred — GitHub Private Security Advisory
 
-### Preferred: GitHub Private Vulnerability Reporting
+Use GitHub's built-in private reporting:
 
-Use GitHub's built-in private advisory system:
-[https://github.com/Alrizz-art/ArizenOS/security/advisories/new](https://github.com/Alrizz-art/ArizenOS/security/advisories/new)
+👉 **[Open a Private Security Advisory](https://github.com/Alrizz-art/ArizenOS/security/advisories/new)**
 
-This creates a private, encrypted thread between you and the maintainers. It is the fastest path to resolution.
+This channel is encrypted, visible only to maintainers, and integrated with
+the CVE assignment process.
 
-### Alternative: Email
+### Alternative — Email
 
-Email: [security@arizenos.dev](mailto:security@arizenos.dev)
+If you cannot use GitHub's advisory system, email the maintainer directly:
 
-Use the subject line: `[SECURITY] <brief description>`
-
-**Include in your report:**
-
-- A clear description of the vulnerability
-- The affected component(s) and version(s)
-- Steps to reproduce (proof of concept if available)
-- Your assessment of impact and severity (CVSS score if known)
-- Whether you have already disclosed this elsewhere
-
-We accept PGP-encrypted reports. Our public key is available at [https://arizenos.dev/.well-known/security.pgp](https://arizenos.dev/.well-known/security.pgp).
+- **To:** security@arizenos.dev *(or contact via GitHub profile if this address is unavailable)*
+- **Subject:** `[SECURITY] <short description>`
+- **Encrypt with GPG if possible** — see [GPG Key](#gpg-key) below
 
 ---
 
-## Response Timeline
+## What to Include in Your Report
 
-| Milestone | Target |
-|---|---|
-| Acknowledgement of receipt | **48 hours** |
-| Initial severity assessment | **5 business days** |
-| Status update to reporter | **10 business days** |
-| Fix available (critical/high) | **30 days** |
-| Fix available (medium/low) | **90 days** |
-| Public disclosure | After fix is released |
+Please provide as much of the following as possible:
 
-We follow a **90-day coordinated disclosure policy**. If a fix cannot be delivered within 90 days, we will negotiate an extension with the reporter or recommend temporary mitigations.
+| Field | Details |
+|-------|---------|
+| **Description** | Clear explanation of the vulnerability |
+| **Type** | e.g. privilege escalation, buffer overflow, info leak, DoS, RCE |
+| **Component** | Which subsystem is affected (kernel, mm, net, drivers, etc.) |
+| **Version** | ArizenOS version or commit hash |
+| **Architecture** | e.g. x86_64 |
+| **Steps to Reproduce** | Minimal reproduction steps |
+| **Proof of Concept** | Code or QEMU commands, if available |
+| **Impact** | What an attacker can achieve |
+| **Suggested Fix** | Optional — your proposed mitigation |
+| **CVE / CWE** | If you already have a CVE/CWE reference |
+
+A clear, detailed report helps us triage and fix faster.
+
+---
+
+## Responsible Disclosure Timeline
+
+We follow a **90-day coordinated disclosure** standard, consistent with
+[Google Project Zero](https://googleprojectzero.blogspot.com/p/vulnerability-disclosure-faq.html)
+and [CERT/CC](https://www.kb.cert.org/vuls/disclosure/).
+
+| Day | Action |
+|-----|--------|
+| **Day 0** | Report received — you receive an acknowledgment within **48 hours** |
+| **Day 1–7** | Initial triage and severity assessment |
+| **Day 7–14** | Maintainer confirms vulnerability and opens private fix branch |
+| **Day 14–60** | Fix developed, tested, and staged for release |
+| **Day 60** | Fix released with a patch release (`vX.Y.Z`) |
+| **Day 90** | Public disclosure — CVE published, security advisory made public |
+
+### Exceptions
+
+- **Critical / actively exploited**: We aim to release a fix within **7 days**
+  and will coordinate an accelerated disclosure timeline with you.
+- **Complex / systemic**: If a fix requires more than 90 days, we will notify
+  you, explain the reason, and agree on an extended deadline together.
+- **No response within 90 days**: If we fail to respond or fix within 90 days
+  without agreement, you are free to disclose publicly.
 
 ---
 
 ## Severity Classification
 
-We use [CVSS v3.1](https://www.first.org/cvss/) for severity scoring.
+We use the [CVSS v3.1](https://www.first.org/cvss/calculator/3-1) scoring system.
 
-| Severity | CVSS Score | Examples |
-|---|---|---|
-| **Critical** | 9.0–10.0 | Remote code execution, privilege escalation to SYSTEM |
-| **High** | 7.0–8.9 | Local privilege escalation, auth bypass, data exfiltration |
-| **Medium** | 4.0–6.9 | Information disclosure, DoS, sandbox escape (widget/agent) |
-| **Low** | 0.1–3.9 | Minor info leaks, non-exploitable crashes |
+| Severity | CVSS Score | Response Target |
+|----------|------------|-----------------|
+| 🔴 Critical | 9.0–10.0 | Patch within 7 days |
+| 🟠 High | 7.0–8.9 | Patch within 30 days |
+| 🟡 Medium | 4.0–6.9 | Patch within 60 days |
+| 🟢 Low | 0.1–3.9 | Patch within 90 days |
+
+---
+
+## What to Expect from Us
+
+- **Acknowledgment** within 48 hours of your report
+- **Regular updates** (at least every 14 days) on progress
+- **Credit** in the security advisory and release notes (unless you prefer anonymity)
+- **CVE assignment** coordination for qualifying vulnerabilities
+- **No legal action** against researchers acting in good faith under this policy
 
 ---
 
@@ -79,68 +116,60 @@ We use [CVSS v3.1](https://www.first.org/cvss/) for severity scoring.
 
 ### In Scope
 
-All code in this repository, including:
-
-- `apps/*` — Arizen Launcher, Assistant, Voice, Hub, Agent
-- `packages/*` — all shared libraries, especially `@arizen/agent-sdk`, `@arizen/shell`, `@arizen/mind`, `@arizen/sync`
-- The installer and updater
-- The widget sandbox and permission model
-- The Agent tool execution system (file, shell, browser)
-- The local AI inference layer (`@arizen/mind`)
+- Kernel privilege escalation
+- Memory safety bugs (buffer overflows, use-after-free, heap corruption)
+- Syscall interface vulnerabilities
+- Bootloader integrity bypass
+- Filesystem privilege or data exposure bugs
+- Network stack vulnerabilities (RCE, DoS, info leak)
+- Driver vulnerabilities affecting kernel integrity
+- CI/CD pipeline compromise (supply chain)
 
 ### Out of Scope
 
-- Third-party Electron vulnerabilities (report to [Electron Security](https://github.com/electron/electron/security/policy))
-- Third-party models downloaded through Arizen Hub
-- Community extensions and themes not authored by ArizenOS maintainers
-- Issues only reproducible on unsupported Windows versions
-- Social engineering attacks on maintainers
-- Theoretical vulnerabilities without a proof of concept
+- Bugs requiring physical access with no software component
+- Vulnerabilities in third-party tools (QEMU, GCC, Clang) — report to them directly
+- Issues in documentation only (use a regular docs issue)
+- Spam, social engineering, or phishing
 
 ---
 
-## Security Architecture Principles
+## GPG Key
 
-ArizenOS is designed with the following security principles:
+For encrypted email communication, use the maintainer's GPG public key.
 
-1. **Local by default.** AI inference and agent execution run entirely on your machine. No data is sent to any external server without your explicit opt-in action.
+**Fingerprint:** *(To be added by maintainer — run `gpg --gen-key` and publish fingerprint here)*
 
-2. **Explicit permission model.** The Arizen Agent requires user approval for tool categories (file write, shell execute, browser control). Permissions are displayed before execution, not after.
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+[Maintainer: export your key with `gpg --armor --export your@email.com`
+and paste it here]
+-----END PGP PUBLIC KEY BLOCK-----
+```
 
-3. **Widget sandbox.** Widgets run in a sandboxed JavaScript runtime with a capability-based permission model. They cannot access the filesystem, network, or OS APIs without declared and approved permissions.
-
-4. **E2E encrypted sync.** If you enable Arizen Sync, all data is encrypted on your device before transmission. The sync server never has access to plaintext.
-
-5. **No telemetry.** ArizenOS collects no usage data, crash reports, or analytics by default. There is no opt-out because there is no opt-in.
-
-6. **Signed releases.** All official releases are code-signed and include SHA-256 checksums. Verify before installing.
-
----
-
-## Security Hall of Fame
-
-We credit all researchers who responsibly disclose security vulnerabilities. With your permission, your name and a description of the finding will be included in the Security Hall of Fame published at [https://arizenos.dev/security/hall-of-fame](https://arizenos.dev/security/hall-of-fame) after the fix is released.
+You can also find the key on [keys.openpgp.org](https://keys.openpgp.org)
+by searching for the maintainer's email.
 
 ---
 
 ## Bug Bounty
 
-A formal bug bounty program is planned for the v1.0.0 release. Until then, we offer:
+ArizenOS is an open-source project currently without a formal bug bounty program.
+We offer **public recognition** and **CVE credit** for responsibly disclosed vulnerabilities.
 
-- Public credit in the Security Hall of Fame
-- A mention in the release notes for the fixing version
-- Our sincere gratitude
-
----
-
-## Contact
-
-| Purpose | Contact |
-|---|---|
-| Vulnerability reports | [security@arizenos.dev](mailto:security@arizenos.dev) |
-| Security architecture questions | [GitHub Discussions](https://github.com/Alrizz-art/ArizenOS/discussions) |
-| Code of Conduct violations | [conduct@arizenos.dev](mailto:conduct@arizenos.dev) |
+If ArizenOS grows to a scale where a bounty program is warranted, this section
+will be updated.
 
 ---
 
-*This policy is reviewed and updated with each major release.*
+## References
+
+- [CERT/CC Vulnerability Disclosure Policy](https://www.kb.cert.org/vuls/disclosure/)
+- [Google Project Zero Disclosure Policy](https://googleprojectzero.blogspot.com/p/vulnerability-disclosure-faq.html)
+- [CVSSv3.1 Calculator](https://www.first.org/cvss/calculator/3-1)
+- [GitHub Private Security Advisories](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/creating-a-repository-security-advisory)
+- [CWE — Common Weakness Enumeration](https://cwe.mitre.org/)
+
+---
+
+*This policy follows the [CERT Coordinated Vulnerability Disclosure](https://resources.sei.cmu.edu/asset_files/SpecialReport/2017_003_001_503340.pdf) framework.*
