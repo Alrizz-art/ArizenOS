@@ -1,0 +1,49 @@
+Windows Registry Editor Version 5.00
+
+; ============================================================
+; ArizenOS - Performance & Responsiveness Registry Tweaks
+; ============================================================
+
+; --- Explorer Responsiveness ---
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"MenuShowDelay"="0"
+"WaitToKillAppTimeout"="2000"
+"HungAppTimeout"="2000"
+"AutoEndTasks"="1"
+
+; --- Disable NTFS Last Access Timestamps (SSD optimization) ---
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem]
+"NtfsDisableLastAccessUpdate"=dword:80000003
+"LongPathsEnabled"=dword:00000001
+
+; --- Network Throttling Disable (gaming/streaming) ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile]
+"NetworkThrottlingIndex"=dword:ffffffff
+"SystemResponsiveness"=dword:00000000
+
+; --- Gaming Priority ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games]
+"Affinity"=dword:00000000
+"Background Only"="False"
+"Clock Rate"=dword:00002710
+"GPU Priority"=dword:00000008
+"Priority"=dword:00000006
+"Scheduling Category"="High"
+"SFIO Priority"="High"
+
+; --- Power Plan Hint (applied via script) ---
+; Run: powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High Performance)
+; Or:  powercfg /setactive e9a42b02-d5df-448d-aa00-03f14749eb61  (Ultimate Performance)
+
+; --- Disable Hibernation (saves disk space; remove if laptop user) ---
+; [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power]
+; "HibernateEnabled"=dword:00000000
+
+; --- Reduce Prefetch Thrash (SSD only) ---
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters]
+"EnablePrefetcher"=dword:00000000
+"EnableSuperfetch"=dword:00000000
+
+; --- Visual FX: Custom Balance ---
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects]
+"VisualFXSetting"=dword:00000003
