@@ -43,13 +43,13 @@ Use DirectComposition for off-screen surface management and Direct2D for blur re
 
 ## Decision
 
-We adopt **Option D — Hybrid DirectComposition + Direct2D rendering** as the glass rendering engine, implemented in `@arizen/glass`.
+We adopt **Option D — Hybrid DirectComposition + Direct2D rendering** as the glass rendering engine, implemented in `@arizen/renderer`.
 
 ### Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
-│          @arizen/glass (TypeScript API)      │
+│          @arizen/renderer (TypeScript API)      │
 │  GlassEngine · GlassSurface · GlassTheme    │
 └─────────────────────┬───────────────────────┘
                       │ N-API
@@ -96,7 +96,7 @@ We adopt **Option D — Hybrid DirectComposition + Direct2D rendering** as the g
 - The fallback renderer produces a visually different result to the full renderer
 
 **Mitigations:**
-- Native module is isolated in `@arizen/glass` — contributors working on other packages are not affected by the C++ toolchain requirement
+- Native module is isolated in `@arizen/renderer` — contributors working on other packages are not affected by the C++ toolchain requirement
 - Visual regression tests run both the full and fallback renderers to catch regressions in both paths
 - CI Windows runners have MSVC pre-installed
 
@@ -104,7 +104,7 @@ We adopt **Option D — Hybrid DirectComposition + Direct2D rendering** as the g
 
 ## Review
 
-This decision will be reviewed at the `@arizen/glass` v1.0.0 milestone. The review should assess:
+This decision will be reviewed at the `@arizen/renderer` v1.0.0 milestone. The review should assess:
 - Whether DirectComposition thumbnail capture remains performant at scale
 - Whether DWM API changes in future Windows versions affect the approach
 - Whether the Visual regression test suite catches all meaningful regressions in the fallback path

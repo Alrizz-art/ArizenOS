@@ -13,15 +13,15 @@
   },
   "packages": {
     "@arizen/core":      "0.1.0",
-    "@arizen/glass":     "0.1.0",
-    "@arizen/mind":      "0.1.0",
-    "@arizen/shell":     "0.1.0",
-    "@arizen/flow":      "0.1.0",
-    "@arizen/skin":      "0.1.0",
+    "@arizen/renderer":     "0.1.0",
+    "@arizen/ai":      "0.1.0",
+    "@arizen/platform":     "0.1.0",
+    "@arizen/animations":      "0.1.0",
+    "@arizen/themes":      "0.1.0",
     "@arizen/ui":        "0.1.0",
     "@arizen/widgets":   "0.1.0",
     "@arizen/sync":      "0.1.0",
-    "@arizen/agent-sdk": "0.1.0"
+    "@arizen/sdk": "0.1.0"
   },
   "minWindows": "10.0.19041",
   "releaseNotes": "https://github.com/Alrizz-art/ArizenOS/releases",
