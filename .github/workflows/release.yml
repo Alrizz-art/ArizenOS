@@ -112,7 +112,7 @@ jobs:
           echo "ENDOFNOTES" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: "ArizenOS ${{ needs.validate-tag.outputs.version }}"
           body: |
