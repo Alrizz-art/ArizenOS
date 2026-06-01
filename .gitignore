@@ -1,18 +1,72 @@
+# ==============================================================================
+# ArizenOS — .gitignore
+# ==============================================================================
+
 # Build output
-*.apbx
-*.zip
+build/
+dist/
+*.o
+*.a
+*.elf
+*.iso
+*.img
+*.bin
+*.sym
+
+# Dependency / object files
+*.d
+*.su
+
+# Debug files
+*.map
+*.lst
+*.disasm
+
+# Cross-compiler output
+*.cross
+
+# QEMU
+*.qcow2
+*.vmdk
+
+# GDB
+.gdb_history
+gdb.txt
+
+# Editor files
+.vscode/settings.json
+.vscode/.browse.c_cpp.db*
+.vscode/ipch/
+*.swp
+*.swo
+*~
+*.orig
+*.bak
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+*.pyo
 
 # Logs
 *.log
-*.csv
+serial.txt
 
-# OS
-Thumbs.db
-.DS_Store
+# Toolchain build artifacts (if built locally)
+tools/toolchain/build/
+tools/toolchain/src/
 
-# Editor
-.vscode/
+# OS-specific
+.Spotlight-V100
+.Trashes
+
+# IDE
 .idea/
+*.iml
+*.ipr
+*.iws
 
-# Secrets / personal config
-*.env
+# Temp files
+tmp/
+temp/
+*.tmp
