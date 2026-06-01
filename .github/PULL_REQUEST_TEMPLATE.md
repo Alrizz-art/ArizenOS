@@ -1,88 +1,90 @@
+<!--
+  Thank you for contributing to ArizenOS.
+
+  Before opening this PR, please confirm:
+  ✅ You have read CONTRIBUTING.md
+  ✅ This PR is against `main` (or a feature branch if agreed with maintainers)
+  ✅ Your branch name follows the convention: type/short-description
+       e.g. feat/glass-depth-api, fix/launcher-crash-on-startup, docs/adr-0002
+
+  For significant changes, an RFC issue should be linked below.
+-->
+
 ## Summary
 
 <!-- One paragraph: what does this PR do and why? -->
 
 ## Type of Change
 
-<!-- Check all that apply -->
+<!-- Remove lines that do not apply. -->
 
-- [ ] `fix` — Bug fix (non-breaking)
-- [ ] `feat` — New feature (non-breaking)
-- [ ] `feat!` — Breaking change (requires migration guide)
-- [ ] `docs` — Documentation only
-- [ ] `perf` — Performance improvement
-- [ ] `refactor` — Code restructuring, no behavior change
-- [ ] `test` — Test additions or fixes
-- [ ] `chore` — Build, CI, dependency updates
+- [ ] `feat` — new feature (non-breaking)
+- [ ] `fix` — bug fix (non-breaking)
+- [ ] `feat!` / `fix!` — breaking change (discuss in an RFC first)
+- [ ] `docs` — documentation only
+- [ ] `refactor` — code change with no behaviour change
+- [ ] `perf` — performance improvement
+- [ ] `test` — adding or updating tests
+- [ ] `chore` — build, tooling, CI, dependencies
 
-## Related Issues
+## Related Issues / RFCs
 
-<!-- Link issues this PR closes or relates to -->
-<!-- Use: Closes #N, Fixes #N, Related to #N -->
+<!--
+  Link all related issues with keywords so they auto-close on merge.
+  Closes #123
+  Related: #456
+-->
 
-Closes #
+## Changes
 
-## What Changed
+<!--
+  Bullet-list of the concrete changes in this PR.
+  Keep each point specific and short.
+-->
 
-<!-- Bullet list of specific changes. Be precise. -->
+- 
+- 
+- 
 
--
--
--
+## Screenshots / Demo
 
-## Testing
-
-<!-- Describe how you tested this. Check what you ran. -->
-
-- [ ] `pnpm lint` — zero errors
-- [ ] `pnpm typecheck` — zero errors
-- [ ] `pnpm test` — all passing
-- [ ] Manual smoke test on Windows 10 / 11
-- [ ] Visual regression test (for UI changes)
-- [ ] Accessibility check (for UI changes)
-
-**Test environment:**
-- OS: Windows <!-- 10 22H2 / 11 23H2 -->
-- GPU: <!-- integrated / discrete -->
-- Display: <!-- single / multi-monitor, DPI -->
-
-## Screenshots / Recordings
-
-<!-- For UI changes, before/after screenshots are required.
-     For non-UI changes, delete this section. -->
+<!--
+  For UI changes: before/after screenshots or a short screen recording.
+  Delete this section if not applicable.
+-->
 
 | Before | After |
 |---|---|
-| <!-- screenshot --> | <!-- screenshot --> |
+| | |
 
-## Breaking Changes
+## Testing
 
-<!-- If this is a breaking change, describe what breaks and how to migrate.
-     If not breaking, delete this section. -->
+<!--
+  How did you test this? What new tests were added?
+  Run the full suite: pnpm lint && pnpm typecheck && pnpm test
+-->
 
-**What breaks:**
+- [ ] `pnpm lint` passes
+- [ ] `pnpm typecheck` passes
+- [ ] `pnpm test` passes
+- [ ] New unit tests added (or explain why not)
+- [ ] Manual testing performed on Windows 10 / 11
 
-**Migration path:**
+**Test steps:**
 
-```typescript
-// Before
-// After
-```
-
-## Documentation
-
-<!-- Check what documentation you updated or explain why none was needed. -->
-
-- [ ] JSDoc updated for all changed public APIs
-- [ ] `docs/` updated for user-facing changes
-- [ ] `CHANGELOG.md` — entry added under `[Unreleased]`
-- [ ] Migration guide added (if breaking change)
-- [ ] No documentation needed (explain below)
+1. 
+2. 
+3. 
 
 ## Checklist
 
-- [ ] PR title follows Conventional Commits format (`type(scope): description`)
-- [ ] Branch is up-to-date with `main`
-- [ ] No debug code, stray `console.log`, or commented-out blocks
-- [ ] No new `TODO`s without `// TODO(username): #issue-link` format
-- [ ] Self-reviewed this diff before marking ready for review
+- [ ] My code follows the style and conventions in [CONTRIBUTING.md](../CONTRIBUTING.md)
+- [ ] I have added or updated JSDoc for all public APIs changed
+- [ ] I have updated the relevant documentation (README, ARCHITECTURE.md, ADRs)
+- [ ] I have added a Changeset entry if this affects a public package (`pnpm changeset`)
+- [ ] I have verified this does not introduce a security regression
+- [ ] I have read and agree to the [Code of Conduct](../CODE_OF_CONDUCT.md)
+
+## Additional Notes for Reviewers
+
+<!-- Anything specific you want reviewers to focus on, look out for, or decide. -->
