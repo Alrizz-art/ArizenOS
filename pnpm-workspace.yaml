@@ -1,0 +1,10 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools/*"
+  - "docs/site"
+  - "tests/e2e"
+  - "tests/integration"
+  - "tests/visual"
+  - "tests/accessibility"
+  - "tests/perf"
