@@ -1,9 +1,4 @@
-# ArizenOS Code of Conduct
-
-> Arizen Technologies — Community Standards v1.0
-> Based on the Contributor Covenant v2.1 and the Linux Foundation Community Participation Guidelines.
-
----
+# Contributor Covenant Code of Conduct
 
 ## Our Pledge
 
@@ -15,134 +10,93 @@ We pledge to act and interact in ways that contribute to an open, welcoming, div
 
 ## Our Standards
 
-### Expected Behavior
+**Examples of behaviour that contributes to a positive environment:**
 
-The following behaviors are expected of all community members:
+- Using welcoming and inclusive language
+- Being respectful of differing viewpoints, experiences, and expertise levels
+- Giving and gracefully accepting constructive feedback
+- Acknowledging mistakes, apologising to those affected, and learning from the experience
+- Focusing on what is best for the community and the project as a whole
+- Showing empathy and patience, especially toward newcomers
 
-- **Be respectful.** Treat all contributors as peers deserving of courtesy. Disagree with ideas, never attack people.
-- **Be constructive.** Criticism should be actionable. "This approach has a performance problem because X — here's an alternative" is constructive. "This is bad" is not.
-- **Be direct but kind.** We value honest communication. Kindness and directness are not opposites.
-- **Assume good faith.** Most contributors are trying to help. Start from that assumption.
-- **Acknowledge your biases.** We all have them. When they affect your behavior, own it.
-- **Give credit generously.** Attribute ideas and code to their sources. Acknowledge when you build on others' work.
-- **Accept responsibility.** When you make a mistake, apologize, learn, and move forward. Do not defensively deflect.
-- **Step back when asked.** If someone tells you that your behavior is making them uncomfortable, take it seriously.
+**Examples of unacceptable behaviour:**
 
-### Unacceptable Behavior
+- The use of sexualised language or imagery, and sexual attention or advances of any kind
+- Trolling, insulting or derogatory comments, and personal or political attacks
+- Public or private harassment
+- Publishing others' private information — such as a physical or email address — without explicit permission
+- Sustained disruption of discussions, reviews, or community events
+- Dismissing or attacking inclusion-focused requests
+- Other conduct which could reasonably be considered inappropriate in a professional setting
 
-The following behaviors are not tolerated in any ArizenOS space — repositories, issues, PRs, Discussions, Discord, social media, events, or private communications where community membership is a factor:
+---
 
-- Harassment, intimidation, or sustained personal attacks in any form
-- Sexual language, imagery, or attention of any kind
-- Deliberate misgendering or use of rejected names/pronouns
-- Trolling, inflammatory comments, or deliberately provocative arguments
-- Publishing private information (doxxing) without explicit permission
-- Weaponizing the Code of Conduct against other contributors in bad faith
-- Discriminatory jokes or language
-- Threats of violence or other harmful behavior
-- Sustained disruption of community discussions or events
-- Advocating for or encouraging any of the above behaviors
+## Enforcement Responsibilities
 
-### Enforcement Responsibilities
+Community leaders and maintainers are responsible for clarifying and enforcing our standards of acceptable behaviour. They will take appropriate and fair corrective action in response to any behaviour they deem inappropriate, threatening, offensive, or harmful.
 
-Community Moderators are responsible for clarifying and enforcing our standards of acceptable behavior. They will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.
-
-Moderators have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned with this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.
+Community leaders have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned with this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.
 
 ---
 
 ## Scope
 
-This Code of Conduct applies within all ArizenOS community spaces, and also applies when an individual is officially representing ArizenOS in public spaces. Examples of representing ArizenOS include using an official email address, posting via an official social media account, or acting as an appointed representative at an online or offline event.
-
-This Code of Conduct also applies to behavior outside community spaces when such behavior has a reasonable potential to harm members of our community.
+This Code of Conduct applies within all community spaces — including the GitHub repository (issues, pull requests, discussions, code reviews), Discord server, official social media accounts, and any other official ArizenOS channel. It also applies when an individual is officially representing the project in public spaces.
 
 ---
 
 ## Reporting
 
-### How to Report
+Instances of abusive, harassing, or otherwise unacceptable behaviour may be reported to the ArizenOS Community Leaders at:
 
-If you experience or witness behavior that violates this Code of Conduct:
+**[conduct@arizenos.dev](mailto:conduct@arizenos.dev)**
 
-**Private Report (Preferred):**
-Email `conduct@arizenos.dev` with:
-- Your contact information (kept confidential)
-- Description of the incident (who, what, when, where)
-- Any relevant links, screenshots, or context
-- Whether you are the target or a witness
+You may also report directly to a maintainer listed in [MAINTAINERS.md](MAINTAINERS.md).
 
-**Public Report:**
-Open a GitHub Issue tagged `conduct/report`. Note that this is public and may not be appropriate for sensitive incidents.
-
-### What Happens Next
-
-1. **Acknowledgment**: You will receive acknowledgment within 48 hours.
-2. **Assessment**: Moderators assess the report within 7 days.
-3. **Action**: Appropriate action is taken per the enforcement guidelines below.
-4. **Follow-up**: You are informed of the outcome (details about third-party actions are kept confidential).
-
-### Confidentiality
-
-All reports are handled with discretion. Reporter identities are not shared with the subject of the report without explicit consent, except where required by law.
-
-Moderators who have a conflict of interest with a report must recuse themselves.
+All reports will be reviewed and investigated promptly and fairly. All community leaders are obligated to maintain the privacy and security of the reporter. We will never publicly identify reporters without their explicit consent.
 
 ---
 
 ## Enforcement Guidelines
 
+Community leaders will follow these guidelines when determining consequences for any action deemed in violation of this Code of Conduct:
+
 ### 1. Correction
 
-**Community Impact**: A single minor violation — off-color comment, minor dismissiveness, unintentional offense.
+**Community Impact:** Use of inappropriate language or other behaviour deemed unprofessional or unwelcome.
 
-**Consequence**: Private written message from a Moderator explaining the violation and expected behavior change. A public apology may be requested.
-
----
+**Consequence:** A private written warning from community leaders, providing clarity around the nature of the violation and an explanation of why the behaviour was inappropriate. A public apology may be requested.
 
 ### 2. Warning
 
-**Community Impact**: A single significant violation, or a pattern of minor violations after a Correction.
+**Community Impact:** A violation through a single incident or series of actions.
 
-**Consequence**: A formal warning with specific behavioral expectations. No interaction with the people involved for a specified period (typically 30 days). Violating these terms may lead to a temporary ban.
-
----
+**Consequence:** A warning with consequences for continued behaviour. No interaction with the people involved — including unsolicited interaction with those enforcing the Code of Conduct — for a specified period of time. This includes avoiding interactions in community spaces as well as external channels like social media. Violating these terms may lead to a temporary or permanent ban.
 
 ### 3. Temporary Ban
 
-**Community Impact**: Serious violation of community standards, including sustained inappropriate behavior, harassment, or aggression.
+**Community Impact:** A serious violation of community standards, including sustained inappropriate behaviour.
 
-**Consequence**: Temporary ban from all community spaces for a defined period (typically 30–90 days). No public or private contact with community members during this period. Violation leads to a permanent ban.
-
----
+**Consequence:** A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved — including unsolicited interaction with those enforcing the Code of Conduct — is allowed during this period. Violating these terms may lead to a permanent ban.
 
 ### 4. Permanent Ban
 
-**Community Impact**: A pattern of violations, sustained harassment, targeted abuse, or a single egregious violation (e.g., threats of violence, doxxing).
+**Community Impact:** Demonstrating a pattern of violation of community standards, including sustained inappropriate behaviour, harassment of an individual, or aggression toward or disparagement of classes of individuals.
 
-**Consequence**: Permanent removal from all ArizenOS community spaces, repositories, and contribution rights. No appeal path.
+**Consequence:** A permanent ban from any sort of public interaction within the community.
 
 ---
 
 ## Appeals
 
-Subjects of enforcement actions at Warning level or above may appeal within 14 days by emailing `conduct@arizenos.dev` with "Appeal" in the subject line. Appeals are reviewed by a Moderator not involved in the original decision and the Steering Committee. Appeal decisions are final.
-
----
-
-## Enforcement Team
-
-The Community Moderators are listed in [`MAINTAINERS.md`](MAINTAINERS.md) under the `Community Moderators` section.
+If you believe an enforcement decision was made in error, you may appeal by emailing [conduct@arizenos.dev](mailto:conduct@arizenos.dev) with the subject line `[Appeal]` and a clear explanation of why you believe the decision should be reconsidered. Appeals are reviewed by community leaders not involved in the original decision.
 
 ---
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) and the [Linux Foundation Community Participation Guidelines](https://lfprojects.org/policies/community-guidelines/).
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html).
 
-For answers to common questions about this code of conduct, see the [FAQ](https://www.contributor-covenant.org/faq).
+Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder](https://github.com/mozilla/diversity).
 
----
-
-*ArizenOS Code of Conduct v1.0 — June 2025*
-*Contact: conduct@arizenos.dev*
+For answers to common questions about this code of conduct, see the FAQ at [https://www.contributor-covenant.org/faq](https://www.contributor-covenant.org/faq).
