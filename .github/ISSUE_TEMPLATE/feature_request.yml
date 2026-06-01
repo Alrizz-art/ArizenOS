@@ -1,0 +1,91 @@
+name: "\u2728 Feature Request"
+description: Propose a new feature or enhancement for ArizenOS.
+title: "feat: <short description>"
+labels: ["enhancement", "needs-triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for proposing a feature.
+        For large or breaking changes that affect public APIs or architecture, please open an [RFC](?template=rfc.yml) instead.
+        Check [Discussions](https://github.com/Alrizz-art/ArizenOS/discussions) and [open issues](https://github.com/Alrizz-art/ArizenOS/issues) first.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight Checklist
+      options:
+        - label: I searched existing issues and discussions — this is not a duplicate.
+          required: true
+        - label: This is not a large architectural change (those need an RFC).
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Feature Area
+      multiple: true
+      options:
+        - Arizen Launcher
+        - Arizen Assistant
+        - Arizen Voice
+        - Arizen Hub
+        - Arizen Agent
+        - Glass rendering
+        - Local AI / ArizenMind
+        - Theming / ArizenSkin
+        - Widget runtime
+        - Sync
+        - Extension / Plugin API
+        - Accessibility
+        - Performance
+        - Developer tooling
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Who has this problem and how often?
+      placeholder: "As a [user type], I find it frustrating when..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Your idea for solving the problem. Be as specific as you like.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Other approaches you've thought about and why you prefer the proposed solution.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority (your perspective)
+      options:
+        - Low — nice to have
+        - Medium — would meaningfully improve my workflow
+        - High — blocking me from using ArizenOS
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Are you willing to contribute this feature?
+      options:
+        - label: Yes, I'd like to implement this and open a PR.
+        - label: Yes, but I'd need guidance.
+        - label: No, I'm only proposing it.
