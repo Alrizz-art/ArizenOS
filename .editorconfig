@@ -1,0 +1,48 @@
+root = true
+
+# All files
+[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# C and Assembly source files
+[*.{c,h,asm,S}]
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+# Makefiles — must use tabs
+[Makefile]
+indent_style = tab
+indent_size = 4
+
+[*.mk]
+indent_style = tab
+indent_size = 4
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 120
+
+# JSON
+[*.json]
+indent_style = space
+indent_size = 2
+
+# Linker scripts
+[*.ld]
+indent_style = space
+indent_size = 4
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 4
