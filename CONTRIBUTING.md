@@ -1,479 +1,317 @@
 # Contributing to ArizenOS
 
-> Thank you for investing your time in ArizenOS. Every contribution — code, documentation, design, testing, or community support — makes the project better for everyone.
+Thank you for your interest in contributing. ArizenOS is built by its community — every contribution matters, whether it is a bug fix, a new feature, improved documentation, or better tests.
+
+This document covers everything you need to make a contribution that gets merged.
 
 ---
 
 ## Table of Contents
 
-1. [Before You Begin](#1-before-you-begin)
-2. [Ways to Contribute](#2-ways-to-contribute)
-3. [Development Setup](#3-development-setup)
-4. [Contribution Workflow](#4-contribution-workflow)
-5. [Pull Request Policy](#5-pull-request-policy)
-6. [Code Review Standards](#6-code-review-standards)
-7. [Commit Standards](#7-commit-standards)
-8. [Testing Requirements](#8-testing-requirements)
-9. [Documentation Requirements](#9-documentation-requirements)
-10. [First-Time Contributors](#10-first-time-contributors)
+- [Code of Conduct](#code-of-conduct)
+- [Ways to Contribute](#ways-to-contribute)
+- [Development Setup](#development-setup)
+- [Repository Structure](#repository-structure)
+- [Branching & Commits](#branching--commits)
+- [Pull Request Process](#pull-request-process)
+- [RFC Process](#rfc-process)
+- [Code Standards](#code-standards)
+- [Testing Requirements](#testing-requirements)
+- [Documentation Standards](#documentation-standards)
+- [Release & Versioning](#release--versioning)
+- [Community & Communication](#community--communication)
+- [Recognition](#recognition)
 
 ---
 
-## 1. Before You Begin
+## Code of Conduct
 
-### Read First
-
-- [Code of Conduct](CODE_OF_CONDUCT.md) — Required reading. Non-negotiable.
-- [Governance Model](GOVERNANCE.md) — Understand how decisions are made.
-- [Brand Guidelines](BRAND_GUIDELINES.md) — For UI/UX and naming contributions.
-- [Product Charter](PRODUCT_CHARTER.md) — Understand what ArizenOS is and is not.
-
-### Check Before Building
-
-Before opening a PR for a new feature or significant change:
-
-1. **Search existing issues** — someone may already be working on it
-2. **Search open PRs** — duplicate work wastes everyone's time
-3. **Open an issue first** for features, RFCs, or architectural changes — get alignment before writing code
-4. **Small bugs and docs** — go ahead and open a PR directly
-
-### Licensing
-
-By contributing to ArizenOS, you agree that your contributions will be licensed under the project's [MIT License](LICENSE). You confirm that you have the right to contribute the code you submit (i.e., it is your original work or you have the rights to it).
-
-If your employer has intellectual property policies, ensure your contribution complies before submitting.
+All contributors must follow the [Code of Conduct](CODE_OF_CONDUCT.md). Violations can be reported to [conduct@arizenos.dev](mailto:conduct@arizenos.dev).
 
 ---
 
-## 2. Ways to Contribute
+## Ways to Contribute
 
-### Code Contributions
-- Bug fixes
-- Feature implementation (RFC-accepted features only for major additions)
-- Performance improvements
-- Security patches (see [Security Policy](SECURITY.md) for vulnerabilities)
-
-### Non-Code Contributions
-- **Documentation**: Fixing errors, improving clarity, writing tutorials
-- **Design**: UI mockups, icon design, theming, accessibility improvements
-- **Testing**: Writing tests, reporting bugs, verifying fixes
-- **Triage**: Labeling issues, reproducing bugs, closing stale issues
-- **Translation**: Localizing UI strings and documentation
-- **Community**: Answering questions in Discussions, writing blog posts, making demo videos
-
-All non-code contributions are valued equally alongside code. They are tracked and credited.
+| Track | Where to Start |
+|---|---|
+| 🐛 Bug fixes | [Issues tagged `good first issue`](https://github.com/Alrizz-art/ArizenOS/labels/good%20first%20issue) |
+| ✨ Features | Open a [Feature Request](https://github.com/Alrizz-art/ArizenOS/issues/new?template=feature_request.yml) first |
+| 📖 Documentation | [`docs/`](docs/) — any improvement welcome |
+| 🎨 Design | Open a [Discussion](https://github.com/Alrizz-art/ArizenOS/discussions) in the `Design` category |
+| 🔌 Extensions | Read the [`@arizen/agent-sdk`](packages/agent-sdk/README.md) docs |
+| 🔒 Security | See [SECURITY.md](SECURITY.md) — never open a public issue |
+| 🌍 Localization | Watch for the `i18n` milestone |
+| 🧪 Testing | Improve coverage in [`tests/`](tests/) |
 
 ---
 
-## 3. Development Setup
+## Development Setup
 
-### Prerequisites
+**Prerequisites:**
 
-| Tool | Version | Notes |
-|---|---|---|
-| Windows | 10 (22H2+) or 11 (23H2+) | Primary development target |
-| Node.js | 20 LTS+ | For build tooling and extensions |
-| Git | 2.40+ | |
-| pnpm | 8.x+ | `npm install -g pnpm` |
-| Rust | 1.75+ | For performance-critical modules |
-| VS Code | Latest | Recommended editor (workspace settings included) |
+| Tool | Minimum Version |
+|---|---|
+| Node.js | 20 LTS |
+| pnpm | 8.x |
+| Git | 2.40+ |
+| Visual Studio Build Tools | 2022 (for N-API native modules) |
+| Windows | 10 Build 19041+ or Windows 11 |
 
-### Clone and Install
+**Setup:**
 
 ```bash
-# Fork the repo on GitHub, then:
+# 1. Fork the repository on GitHub, then clone your fork
 git clone https://github.com/<your-username>/ArizenOS.git
 cd ArizenOS
 
-# Install dependencies
+# 2. Add the upstream remote
+git remote add upstream https://github.com/Alrizz-art/ArizenOS.git
+
+# 3. Install all dependencies
 pnpm install
 
-# Copy environment config
-cp .env.example .env.local
-```
-
-### Build
-
-```bash
-# Build all modules
+# 4. Build all packages
 pnpm build
 
-# Build a specific module
-pnpm --filter @arizen/glass build
-
-# Development mode (watch)
-pnpm dev
+# 5. Start a specific app in development
+pnpm --filter @arizen/launcher dev
 ```
 
-### Run Tests
+To verify your environment is correctly set up:
 
-```bash
-# Full test suite
-pnpm test
-
-# Specific module
-pnpm --filter @arizen/mind test
-
-# Watch mode
-pnpm test:watch
-```
-
-### Lint and Format
-
-```bash
-# Lint
-pnpm lint
-
-# Format (auto-fix)
-pnpm format
-
-# Type check
-pnpm typecheck
-```
-
-All PRs must pass `pnpm lint && pnpm typecheck && pnpm test` before review.
-
----
-
-## 4. Contribution Workflow
-
-### Standard Workflow
-
-```
-1. Fork → 2. Branch → 3. Code → 4. Test → 5. PR → 6. Review → 7. Merge
-```
-
-**Step 1: Fork**
-Fork the repository to your GitHub account. Do not push branches directly to `Alrizz-art/ArizenOS` unless you are a Core Team member.
-
-**Step 2: Branch**
-Create a branch from `main` with a descriptive name following the [naming convention](BRAND_GUIDELINES.md#branch-naming):
-```bash
-git checkout -b feat/mind-streaming-inference
-git checkout -b fix/glass-blur-performance
-git checkout -b docs/api-reference-update
-```
-
-**Step 3: Code**
-Make your changes. Keep commits atomic — each commit should represent one logical change. See [Commit Standards](#7-commit-standards).
-
-**Step 4: Test**
-Run the full test suite locally before pushing:
 ```bash
 pnpm lint && pnpm typecheck && pnpm test
 ```
 
-**Step 5: Push and Open PR**
+All three must pass before you open a PR.
+
+---
+
+## Repository Structure
+
+```
+ArizenOS/
+├── apps/           # End-user applications (Electron)
+├── packages/       # Shared libraries and SDKs
+├── branding/       # Logos, tokens, fonts
+├── docs/           # Documentation site + ADRs
+├── tests/          # E2E, integration, visual regression, a11y
+└── tools/          # Internal build and scaffold tooling
+```
+
+**Dependency rule (strictly enforced by CI):**
+
+```
+@arizen/core → packages/* → @arizen/ui → apps/*
+apps/* must never import each other.
+```
+
+---
+
+## Branching & Commits
+
+### Branch Naming
+
+```
+type/short-description-kebab-case
+
+feat/glass-depth-blur-api
+fix/launcher-crash-on-windows-10
+docs/adr-0002-widget-sandbox
+test/core-event-bus-coverage
+chore/update-electron-33
+```
+
+**Types:** `feat`, `fix`, `docs`, `refactor`, `perf`, `test`, `chore`
+
+### Commit Messages
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>[optional scope]: <short description>
+
+[optional body — wrap at 72 chars]
+
+[optional footer: Closes #123, BREAKING CHANGE: ...]
+```
+
+**Examples:**
+
+```
+feat(glass): add depth-aware blur intensity API
+fix(launcher): prevent crash when DWM is disabled
+docs(mind): document model configuration options
+chore(deps): update llama.cpp binding to v0.3.2
+feat!: rename ArizenSkin token format — BREAKING CHANGE
+```
+
+- Subject line: imperative mood, no period, ≤72 characters
+- Breaking changes: append `!` to type and add `BREAKING CHANGE:` footer
+- One logical change per commit — squash if necessary before opening a PR
+
+---
+
+## Pull Request Process
+
+### Before Opening a PR
+
+1. **Sync with upstream:**
+   ```bash
+   git fetch upstream
+   git rebase upstream/main
+   ```
+
+2. **Run the full check suite:**
+   ```bash
+   pnpm lint && pnpm typecheck && pnpm test
+   ```
+
+3. **Add a Changeset** (if your PR changes a public-facing package):
+   ```bash
+   pnpm changeset
+   ```
+
+4. **Write or update tests.** PRs that reduce coverage will not be merged.
+
+5. **Update documentation.** If you added or changed a public API, update JSDoc, README, and any relevant ADRs.
+
+### PR Requirements
+
+- Target: `main` branch (unless a maintainer has directed you to a feature branch)
+- Title: follows Conventional Commits format (`feat(scope): description`)
+- Description: fills out all required sections of the PR template
+- Size: prefer small, focused PRs. Large PRs are hard to review and slow to merge
+- Draft PRs are welcome for early feedback — mark them ready when CI is green
+
+### Review Process
+
+1. CI must be green (lint, typecheck, test, build)
+2. At least **1 review from a Core Team member** for packages
+3. At least **2 reviews including 1 Module Owner** for changes to `@arizen/core`, `@arizen/mind`, or `@arizen/shell`
+4. No unresolved `Request Changes` reviews
+5. Maintainer merges using **Squash and Merge** — your commit history will be squashed
+
+Reviewers aim to respond within 5 business days. If you haven't heard back in 7 days, ping the PR with a comment.
+
+---
+
+## RFC Process
+
+An RFC (Request for Comments) is required for any change that:
+
+- Introduces or removes a public package or app
+- Modifies a stable public API in a breaking way
+- Changes the monorepo architecture or build pipeline
+- Has significant cross-cutting UX or performance implications
+
+**RFC lifecycle:**
+
+1. Open an [RFC issue](https://github.com/Alrizz-art/ArizenOS/issues/new?template=rfc.yml)
+2. Community discussion period: minimum **14 days**
+3. Technical Council reviews and votes (lazy consensus or formal majority)
+4. RFC is **Accepted**, **Rejected**, or **Deferred**
+5. Accepted RFCs are assigned an RFC number and implementation owner
+6. Implementation PR links back to the RFC issue
+
+Do not begin implementation until the RFC is formally accepted.
+
+---
+
+## Code Standards
+
+### TypeScript
+
+- Strict mode enabled — no `any`, no `@ts-ignore` without a comment
+- Explicit return types on all public functions
+- No default exports in packages (named exports only)
+- Prefer `const` over `let`; never `var`
+
+### Style
+
+- ESLint + Prettier — enforced by CI
+- Run `pnpm lint --fix` to auto-fix formatting
+- All public functions and classes must have JSDoc with `@param`, `@returns`, and `@example`
+
+### Testing
+
+- Unit tests: Vitest — one test file per source file
+- Coverage minimum: 80% for `@arizen/core` (100% target), 70% for other packages
+- E2E tests: Playwright — required for any new UI flow in apps
+
+### Accessibility
+
+- All UI components in `@arizen/ui` must pass WCAG 2.1 AA
+- Run `pnpm a11y` to audit. PRs that introduce a11y regressions will be blocked
+
+---
+
+## Testing Requirements
+
 ```bash
-git push origin feat/mind-streaming-inference
+# Unit + integration tests
+pnpm test
+
+# Type checking
+pnpm typecheck
+
+# Lint
+pnpm lint
+
+# Accessibility audit (UI changes)
+pnpm a11y
+
+# Visual regression (UI changes)
+pnpm test:visual
+
+# E2E (full app changes)
+pnpm test:e2e
 ```
-Open a PR against `Alrizz-art/ArizenOS:main`. Fill out the PR template completely.
 
-**Step 6: Review**
-Respond to review feedback within 7 days. If you need more time, comment on the PR. PRs with no response for 14 days are marked `stale` and closed after 7 more days.
-
-**Step 7: Merge**
-A Core Team member or Module Owner merges your PR after all requirements are met. You do not merge your own PR.
+Not every PR needs all test suites — use judgement and explain in the PR what was tested.
 
 ---
 
-## 5. Pull Request Policy
+## Documentation Standards
 
-### PR Requirements (All PRs)
+- **In-code:** JSDoc for all public symbols. `@internal` to mark internal APIs
+- **Package READMEs:** Each package and app has a `README.md`. Update it if you change the public API
+- **Architecture decisions:** Significant decisions should be recorded as ADRs in `docs/architecture/`
+- **Docs site:** Content in `docs/` — use Markdown, follow existing structure
 
-- [ ] Title follows Conventional Commits format
-- [ ] PR description filled out completely (use template)
-- [ ] Branch is up-to-date with `main`
-- [ ] `pnpm lint` passes (zero errors)
-- [ ] `pnpm typecheck` passes (zero errors)
-- [ ] `pnpm test` passes (zero failures)
-- [ ] No unresolved merge conflicts
-- [ ] No debug code, `console.log`, commented-out code, or `TODO`s introduced (unless tagged with `// TODO(username): ticket-link`)
+---
 
-### Approval Requirements
+## Release & Versioning
 
-| PR Type | Required Approvals | Who Can Approve |
-|---|---|---|
-| Documentation | 1 | Any Reviewer+ |
-| Bug fix | 2 | Any Reviewer+ |
-| Feature | 2 | Any Reviewer+, at least 1 Core Team |
-| Breaking change | 3 | 2 Core Team + 1 TC member |
-| New module | 3 | 1 Module Owner + 1 TC + SC notification |
-| Governance / policy | TC vote | Technical Council |
+ArizenOS uses [Semantic Versioning](https://semver.org/) and [Changesets](https://github.com/changesets/changesets):
 
-### Review Window
+```bash
+# After making a change to a public package, add a changeset:
+pnpm changeset
 
-PRs must remain open for a minimum review window before merging:
+# Choose: major (breaking), minor (feature), or patch (fix)
+# Write a summary of the change for the changelog
+```
 
-| Type | Minimum Window |
+You do not manage releases. Maintainers run `pnpm release` as part of the release process described in [RELEASE.md](RELEASE.md).
+
+---
+
+## Community & Communication
+
+| Channel | Purpose |
 |---|---|
-| Typo / docs fix | 24 hours |
-| Bug fix | 48 hours |
-| Feature | 72 hours |
-| Breaking change | 7 days |
+| [GitHub Issues](https://github.com/Alrizz-art/ArizenOS/issues) | Bug reports and feature requests |
+| [GitHub Discussions](https://github.com/Alrizz-art/ArizenOS/discussions) | Q&A, ideas, announcements |
+| [Discord](https://discord.gg/arizenos) | Real-time chat, quick help |
+| [X (Twitter)](https://x.com/arizenos) | Announcements and project news |
 
-### What Blocks a PR
-
-Any of the following blocks merge:
-- A formal `-1` from any Reviewer+ (must include written explanation)
-- Failing CI checks
-- Unresolved review conversations marked "blocking"
-- Missing required approvals
-
-Responding to a `-1`: Address the objection in a new commit or explain why you disagree. If disagreement persists, it escalates to TC per the [Conflict Resolution](GOVERNANCE.md#7-conflict-resolution) process.
-
-### Draft PRs
-
-Use draft PRs for work in progress. Draft PRs:
-- Are visible to the community and may receive early feedback
-- Do not count toward anyone's review queue
-- Must be converted to "Ready for Review" manually before approval can begin
-
-### Stale PRs
-
-- **14 days** of no activity → labeled `stale`
-- **7 more days** → closed with a comment
-- Authors may reopen or push an update to reset the timer
+For architectural decisions and large proposals, always use GitHub (Discussions or RFC issues) rather than Discord — decisions made only in chat are not discoverable or durable.
 
 ---
 
-## 6. Code Review Standards
+## Recognition
 
-### For Reviewers
+Every merged contributor is added to the [MAINTAINERS.md](MAINTAINERS.md) contributors list and credited in the release changelog. Sustained contributors are invited to take on formal roles as Reviewers and Core Team members per the [Governance Model](GOVERNANCE.md).
 
-**The purpose of code review is to improve the code, not to demonstrate expertise.**
-
-**DO:**
-- Review the code, not the author
-- Be specific — reference line numbers, link to documentation, provide examples
-- Distinguish between blocking issues and non-blocking suggestions
-  - Prefix blocking: `[blocking]` — must be fixed before merge
-  - Prefix non-blocking: `[nit]`, `[suggestion]`, `[question]`
-- Approve PRs you'd be comfortable maintaining
-- Acknowledge what the PR does well before raising issues
-- Respond to re-review requests within 3 business days
-
-**DO NOT:**
-- Leave vague feedback like "this could be better"
-- Request changes without explaining why
-- Apply personal style preferences not covered in linting rules as blocking issues
-- Ghost a PR — if you started a review, see it through or explicitly hand off
-- Use review as gatekeeping — if a PR meets standards, approve it
-
-**Review Checklist:**
-
-```
-□ Does the PR do what it says it does?
-□ Are there tests for new behavior?
-□ Does it handle error cases?
-□ Are there performance implications?
-□ Does it follow the naming conventions?
-□ Does it break any existing interfaces?
-□ Is the documentation updated?
-□ Does it meet accessibility requirements (for UI changes)?
-□ Could it introduce security issues?
-□ Does it stay within its module boundary?
-```
-
-### For PR Authors
-
-- Respond to all review comments, even if just to acknowledge `[nit]` feedback
-- Do not resolve conversations opened by a reviewer — let the reviewer resolve after re-review
-- Use `fixup!` commits during review; squash before final merge (maintainer may do this)
-- If you disagree with feedback, say so clearly and explain why — disagreement is healthy when handled professionally
-
-### Review Anti-Patterns (Banned)
-
-The following review behaviors are considered Code of Conduct violations if persistent:
-
-- **Bike-shedding**: Blocking on low-impact stylistic preferences not covered by linter
-- **Review bombing**: Multiple nitpick comments with no substantive concerns
-- **Scope creep demands**: Requiring the PR to fix unrelated issues
-- **Approval withholding**: Approving in spirit but deliberately withholding formal approval
-
----
-
-## 7. Commit Standards
-
-ArizenOS uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
-
-### Format
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-### Types
-
-| Type | Use When |
-|---|---|
-| `feat` | New feature or capability |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `style` | Formatting, no logic change |
-| `refactor` | Code restructuring, no feature/fix |
-| `perf` | Performance improvement |
-| `test` | Adding or updating tests |
-| `build` | Build system, dependencies |
-| `ci` | CI/CD pipeline changes |
-| `chore` | Maintenance tasks |
-| `revert` | Reverting a prior commit |
-
-### Scopes
-
-Use the module name as scope: `mind`, `glass`, `shell`, `flow`, `skin`, `widgets`, `agent`, `sync`, `docs`, `ci`, `deps`
-
-### Rules
-
-- Description is lowercase, imperative mood, no period at end
-- Body wraps at 72 characters
-- Breaking changes: add `BREAKING CHANGE:` footer with migration path
-- Reference issues: `Closes #123`, `Fixes #456`, `Related to #789`
-
-### Examples
-
-```
-feat(mind): add streaming inference for llama-3 models
-
-Implements ReadableStream response from ArizenMind.query() using the
-llama.cpp streaming API. Consumers pipe the stream directly to UI
-renderers without buffering the full response.
-
-Closes #142
-
----
-
-fix(glass): resolve blur flicker on secondary monitor hotplug
-
-The DWM composition target was not being re-acquired after a display
-change event. Added WM_DISPLAYCHANGE handler to force re-initialization.
-
-Fixes #284
-
----
-
-feat(shell)!: remove legacy widget bridge API
-
-BREAKING CHANGE: The `LegacyWidgetBridge` class and all methods under
-`ArizenShell.legacyWidgets.*` have been removed. Migrate to the
-ArizenWidgets SDK introduced in v0.3.0. See docs/migration/v0.4.md.
-```
-
----
-
-## 8. Testing Requirements
-
-### Coverage Requirements
-
-| Module | Minimum Coverage | Notes |
-|---|---|---|
-| ArizenMind | 80% | All inference paths tested |
-| ArizenShell | 70% | Window management logic |
-| ArizenGlass | 60% | Rendering has integration tests |
-| All modules | 60% minimum | Hard floor; CI blocks below this |
-
-### Test Types
-
-**Unit Tests** — Required for all new functions and methods.
-```typescript
-// Every exported function must have at least one unit test
-describe("ArizenMind.query()", () => {
-  it("returns a ReadableStream", async () => { ... });
-  it("throws ModelNotFoundError when model is missing", async () => { ... });
-  it("respects context length limit", async () => { ... });
-});
-```
-
-**Integration Tests** — Required for module boundaries and API interactions.
-
-**Visual Regression Tests** — Required for all ArizenGlass and ArizenFlow changes.
-Use the project's Playwright + screenshot comparison setup.
-
-**Accessibility Tests** — Required for all UI component additions.
-Use axe-core integration included in the test suite.
-
-### Test File Naming
-
-```
-src/mind/query.ts          → src/mind/query.test.ts
-src/glass/renderer.ts      → src/glass/renderer.test.ts
-src/shell/taskbar.ts       → src/shell/taskbar.test.ts
-```
-
-Integration tests live in `tests/integration/`.
-E2E tests live in `tests/e2e/`.
-
----
-
-## 9. Documentation Requirements
-
-### What Requires Documentation
-
-| Change Type | Required Documentation |
-|---|---|
-| New public API / function | JSDoc + API reference page |
-| New module | `docs/<module>/README.md` + architecture overview |
-| New CLI flag | `docs/cli.md` update |
-| Configuration change | `docs/configuration.md` update |
-| Breaking change | `docs/migration/v<X.Y>.md` |
-| New user-facing feature | Guide in `docs/guides/` |
-
-### JSDoc Standard
-
-All exported functions, classes, types, and interfaces must have JSDoc:
-
-```typescript
-/**
- * Queries the local inference engine with the provided prompt.
- *
- * Returns a `ReadableStream<string>` that emits tokens as they are generated.
- * The stream closes automatically when inference completes.
- *
- * @param prompt - The input text to send to the model.
- * @param options - Optional configuration for this query.
- * @returns A readable stream of generated tokens.
- * @throws {ModelNotFoundError} When no model is loaded or the specified model is not found.
- * @throws {ContextLengthError} When the prompt exceeds the model's context window.
- *
- * @example
- * const stream = await mind.query("Summarize my open PRs");
- * for await (const token of stream) {
- *   process.stdout.write(token);
- * }
- */
-async query(prompt: string, options?: QueryOptions): Promise<ReadableStream<string>>
-```
-
----
-
-## 10. First-Time Contributors
-
-### Good First Issues
-
-Issues tagged [`good first issue`](https://github.com/Alrizz-art/ArizenOS/labels/good%20first%20issue) are scoped, documented, and mentored. They are held for new contributors — please do not claim them if you are already a Reviewer+.
-
-To claim an issue: comment "I'd like to work on this" and a maintainer will assign it to you. Assignments expire after 14 days of no progress update.
-
-### Getting Help
-
-- **GitHub Discussions** — Ask questions in the `Q&A` category
-- **Issue comments** — Ask for clarification directly on the issue you're working on
-- **Mentorship** — Tag a Core Team member on your draft PR for early feedback
-
-### What to Expect
-
-- First response to your PR within 5 business days
-- Honest, specific feedback — not vague rejections
-- Credit in the release notes for every merged contribution
-- A path to Reviewer status if you want it
-
-We know the first PR is the hardest. We will work with you to get it merged.
-
----
-
-*ArizenOS Contributing Guide v1.0 — June 2025*
-*Questions? Open a GitHub Discussion in the `contributing` category.*
+Thank you for contributing. ArizenOS is better because of you.
