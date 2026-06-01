@@ -1,0 +1,42 @@
+Windows Registry Editor Version 5.00
+
+; ============================================================
+; ArizenOS - Dark Theme Registry
+; Target: Windows 10 22H2+ / Windows 11 22H2+
+; ============================================================
+
+; --- System-wide Dark Mode ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize]
+"AppsUseLightTheme"=dword:00000000
+"SystemUsesLightTheme"=dword:00000000
+
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize]
+"AppsUseLightTheme"=dword:00000000
+"SystemUsesLightTheme"=dword:00000000
+"EnableTransparency"=dword:00000001
+"ColorPrevalence"=dword:00000000
+
+; --- DWM Accent: ArizenOS Deep Slate (#0F172A / #1E293B) ---
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\DWM]
+"AccentColor"=dword:FF1E293B
+"AccentColorInactive"=dword:FF0F172A
+"ColorizationColor"=dword:C41E293B
+"ColorizationColorBalance"=dword:00000059
+"ColorizationAfterglow"=dword:C41E293B
+"ColorizationAfterglowBalance"=dword:0000000A
+"ColorizationBlurBalance"=dword:00000001
+"UseWindowsDarkMode"=dword:00000001
+"EnableAeroPeek"=dword:00000001
+
+; --- Immersive Color Policy ---
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer]
+"GlobalFolderSettings"=dword:00000000
+
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Accent]
+"AccentColorMenu"=dword:FF1E293B
+"StartColorMenu"=dword:FF0F172A
+"AccentPalette"=hex:06,1b,36,00,0f,2a,4a,00,1e,3a,5f,00,1e,52,86,00,2d,74,b8,00,3b,82,f6,00,60,a5,fa,00,38,bd,f8,00
+
+; --- Taskbar Dark + Colorization ---
+[HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes]
+"CurrentTheme"="%SystemRoot%\\resources\\themes\\dark.theme"
