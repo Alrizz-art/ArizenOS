@@ -1,0 +1,284 @@
+title: "Safe Debloat"
+description: "Removes Microsoft telemetry, advertising components, and non-essential pre-installed apps. NEVER removes: Windows Store, WinGet, Calculator, Notepad, Paint, Windows Terminal, or any security components. Two levels available: Safe (recommended) and Minimal."
+privilege: TrustedInstaller
+actions:
+  # ── Telemetry Registry Policies ─────────────────────────────────
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+      value: "AllowTelemetry"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
+      value: "AllowTelemetry"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection"
+      value: "MaxTelemetryAllowed"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo"
+      value: "DisabledByGroupPolicy"
+      data: 1
+      type: DWord
+
+  - !registryValue:
+      path: "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy"
+      value: "TailoredExperiencesWithDiagnosticDataEnabled"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKCU:\SOFTWARE\Microsoft\InputPersonalization"
+      value: "RestrictImplicitInkCollection"
+      data: 1
+      type: DWord
+
+  - !registryValue:
+      path: "HKCU:\SOFTWARE\Microsoft\InputPersonalization"
+      value: "RestrictImplicitTextCollection"
+      data: 1
+      type: DWord
+
+  # Disable Cortana
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
+      value: "AllowCortana"
+      data: 0
+      type: DWord
+
+  # Disable Activity History
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+      value: "EnableActivityFeed"
+      data: 0
+      type: DWord
+
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System"
+      value: "PublishUserActivities"
+      data: 0
+      type: DWord
+
+  # WiFi Sense
+  - !registryValue:
+      path: "HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config"
+      value: "AutoConnectAllowedOEM"
+      data: 0
+      type: DWord
+
+  # ── Telemetry Services ────────────────────────────────────────────
+  - !service:
+      name: "DiagTrack"
+      startType: Disabled
+      status: Stopped
+
+  - !service:
+      name: "dmwappushservice"
+      startType: Disabled
+      status: Stopped
+
+  - !service:
+      name: "WerSvc"
+      startType: Manual
+      status: Stopped
+
+  - !service:
+      name: "RetailDemo"
+      startType: Disabled
+      status: Stopped
+
+  - !service:
+      name: "MapsBroker"
+      startType: Disabled
+      status: Stopped
+
+  - !service:
+      name: "RemoteRegistry"
+      startType: Disabled
+      status: Stopped
+
+  # ── Scheduled Tasks ───────────────────────────────────────────────
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser'
+      enabled: false
+
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Application Experience\ProgramDataUpdater'
+      enabled: false
+
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Customer Experience Improvement Program\Consolidator'
+      enabled: false
+
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip'
+      enabled: false
+
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Feedback\Siuf\DmClient'
+      enabled: false
+
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload'
+      enabled: false
+
+  - !scheduledTask:
+      path: '\Microsoft\Windows\Windows Error Reporting\QueueReporting'
+      enabled: false
+
+  # ── AppX Removal (Safe Level) ─────────────────────────────────────
+  - !appxPackage:
+      name: "Microsoft.BingNews"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.BingWeather"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.BingFinance"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.WindowsFeedbackHub"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.WindowsMaps"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.ZuneMusic"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.ZuneVideo"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.MixedReality.Portal"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.GetHelp"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.Getstarted"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.YourPhone"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "MicrosoftTeams"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Clipchamp.Clipchamp"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.549981C3F5F10"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.3DBuilder"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.Print3D"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.MicrosoftSolitaireCollection"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "king.com.CandyCrushSaga"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "king.com.CandyCrushFriends"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Facebook.Facebook"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.Xbox.TCUI"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.XboxApp"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.XboxGameOverlay"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.XboxGamingOverlay"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.XboxIdentityProvider"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.SkypeApp"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.Todos"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.MicrosoftOfficeHub"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !appxPackage:
+      name: "Microsoft.OutlookForWindows"
+      operation: Remove
+      removeForAllUsers: true
+
+  - !powerShell:
+      script: |
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] Debloat complete" |
+          Add-Content "$env:SystemDrive\ArizenOS\Logs\install.log"
