@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "\U0001F4AC GitHub Discussions (Q&A)"
+    url: https://github.com/Alrizz-art/ArizenOS/discussions/categories/q-a
+    about: Ask questions, get help, and discuss anything ArizenOS.
+  - name: "\U0001F4AC Discord Community"
+    url: https://discord.gg/arizenos
+    about: Real-time chat with maintainers and the ArizenOS community.
+  - name: "\U0001F4D6 Documentation"
+    url: https://docs.arizenos.dev
+    about: Official ArizenOS documentation, guides, and API reference.
+  - name: "\U0001F512 Report a Security Vulnerability"
+    url: https://github.com/Alrizz-art/ArizenOS/security/advisories/new
+    about: "Report security issues privately \u2014 do not use a public issue."
