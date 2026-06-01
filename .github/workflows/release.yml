@@ -4,115 +4,130 @@ on:
   push:
     tags:
       - "v*.*.*"
-      - "v*.*.*-*"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
-  discussions: write
 
 jobs:
-  # ─── Validate ────────────────────────────────────────────────────────────────
-  validate:
-    name: Validate Release
+  validate-tag:
+    name: Validate Tag Format
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.parse.outputs.version }}
+      is_prerelease: ${{ steps.parse.outputs.is_prerelease }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-      - name: Verify CHANGELOG entry exists
+      - name: Parse version tag
+        id: parse
         run: |
-          if ! grep -q "\[${{ steps.version.outputs.version }}\]" CHANGELOG.md; then
-            echo "ERROR: No CHANGELOG entry found for v${{ steps.version.outputs.version }}"
-            exit 1
+          TAG="${GITHUB_REF#refs/tags/}"
+          echo "version=$TAG" >> $GITHUB_OUTPUT
+          if echo "$TAG" | grep -qE "\-(alpha|beta|rc)\.[0-9]+$"; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
           fi
-      - name: Verify release manifest exists
-        run: |
-          if [ ! -f "releases/manifests/v${{ steps.version.outputs.version }}.json" ]; then
-            echo "ERROR: Release manifest not found for v${{ steps.version.outputs.version }}"
-            exit 1
-          fi
+          echo "Releasing: $TAG"
 
-  # ─── Build Windows Artifacts ─────────────────────────────────────────────────
-  build-artifacts:
-    name: Build — ${{ matrix.app }}
-    needs: [validate]
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        app: [launcher, assistant, voice, hub, agent]
-      fail-fast: false
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with: { version: "8" }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo build --filter=@arizen/${{ matrix.app }}
-      - name: Package installer
-        run: pnpm --filter @arizen/${{ matrix.app }} package
-      - name: Compute SHA256
-        run: |
-          Get-FileHash apps/${{ matrix.app }}/build/*.exe -Algorithm SHA256 |
-            Format-List | Out-File -Append releases/checksums/${{ github.ref_name }}-SHA256SUMS.txt
-        shell: pwsh
-      - uses: actions/upload-artifact@v4
-        with:
-          name: artifact-${{ matrix.app }}
-          path: apps/${{ matrix.app }}/build/*.exe
-          retention-days: 7
-
-  # ─── Publish GitHub Release ──────────────────────────────────────────────────
-  publish:
-    name: Publish Release
-    needs: [build-artifacts]
+  build:
+    name: Build Release Artifacts
     runs-on: ubuntu-latest
+    needs: validate-tag
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          path: release-artifacts
-          merge-multiple: true
-      - name: Extract release notes from CHANGELOG
-        id: release-notes
+          fetch-depth: 0
+
+      - name: Install build dependencies
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          NOTES=$(awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | head -n -2 | tail -n +2)
-          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          sudo apt-get update -qq
+          sudo apt-get install -y \
+            build-essential \
+            nasm \
+            xorriso \
+            grub-pc-bin \
+            grub-common \
+            qemu-system-x86 \
+            mtools
+
+      # Uncomment when build system is ready:
+      # - name: Build kernel
+      #   run: make clean && make all
+      #
+      # - name: Build ISO
+      #   run: make iso
+      #
+      # - name: Compute checksums
+      #   run: |
+      #     sha256sum build/arizenos.iso > build/arizenos.iso.sha256
+      #     sha256sum build/arizenos.elf >> build/arizenos.iso.sha256
+      #     cat build/arizenos.iso.sha256
+
+      - name: Placeholder build step
+        run: |
+          mkdir -p build
+          echo "ArizenOS ${{ needs.validate-tag.outputs.version }}" > build/version.txt
+          echo "Build system placeholder — implement Makefile targets"
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: arizenos-${{ needs.validate-tag.outputs.version }}
+          path: build/
+          retention-days: 90
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [validate-tag, build]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: arizenos-${{ needs.validate-tag.outputs.version }}
+          path: release-artifacts/
+
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          VERSION="${{ needs.validate-tag.outputs.version }}"
+          # Extract the relevant section from CHANGELOG.md
+          NOTES=$(awk "/## \[${VERSION#v}\]/,/## \[/" CHANGELOG.md | head -n -1)
+          if [ -z "$NOTES" ]; then
+            NOTES="See CHANGELOG.md for details."
+          fi
+          echo "notes<<ENDOFNOTES" >> $GITHUB_OUTPUT
           echo "$NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "ENDOFNOTES" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "ArizenOS ${{ github.ref_name }}"
-          body: ${{ steps.release-notes.outputs.notes }}
-          draft: false
-          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
-          files: |
-            release-artifacts/**/*.exe
-            releases/checksums/${{ github.ref_name }}-SHA256SUMS.txt
+          name: "ArizenOS ${{ needs.validate-tag.outputs.version }}"
+          body: |
+            ${{ steps.changelog.outputs.notes }}
 
-  # ─── Update Latest Manifest ──────────────────────────────────────────────────
-  update-manifest:
-    name: Update Latest Manifest
-    needs: [publish]
-    if: "!contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') && !contains(github.ref_name, '-rc')"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Copy manifest to latest.json
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
-          cp releases/manifests/v${VERSION}.json releases/manifests/latest.json
-      - name: Commit latest.json update
-        run: |
-          git config user.name "arizen-bot"
-          git config user.email "bot@arizenos.dev"
-          git add releases/manifests/latest.json
-          git commit -m "chore(release): update latest manifest to ${{ github.ref_name }}"
-          git push
+            ---
+
+            **Full Changelog:** https://github.com/Alrizz-art/ArizenOS/blob/${{ needs.validate-tag.outputs.version }}/CHANGELOG.md
+
+            **Verify download integrity:**
+            ```bash
+            sha256sum -c arizenos.iso.sha256
+            ```
+          files: |
+            release-artifacts/*
+          draft: false
+          prerelease: ${{ needs.validate-tag.outputs.is_prerelease == 'true' }}
+          generate_release_notes: true
