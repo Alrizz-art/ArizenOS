@@ -1,0 +1,79 @@
+# Auto-label PRs by changed file paths
+# See: https://github.com/actions/labeler
+
+# ─── Packages ─────────────────────────────────────────────────────────────────
+"pkg/core":
+  - packages/core/**
+
+"pkg/glass":
+  - packages/glass/**
+
+"pkg/mind":
+  - packages/mind/**
+
+"pkg/shell":
+  - packages/shell/**
+
+"pkg/flow":
+  - packages/flow/**
+
+"pkg/skin":
+  - packages/skin/**
+
+"pkg/ui":
+  - packages/ui/**
+
+"pkg/widgets":
+  - packages/widgets/**
+
+"pkg/sync":
+  - packages/sync/**
+
+"pkg/agent-sdk":
+  - packages/agent-sdk/**
+
+# ─── Apps ─────────────────────────────────────────────────────────────────────
+"app/launcher":
+  - apps/launcher/**
+
+"app/assistant":
+  - apps/assistant/**
+
+"app/voice":
+  - apps/voice/**
+
+"app/hub":
+  - apps/hub/**
+
+"app/agent":
+  - apps/agent/**
+
+# ─── Cross-cutting ────────────────────────────────────────────────────────────
+"area/ci":
+  - .github/workflows/**
+  - .github/dependabot.yml
+
+"area/docs":
+  - docs/**
+  - "*.md"
+
+"area/branding":
+  - branding/**
+
+"area/tests":
+  - tests/**
+
+"area/tools":
+  - tools/**
+
+"area/release":
+  - releases/**
+  - RELEASE.md
+  - CHANGELOG.md
+
+"area/governance":
+  - GOVERNANCE.md
+  - CONTRIBUTING.md
+  - CODE_OF_CONDUCT.md
+  - SECURITY.md
+  - MAINTAINERS.md
