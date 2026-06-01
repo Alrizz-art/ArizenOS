@@ -1,0 +1,147 @@
+name: fix_bug
+version: "1.0.0"
+description: "Diagnose a bug from error output, generate a patch, verify with tests, and store fix in memory."
+author: commander
+tags: [debugging, maintenance, patch]
+
+trigger:
+  type: manual
+
+inputs:
+  error_text:
+    type: string
+    required: true
+    description: "The error message, stack trace, or bug description"
+  file_path:
+    type: string
+    required: false
+    default: ""
+    description: "Path to the file suspected of containing the bug (optional)"
+  run_tests:
+    type: boolean
+    required: false
+    default: true
+    description: "Run the test suite after applying the patch to verify the fix"
+  auto_apply:
+    type: boolean
+    required: false
+    default: false
+    description: "Apply the patch automatically (requires approval gate)"
+
+steps:
+  - id: recall_similar_bugs
+    name: "Search memory for similar bugs"
+    agent: memory
+    tool: memory.query
+    inputs:
+      query: "{{ inputs.error_text }}"
+      limit: 3
+      scope: persistent
+    on_failure: continue
+    output_var: similar_bugs
+    priority: 3
+    timeout_sec: 10
+
+  - id: diagnose
+    name: "Diagnose root cause"
+    agent: fixer
+    tool: debug.error
+    inputs:
+      query: "{{ inputs.error_text }}"
+      file_path: "{{ inputs.file_path }}"
+      context: "{{ steps.recall_similar_bugs.output }}"
+    depends_on: [recall_similar_bugs]
+    output_var: diagnosis
+    priority: 10
+    timeout_sec: 90
+    retry:
+      max_attempts: 2
+      backoff: fixed
+      delay_sec: 2
+
+  - id: security_check
+    name: "Check if error exposes a security vulnerability"
+    agent: security
+    tool: security.scan
+    inputs:
+      target: "{{ inputs.file_path }}"
+      context: "{{ steps.diagnose.output }}"
+    depends_on: [diagnose]
+    output_var: sec_check
+    priority: 7
+    timeout_sec: 45
+    on_failure: continue
+    condition: "{{ inputs.file_path != '' }}"
+
+  - id: apply_patch
+    name: "Apply the generated patch"
+    agent: coder
+    tool: code.refactor
+    inputs:
+      query: "Apply this fix: {{ steps.diagnose.output.patch }}"
+      file_path: "{{ inputs.file_path }}"
+      context: "{{ steps.diagnose.output }}"
+    depends_on: [diagnose]
+    condition: "{{ inputs.auto_apply == true and steps.diagnose.output.patch != '' }}"
+    approval:
+      required: true
+      message: "Fixer wants to apply a patch to {{ inputs.file_path }}. Review the diff before approving."
+      timeout_sec: 120
+    output_var: patch_result
+    priority: 8
+    timeout_sec: 60
+    on_failure: skip
+    retry:
+      max_attempts: 2
+      backoff: fixed
+      delay_sec: 2
+
+  - id: verify_fix
+    name: "Run test suite to verify fix"
+    agent: devops
+    tool: devops.ci
+    inputs:
+      target: "{{ inputs.file_path }}"
+      query: "Run tests related to the patched file"
+    depends_on: [apply_patch]
+    condition: "{{ inputs.run_tests == true and inputs.auto_apply == true }}"
+    output_var: test_result
+    priority: 7
+    timeout_sec: 180
+    on_failure: continue
+
+  - id: store_fix
+    name: "Store fix and diagnosis in memory"
+    agent: memory
+    tool: memory.store
+    inputs:
+      content: >
+        Bug Fix Record:
+        Error: {{ inputs.error_text[:200] }}
+        Root Cause: {{ steps.diagnose.output.root_cause }}
+        Severity: {{ steps.diagnose.output.severity }}
+        Fix Applied: {{ inputs.auto_apply }}
+        Confidence: {{ steps.diagnose.output.confidence }}
+      scope: persistent
+      source: playbook.fix_bug
+      tags: [bug, fix, "{{ steps.diagnose.output.severity }}"]
+    depends_on: [diagnose]
+    priority: 2
+    timeout_sec: 15
+
+checkpoints:
+  - after: diagnose
+    scope: all
+    ttl_sec: 3600
+
+on_error:
+  action: abort
+  notify: true
+  rollback: false
+
+observability:
+  log_level: info
+  emit_events: true
+  hud_overlay: true
+
+timeout_sec: 600

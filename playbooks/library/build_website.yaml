@@ -1,0 +1,172 @@
+name: build_website
+version: "1.0.0"
+description: "Research, design, generate, and deploy a complete website or landing page."
+author: commander
+tags: [web, design, ui, frontend]
+
+trigger:
+  type: manual
+
+inputs:
+  site_name:
+    type: string
+    required: true
+    description: "Name of the website or product"
+  purpose:
+    type: string
+    required: true
+    description: "What the site is for (e.g. 'portfolio', 'SaaS landing page', 'docs site')"
+  tech_stack:
+    type: string
+    required: false
+    default: react-typescript
+    enum: [react-typescript, html-css, tauri-react]
+    description: "Frontend technology stack"
+  research_competitors:
+    type: boolean
+    required: false
+    default: false
+    description: "Research similar websites for inspiration (requires network)"
+
+steps:
+  - id: recall_design_context
+    name: "Load design tokens and brand context"
+    agent: memory
+    tool: memory.query
+    inputs:
+      query: "design tokens branding colors typography ArizenOS"
+      scope: persistent
+      limit: 5
+    on_failure: continue
+    output_var: brand_context
+    priority: 3
+    timeout_sec: 10
+
+  - id: research_reference
+    name: "Research similar sites for inspiration"
+    agent: researcher
+    tool: research.web
+    inputs:
+      query: "{{ inputs.purpose }} website design best practices UI examples 2024"
+      mode: web
+    condition: "{{ inputs.research_competitors == true }}"
+    output_var: research_result
+    priority: 6
+    timeout_sec: 60
+    on_failure: continue
+
+  - id: design_components
+    name: "Generate UI components"
+    agent: designer
+    tool: design.component
+    inputs:
+      query: >
+        Design and generate the core UI components for '{{ inputs.site_name }}' — a {{ inputs.purpose }}.
+        Stack: {{ inputs.tech_stack }}.
+        Brand context: {{ steps.recall_design_context.output }}
+        Research inspiration: {{ steps.research_reference.output }}
+      file_path: "ui/command-nexus/src/components/{{ inputs.site_name }}"
+    depends_on: [recall_design_context, research_reference]
+    output_var: design_result
+    priority: 9
+    timeout_sec: 180
+    retry:
+      max_attempts: 2
+      backoff: exponential
+      delay_sec: 5
+
+  - id: generate_pages
+    name: "Generate page structure and routes"
+    agent: coder
+    tool: code.generate
+    inputs:
+      query: >
+        Generate the main page files for '{{ inputs.site_name }}' using {{ inputs.tech_stack }}.
+        Purpose: {{ inputs.purpose }}.
+        Use the generated components from: {{ steps.design_components.output.file_path }}
+      context: "{{ steps.design_components.output }}"
+    depends_on: [design_components]
+    output_var: pages_result
+    priority: 8
+    timeout_sec: 120
+    retry:
+      max_attempts: 2
+      backoff: exponential
+      delay_sec: 3
+
+  - id: accessibility_audit
+    name: "Run accessibility audit"
+    agent: designer
+    tool: design.audit
+    inputs:
+      file_path: "ui/command-nexus/src/components/{{ inputs.site_name }}"
+    depends_on: [design_components]
+    parallel_with: [generate_pages]
+    output_var: a11y_result
+    priority: 7
+    timeout_sec: 60
+    on_failure: continue
+
+  - id: security_review
+    name: "Security review of generated code"
+    agent: security
+    tool: security.scan
+    inputs:
+      target: "ui/command-nexus/src/components/{{ inputs.site_name }}"
+    depends_on: [generate_pages]
+    parallel_with: [accessibility_audit]
+    output_var: security_result
+    priority: 7
+    timeout_sec: 60
+    on_failure: continue
+
+  - id: build_check
+    name: "Build verification"
+    agent: devops
+    tool: devops.build
+    inputs:
+      target: ui
+      query: "Build the UI to verify {{ inputs.site_name }} compiles cleanly"
+    depends_on: [generate_pages]
+    output_var: build_result
+    priority: 8
+    timeout_sec: 120
+    on_failure: continue
+
+  - id: store_result
+    name: "Store website in memory"
+    agent: memory
+    tool: memory.store
+    inputs:
+      content: >
+        Website Built: {{ inputs.site_name }}
+        Purpose: {{ inputs.purpose }}
+        Stack: {{ inputs.tech_stack }}
+        Components: {{ steps.design_components.output.summary }}
+        A11y issues: {{ steps.accessibility_audit.output.warnings }}
+        Build: {{ steps.build_check.output.success }}
+      scope: persistent
+      source: playbook.build_website
+      tags: [website, ui, "{{ inputs.tech_stack }}", "{{ inputs.site_name }}"]
+    depends_on: [generate_pages, accessibility_audit, build_check]
+    priority: 2
+    timeout_sec: 15
+
+checkpoints:
+  - after: design_components
+    scope: all
+    ttl_sec: 86400
+  - after: generate_pages
+    scope: outputs
+
+on_error:
+  action: abort
+  notify: true
+  rollback: false
+
+observability:
+  log_level: info
+  emit_events: true
+  hud_overlay: true
+
+timeout_sec: 900
