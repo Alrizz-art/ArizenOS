@@ -1,0 +1,25 @@
+title: Finalize and Cleanup
+actions:
+  # ── Performance Registry ──────────────────────────────────────────
+  - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\FileSystem', value: 'NtfsDisableLastAccessUpdate', type: REG_DWORD, data: '2147483651'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile', value: 'NetworkThrottlingIndex', type: REG_DWORD, data: '4294967295'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile', value: 'SystemResponsiveness', type: REG_DWORD, data: '0'}
+
+  # ── Security Audit ────────────────────────────────────────────────
+  - !run:
+      exe: 'powershell.exe'
+      args: '-ExecutionPolicy Bypass -File "Executables\security-audit.ps1"'
+
+  # ── Restart Explorer to apply theme ──────────────────────────────
+  - !powerShell:
+      command: >-
+        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue;
+        Start-Sleep -Seconds 2;
+        Start-Process explorer
+
+  # ── Log Summary ───────────────────────────────────────────────────
+  - !powerShell:
+      command: >-
+        $log = "$env:SystemDrive\ArizenOS\Logs\install.log";
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] ArizenOS installation complete" | Add-Content $log;
+        "ACTION REQUIRED: Reboot to complete WSL2 and theme changes." | Add-Content $log
