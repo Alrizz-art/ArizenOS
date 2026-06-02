@@ -1,0 +1,235 @@
+# ArizenOS v0.1 — Asset Manifest
+# Status: DRAFT — OI-01 logo validation pending
+# Version: 0.1.0
+# Reference: docs/specs/ArizenOS-v0.1-Product-Specification.md §7
+#
+# Placeholder legend:
+#   [TBD_SHA256]   — SHA256 hash pending final asset validation
+#   [TBD_SIZE]     — file size in bytes pending final asset
+#
+# Validation status:
+#   ✅ VALIDATED  — asset confirmed against spec requirements
+#   ⚠️  PENDING   — OI-01 resolution required (OEM logo)
+#   📐 SPEC_MET   — file exists and dimensions confirmed, hash pending final version
+# ─────────────────────────────────────────────────────────────────────────────
+
+schema_version: "1.0"
+product: "ArizenOS"
+version: "0.1.0"
+generated: "2026-06-02"
+
+# Installation base paths
+paths:
+  branding_dest:    "%ProgramData%\ArizenOS\branding\"
+  wallpaper_dest:   "%ProgramData%\ArizenOS\wallpapers\"
+  manifest_dest:    "%ProgramData%\ArizenOS\"
+  backup_dest:      "%APPDATA%\ArizenOS\backup\"
+  log_dest:         "%APPDATA%\ArizenOS\logs\"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ASSET 1 — OEM MANUFACTURER LOGO
+# Status: ⚠️ PENDING — OI-01 BMP format validation required
+# ═══════════════════════════════════════════════════════════════════════════════
+assets:
+  - id: oemlogo
+    label: "OEM Manufacturer Logo"
+    validation_status: PENDING
+    blocker: OI-01
+
+    source:
+      repo_path: "assets/logos/arizenOS_logo_oem.bmp"
+      format: BMP
+
+    destination:
+      path: "%ProgramData%\ArizenOS\branding\oemlogo.bmp"
+      expand_env: true
+      create_dir: true
+
+    spec_requirements:
+      format: BMP
+      dib_header: BITMAPINFOHEADER   # 40-byte header
+      width_px: 120
+      height_px: 120
+      bit_depth: 24
+      compression: BI_RGB            # 0 — no compression
+      embedded_icc_profile: false
+      max_size_bytes: 262144         # 256 KB
+
+    # ⚠️ To be filled when OI-01 validation is complete:
+    validation:
+      magic_bytes_confirmed: false
+      dimensions_confirmed: false
+      bit_depth_confirmed: false
+      renders_win10: false
+      renders_win11: false
+      sha256: "[TBD_SHA256_OEMLOGO]"
+      size_bytes: "[TBD_SIZE_OEMLOGO]"
+
+    rollback:
+      action: delete_file   # remove on rollback if it was deployed by this playbook
+      also_remove_dir_if_empty: true
+
+    registry_reference:
+      hive: HKLM
+      key: "SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+      value: Logo
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - id: wallpaper_dark
+    label: "Desktop Wallpaper — Dark"
+    validation_status: SPEC_MET   # file present, final hash TBD
+
+    source:
+      repo_path: "assets/wallpapers/arizenOS_dark.jpg"
+      format: JPEG
+
+    destination:
+      path: "%ProgramData%\ArizenOS\wallpapers\arizenOS_dark.jpg"
+      expand_env: true
+      create_dir: true
+
+    spec_requirements:
+      format: JPEG
+      width_px: 3840
+      height_px: 2160
+      aspect_ratio: "16:9"
+      color_space: sRGB
+      jpeg_quality_min: 90
+      max_size_bytes: 8388608   # 8 MB
+
+    validation:
+      dimensions_confirmed: false   # pending final check
+      color_space_confirmed: false
+      sha256: "[TBD_SHA256_WALLPAPER_DARK]"
+      size_bytes: "[TBD_SIZE_WALLPAPER_DARK]"
+
+    usage:
+      applied_by: SCR-06            # apply-wallpaper
+      registry_path: "HKCU\Control Panel\Desktop\Wallpaper"
+      set_as_default: true          # this is the primary wallpaper
+
+    rollback:
+      action: delete_file
+      also_remove_dir_if_empty: false   # other wallpapers may still be present
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - id: wallpaper_default
+    label: "Desktop Wallpaper — Default (Light)"
+    validation_status: SPEC_MET
+
+    source:
+      repo_path: "assets/wallpapers/arizenOS_default.jpg"
+      format: JPEG
+
+    destination:
+      path: "%ProgramData%\ArizenOS\wallpapers\arizenOS_default.jpg"
+      expand_env: true
+      create_dir: true
+
+    spec_requirements:
+      format: JPEG
+      width_px: 3840
+      height_px: 2160
+      aspect_ratio: "16:9"
+      color_space: sRGB
+      jpeg_quality_min: 90
+      max_size_bytes: 8388608
+
+    validation:
+      dimensions_confirmed: false
+      color_space_confirmed: false
+      sha256: "[TBD_SHA256_WALLPAPER_DEFAULT]"
+      size_bytes: "[TBD_SIZE_WALLPAPER_DEFAULT]"
+
+    usage:
+      applied_by: SCR-06
+      note: "Deployed alongside dark variant. Not set as active wallpaper — available for user to switch to."
+
+    rollback:
+      action: delete_file
+      also_remove_dir_if_empty: false
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+  - id: wallpaper_lockscreen
+    label: "Lock Screen Wallpaper"
+    validation_status: SPEC_MET
+
+    source:
+      repo_path: "assets/wallpapers/arizenOS_lockscreen.jpg"
+      format: JPEG
+
+    destination:
+      path: "%ProgramData%\ArizenOS\wallpapers\arizenOS_lockscreen.jpg"
+      expand_env: true
+      create_dir: true
+
+    spec_requirements:
+      format: JPEG
+      width_px: 3840
+      height_px: 2160
+      aspect_ratio: "16:9"
+      color_space: sRGB
+      jpeg_quality_min: 90
+      max_size_bytes: 8388608
+      composition_notes:
+        - "No critical content in bottom-left (clock overlay zone)"
+        - "No critical content in top-right (network/battery overlay zone)"
+
+    validation:
+      dimensions_confirmed: false
+      composition_reviewed: false
+      renders_win10_lockscreen: false    # pending OI-03
+      renders_win11_lockscreen: false    # pending OI-03
+      sha256: "[TBD_SHA256_WALLPAPER_LOCKSCREEN]"
+      size_bytes: "[TBD_SIZE_WALLPAPER_LOCKSCREEN]"
+
+    usage:
+      applied_by: SCR-06
+      registry_reference:
+        - section: lock_screen.policy_path.LockScreenImage
+        - section: lock_screen.personalization_csp.LockScreenImagePath
+        - section: lock_screen.personalization_csp.LockScreenImageUrl
+      blocker: OI-03
+
+    rollback:
+      action: delete_file
+      also_remove_dir_if_empty: false
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# RUNTIME-GENERATED FILES (not pre-packaged — written during installation)
+# ═══════════════════════════════════════════════════════════════════════════════
+runtime_files:
+  - id: installation_manifest
+    label: "Installation Manifest (runtime-generated)"
+    generated_by: SCR-11
+    destination: "%ProgramData%\ArizenOS\manifest.json"
+    format: JSON
+    rollback:
+      action: delete_file
+
+  - id: registry_backup
+    label: "Registry Backup (runtime-generated)"
+    generated_by: SCR-03
+    destination: "%APPDATA%\ArizenOS\backup\registry-backup.reg"
+    format: REG
+    rollback:
+      action: delete_file
+      note: "Backup file deleted AFTER registry is successfully restored from it"
+
+  - id: install_log
+    label: "Installation Log (runtime-generated)"
+    generated_by: all_scripts
+    destination: "%APPDATA%\ArizenOS\logs\install.log"
+    format: plaintext
+    rollback:
+      action: preserve   # keep log even after rollback — useful for debugging
+
+  - id: rollback_shortcut
+    label: "Start Menu Rollback Shortcut (runtime-generated)"
+    generated_by: SCR-12
+    destination: "%ProgramData%\Microsoft\Windows\Start Menu\Programs\ArizenOS\Rollback ArizenOS.lnk"
+    rollback:
+      action: delete_file

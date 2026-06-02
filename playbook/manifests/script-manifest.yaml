@@ -1,0 +1,497 @@
+# ArizenOS v0.1 — Script Manifest
+# Status: DRAFT — all scripts specified, none written yet
+# Version: 0.1.0
+# Reference: docs/specs/ArizenOS-v0.1-Product-Specification.md §8
+#
+# This manifest defines the 13 scripts in execution order.
+# Scripts are PowerShell, run elevated in AME Wizard context.
+# All scripts must be idempotent.
+# All scripts must log to %APPDATA%\ArizenOS\logs\install.log
+# No script may touch the DO NOT TOUCH list in registry-manifest.yaml
+# ─────────────────────────────────────────────────────────────────────────────
+
+schema_version: "1.0"
+product: "ArizenOS"
+version: "0.1.0"
+generated: "2026-06-02"
+
+# Global script constraints (apply to ALL scripts below)
+global_constraints:
+  language: PowerShell
+  elevation_required: true
+  idempotent: true
+  error_handling: try_catch_required
+  log_target: "%APPDATA%\ArizenOS\logs\install.log"
+  log_format: "[TIMESTAMP] [SCRIPT_ID] [LEVEL] MESSAGE"
+  exit_codes:
+    0: success
+    1: fatal_error_abort
+    2: soft_warning_continue
+    3: user_cancelled
+  do_not_touch: registry-manifest.yaml#do_not_touch   # reference to the DO NOT TOUCH list
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INSTALLATION SCRIPTS — executed in sequence order
+# ═══════════════════════════════════════════════════════════════════════════════
+scripts:
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-01
+    name: preflight-check
+    file: scripts/preflight-check.ps1
+    phase: PRE_INSTALL
+    sequence: 1
+    trigger: automatic   # first script to run — blocks everything if it fails
+
+    description: >
+      Validates that the target machine meets minimum requirements.
+      Aborts installation on hard failures. Prompts user on soft warnings.
+
+    inputs:
+      - name: MinBuildNumber
+        value: 19045
+        type: int
+        note: "Windows 10 22H2 minimum"
+
+    outputs:
+      - exit_code_0: "All checks passed — proceed to SCR-02"
+      - exit_code_1: "Hard failure — abort, no changes made to system"
+      - exit_code_2: "Soft warning — user prompted to continue or abort"
+
+    checks:
+      - id: CHK-01
+        name: os_build_minimum
+        type: hard_fail
+        condition: "[System.Environment]::OSVersion.Version.Build -ge 19045"
+        failure_message: "ArizenOS requires Windows 10 22H2 (build 19045) or later."
+
+      - id: CHK-02
+        name: administrator_privileges
+        type: hard_fail
+        condition: "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"
+        failure_message: "ArizenOS must be installed as Administrator."
+
+      - id: CHK-03
+        name: s_mode_inactive
+        type: hard_fail
+        condition: "(Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CI\Policy' -ErrorAction SilentlyContinue).SkuPolicyRequired -ne 1"
+        failure_message: "ArizenOS cannot be installed on Windows S Mode."
+
+      - id: CHK-04
+        name: disk_space_minimum
+        type: hard_fail
+        threshold_mb: 500
+        condition: "(Get-PSDrive -Name C).Free / 1MB -ge 500"
+        failure_message: "ArizenOS requires at least 500 MB of free disk space."
+
+      - id: CHK-05
+        name: disk_space_recommended
+        type: soft_warn
+        threshold_mb: 1024
+        condition: "(Get-PSDrive -Name C).Free / 1MB -ge 1024"
+        warning_message: "Less than 1 GB free. Installation may proceed but ensure adequate space."
+
+      - id: CHK-06
+        name: domain_joined_warning
+        type: soft_warn
+        condition: "(Get-WmiObject Win32_ComputerSystem).PartOfDomain -eq \$false"
+        warning_message: "Domain-joined machine detected. Group policies may override some ArizenOS settings."
+
+    rollback_on_failure: none   # no changes have been made at this point
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-02
+    name: create-restore-point
+    file: scripts/create-restore-point.ps1
+    phase: PRE_INSTALL
+    sequence: 2
+    trigger: automatic
+    depends_on: [SCR-01]
+
+    description: >
+      Creates a Windows System Restore Point before any changes are applied.
+      If restore point creation fails, user is warned and prompted to continue
+      or abort. Installation MUST NOT proceed silently without a restore point
+      unless user explicitly accepts the risk.
+
+    restore_point:
+      description: "Before ArizenOS v0.1"
+      type: APPLICATION_INSTALL   # Windows restore point type constant
+
+    outputs:
+      - exit_code_0: "Restore point created — proceed"
+      - exit_code_2: "Restore point creation failed — warn user, await decision"
+
+    log_entry: "Restore point created: 'Before ArizenOS v0.1'"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-03
+    name: backup-registry
+    file: scripts/backup-registry.ps1
+    phase: PRE_INSTALL
+    sequence: 3
+    trigger: automatic
+    depends_on: [SCR-02]
+
+    description: >
+      Exports all registry keys that will be modified by this playbook to a
+      .reg backup file. This is the source of truth for rollback. If this
+      script fails, installation must abort — rollback is not possible without it.
+
+    backup_target: "%APPDATA%\ArizenOS\backup\registry-backup.reg"
+    create_dir_if_absent: true
+
+    keys_to_backup:
+      - "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+      - "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"
+      - "HKCU\SOFTWARE\Microsoft\Windows\DWM"
+      - "HKCU\Control Panel\Desktop"
+      - "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects"
+      - "HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization"
+      - "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\PersonalizationCSP"
+      - "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters"
+
+    manifest_output: "%APPDATA%\ArizenOS\backup\manifest.json"
+    manifest_fields: [version, date, backup_path, keys_backed_up]
+
+    outputs:
+      - exit_code_0: "Backup complete — safe to proceed with writes"
+      - exit_code_1: "Backup failed — ABORT installation (rollback impossible without backup)"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-04
+    name: deploy-assets
+    file: scripts/deploy-assets.ps1
+    phase: INSTALL
+    sequence: 4
+    trigger: automatic
+    depends_on: [SCR-03]
+
+    description: >
+      Creates destination directories and copies all branding and wallpaper
+      assets from the playbook bundle to ProgramData. Non-critical asset
+      failures (e.g., wallpaper copy fails) are logged but do not abort.
+      OEM logo copy failure IS critical — logged as error, feature marked failed.
+
+    asset_references: asset-manifest.yaml   # reads from asset manifest
+
+    directories_to_create:
+      - "%ProgramData%\ArizenOS\branding\"
+      - "%ProgramData%\ArizenOS\wallpapers\"
+
+    assets_to_copy:
+      - asset_id: oemlogo
+        critical: true    # failure logged as error, oem_branding feature marked failed
+      - asset_id: wallpaper_dark
+        critical: true
+      - asset_id: wallpaper_default
+        critical: false   # failure logged as warning only
+      - asset_id: wallpaper_lockscreen
+        critical: true
+
+    outputs:
+      - exit_code_0: "All critical assets deployed"
+      - exit_code_2: "Non-critical asset(s) failed — logged, installation continues"
+      - exit_code_1: "Critical asset deployment failed — log error, mark feature failed"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-05
+    name: apply-oem-branding
+    file: scripts/apply-oem-branding.ps1
+    phase: INSTALL
+    sequence: 5
+    trigger: automatic
+    depends_on: [SCR-04]
+
+    description: >
+      Writes OEM branding registry values. References registry-manifest.yaml
+      section oem_branding. The Logo value path must be fully expanded at
+      write time (not stored as %ProgramData% — use [System.Environment]::ExpandEnvironmentVariables).
+
+    registry_section: registry-manifest.yaml#oem_branding
+
+    outputs:
+      - exit_code_0: "OEM branding applied"
+      - exit_code_1: "Registry write failed — log error, mark oem_branding failed"
+
+    post_apply_verification:
+      read_back: true   # read the written values back and confirm they match expected data
+      verification_key: "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-06
+    name: apply-wallpaper
+    file: scripts/apply-wallpaper.ps1
+    phase: INSTALL
+    sequence: 6
+    trigger: automatic
+    depends_on: [SCR-04]
+
+    description: >
+      Sets the desktop wallpaper and lock screen wallpaper.
+      Desktop wallpaper: writes registry + calls SystemParametersInfo (SPI_SETDESKWALLPAPER).
+      Lock screen: writes dual-path registry (both Policy and PersonalizationCSP),
+      then runs gpupdate /force.
+      BLOCKER OI-03: lock screen paths contain [TBD] until OI-03 resolved.
+
+    desktop_wallpaper:
+      registry_hive: HKCU
+      registry_path: "Control Panel\Desktop"
+      registry_value: Wallpaper
+      asset_id: wallpaper_dark
+      spi_call: true   # call SystemParametersInfo after registry write for immediate effect
+
+    lock_screen:
+      registry_section_1: registry-manifest.yaml#lock_screen.policy_path
+      registry_section_2: registry-manifest.yaml#lock_screen.personalization_csp
+      asset_id: wallpaper_lockscreen
+      gpupdate: true
+      blocker: OI-03   # [TBD] placeholders in registry manifest must be resolved first
+
+    outputs:
+      - exit_code_0: "Wallpaper and lock screen applied"
+      - exit_code_2: "Lock screen registry write failed — log warning, desktop wallpaper still applied"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-07
+    name: apply-theme
+    file: scripts/apply-theme.ps1
+    phase: INSTALL
+    sequence: 7
+    trigger: automatic
+    depends_on: [SCR-03]   # only requires backup to exist, not dependent on assets
+
+    description: >
+      Applies dark mode and transparency settings.
+      Writes HKCU theme and DWM registry values.
+
+    registry_sections:
+      - registry-manifest.yaml#theme
+      - registry-manifest.yaml#dwm
+
+    outputs:
+      - exit_code_0: "Theme applied"
+      - exit_code_1: "Registry write failed"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-08
+    name: apply-performance
+    file: scripts/apply-performance.ps1
+    phase: INSTALL
+    sequence: 8
+    trigger: automatic
+    depends_on: [SCR-03]
+
+    description: >
+      Applies visual effects and prefetch settings.
+      UserPreferencesMask write is OS-version-conditional.
+      BLOCKER OI-02: mask value contains [TBD] until OI-02 resolved.
+
+    registry_sections:
+      - registry-manifest.yaml#visual_effects
+      - registry-manifest.yaml#prefetch
+
+    os_detection_required: true   # for UserPreferencesMask os_specific split
+    blocker: OI-02
+
+    outputs:
+      - exit_code_0: "Performance settings applied"
+      - exit_code_1: "Registry write failed"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-09
+    name: apply-developer
+    file: scripts/apply-developer.ps1
+    phase: INSTALL
+    sequence: 9
+    trigger: conditional   # only if user selected developer setup
+
+    description: >
+      Applies optional developer settings: Developer Mode, sideloading,
+      and long path support. Only executes if user opted in during installation.
+
+    condition: user_selected_developer_setup
+    registry_section: registry-manifest.yaml#developer_optional
+
+    outputs:
+      - exit_code_0: "Developer settings applied (or skipped — not selected)"
+      - exit_code_1: "Registry write failed"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-10
+    name: write-manifest
+    file: scripts/write-manifest.ps1
+    phase: POST_INSTALL
+    sequence: 10
+    trigger: automatic
+    depends_on: [SCR-05, SCR-06, SCR-07, SCR-08]
+
+    description: >
+      Writes the ArizenOS installation manifest to ProgramData.
+      Records which features were applied, backup location, and version.
+      Used by the rollback script to verify installation state.
+
+    output_file: "%ProgramData%\ArizenOS\manifest.json"
+    schema_reference: "docs/specs/ArizenOS-v0.1-Product-Specification.md#appendix-a"
+
+    manifest_fields:
+      - product
+      - version
+      - installed_at        # ISO 8601 timestamp
+      - installed_by        # "AME Wizard"
+      - features_applied    # array — only features that actually succeeded
+      - features_failed     # array — features that errored (if any)
+      - backup_path
+      - rollback_available  # true/false
+      - rollback_version    # same as version
+
+    outputs:
+      - exit_code_0: "Manifest written"
+      - exit_code_1: "Manifest write failed — log warning (non-critical for user, critical for rollback)"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-11
+    name: register-rollback
+    file: scripts/register-rollback.ps1
+    phase: POST_INSTALL
+    sequence: 11
+    trigger: automatic
+    depends_on: [SCR-10]
+
+    description: >
+      Creates the ArizenOS Start Menu entry and Rollback shortcut.
+      Shortcut points to SCR-12 (rollback.ps1) with elevated execution.
+
+    shortcut:
+      target: "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe"
+      arguments: "-ExecutionPolicy Bypass -File "%ProgramData%\ArizenOS\scripts\rollback.ps1""
+      destination: "%ProgramData%\Microsoft\Windows\Start Menu\Programs\ArizenOS\Rollback ArizenOS.lnk"
+      icon: "%SystemRoot%\System32\shell32.dll,238"   # undo/restore icon
+      run_as_admin: true
+
+    outputs:
+      - exit_code_0: "Rollback shortcut created"
+      - exit_code_2: "Shortcut creation failed — log warning, installation still complete"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-12
+    name: finalize
+    file: scripts/finalize.ps1
+    phase: POST_INSTALL
+    sequence: 12
+    trigger: automatic
+    depends_on: [SCR-11]
+
+    description: >
+      Final step. Counts applied features, writes final log entry,
+      triggers AME Wizard completion screen with restart prompt.
+
+    actions:
+      - read manifest.json and count features_applied vs features_failed
+      - write final log entry: "ArizenOS v0.1.0 installation complete. N/23 features applied."
+      - signal AME Wizard: COMPLETE with restart_required=true
+
+    outputs:
+      - exit_code_0: "Installation complete"
+
+  # ───────────────────────────────────────────────────────────────────────────
+  - id: SCR-13
+    name: rollback
+    file: scripts/rollback.ps1
+    phase: ON_DEMAND
+    sequence: null   # not part of install sequence — invoked independently
+    trigger: manual   # user-initiated via Start Menu shortcut or AME Wizard
+
+    description: >
+      Full rollback of all ArizenOS changes.
+      Reads manifest.json to verify version, imports registry-backup.reg,
+      optionally removes deployed assets, optionally reverts developer settings.
+      Prompts user at each step. Ends with restart prompt.
+
+    inputs:
+      - name: Version
+        type: string
+        default: "0.1.0"
+      - name: Force
+        type: bool
+        default: false
+        note: "Skip version check — use only if manifest is missing or corrupt"
+
+    steps:
+      - step: 1
+        action: read_manifest
+        path: "%ProgramData%\ArizenOS\manifest.json"
+        failure_behavior: >
+          If manifest missing: warn user, offer to proceed with Force mode
+          or use Windows Restore Point instead.
+
+      - step: 2
+        action: verify_backup_exists
+        path: "%APPDATA%\ArizenOS\backup\registry-backup.reg"
+        failure_behavior: >
+          If backup missing: abort rollback, direct user to Windows Restore Point.
+          Do not attempt partial rollback.
+
+      - step: 3
+        action: confirm_user
+        prompt: "This will restore your system settings to their state before ArizenOS was installed. Continue? (Y/N)"
+        failure_behavior: exit_code_3   # user cancelled
+
+      - step: 4
+        action: import_registry_backup
+        source: "%APPDATA%\ArizenOS\backup\registry-backup.reg"
+        failure_behavior: >
+          If import fails: log error, advise user to manually import the .reg file
+          or use Windows Restore Point.
+
+      - step: 5
+        action: prompt_remove_assets
+        prompt: "Remove ArizenOS wallpapers and branding files from ProgramData? (Y/N)"
+        if_yes:
+          - delete: "%ProgramData%\ArizenOS\"
+          - note: "Removes entire ArizenOS ProgramData tree"
+        if_no:
+          - note: "Files remain — harmless if registry no longer references them"
+
+      - step: 6
+        action: revert_developer_optional
+        condition: features_applied contains developer_setup
+        prompt: "Revert Developer Mode and Long Path settings? (Y/N)"
+        registry_section: registry-manifest.yaml#developer_optional
+        if_yes: restore rollback_data values from registry manifest
+
+      - step: 7
+        action: cleanup
+        actions:
+          - remove rollback shortcut: "%ProgramData%\Microsoft\Windows\Start Menu\Programs\ArizenOS\"
+          - delete backup directory: "%APPDATA%\ArizenOS\backup\"
+          - write rollback log to: "%APPDATA%\ArizenOS\logs\rollback.log"
+
+      - step: 8
+        action: prompt_restart
+        prompt: "Rollback complete. A restart is required. Restart now? (Y/N)"
+
+    outputs:
+      - exit_code_0: "Rollback complete"
+      - exit_code_1: "Rollback failed — see log"
+      - exit_code_3: "User cancelled"
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# EXECUTION ORDER SUMMARY
+# ═══════════════════════════════════════════════════════════════════════════════
+execution_order:
+  install:
+    - SCR-01   # preflight-check
+    - SCR-02   # create-restore-point
+    - SCR-03   # backup-registry
+    - SCR-04   # deploy-assets
+    - SCR-05   # apply-oem-branding
+    - SCR-06   # apply-wallpaper
+    - SCR-07   # apply-theme
+    - SCR-08   # apply-performance
+    - SCR-09   # apply-developer (conditional)
+    - SCR-10   # write-manifest
+    - SCR-11   # register-rollback
+    - SCR-12   # finalize
+  on_demand:
+    - SCR-13   # rollback
