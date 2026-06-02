@@ -4,10 +4,10 @@
 .DESCRIPTION
     Assembles ArizenOS.apbx per the APBX Assembly Specification.
     Stages the correct folder structure into a temp directory, then packages
-    as an AES-256 encrypted ZIP (password: malte) required by AME Wizard.
+    as a ZipCrypto (PKZIP 2.0) encrypted ZIP (password: malte) required by AME Wizard.
 
     APBX Structure:
-      playbook.yaml           <- root (from repo root)
+      playbook.conf           <- root (AME Wizard Beta entry point)
       entries/                <- from playbook/entries/
       scripts/                <- SCR-01..SCR-13 only
       assets/logos/           <- arizenOS_logo_oem.bmp only (per spec)
@@ -15,12 +15,12 @@
       manifests/              <- from playbook/manifests/ (reference only)
 
     ENCRYPTION:
-      AME Wizard requires AES-256 encryption with password "malte".
+      AME Wizard requires ZipCrypto (PKZIP 2.0) encryption with password "malte".
       System.IO.Compression.ZipFile does NOT support password encryption.
       This script uses 7-Zip (7z.exe). Install 7-Zip before running:
         https://www.7-zip.org/
 
-.VERSION 4.0.0
+.VERSION 5.0.0
 #>
 
 $ErrorActionPreference = "Stop"
@@ -55,7 +55,7 @@ if (-not $7z) {
 7-Zip not found. Install 7-Zip and re-run:
   https://www.7-zip.org/
   winget install 7zip.7zip
-AME Wizard requires AES-256 encryption -- System.IO.Compression cannot do this.
+AME Wizard requires ZipCrypto -- use 7-Zip with -mem=ZipCrypto (NOT -mem=AES256).
 "@
 }
 Write-OK "7-Zip: $7z"
@@ -123,8 +123,8 @@ $null = New-Item -ItemType Directory -Force -Path "$StagingDir\assets\wallpapers
 $null = New-Item -ItemType Directory -Force -Path "$StagingDir\manifests"
 
 # Root playbook.yaml
-Copy-Item "$RepoRoot\playbook.yaml" "$StagingDir\playbook.yaml" -Force
-Write-OK "Staged: playbook.yaml"
+Copy-Item "$RepoRoot\playbook.yaml" "$StagingDir\playbook.conf" -Force
+Write-OK "Staged: playbook.conf  (renamed from playbook.yaml for AME Wizard Beta)"
 
 # Entries (playbook/entries/ -> entries/)
 Get-ChildItem "$RepoRoot\playbook\entries\*.yaml" | ForEach-Object {
@@ -173,16 +173,16 @@ Get-ChildItem "$StagingDir\assets" -Recurse -File | ForEach-Object {
 }
 
 # ── [4/5] Package with AES-256 Encryption (password: malte) ──────────────────
-Write-Host "`n[4/5] Packaging APBX with AES-256 encryption..." -ForegroundColor White
+Write-Host "`n[4/5] Packaging APBX with ZipCrypto encryption..." -ForegroundColor White
 Write-Host "  Password : malte  (required by AME Wizard -- do not change)" -ForegroundColor Yellow
-Write-Host "  Method   : AES-256 (WinZip method 99)" -ForegroundColor Gray
+Write-Host "  Method   : ZipCrypto (PKZIP 2.0, method 8)" -ForegroundColor Gray
 Write-Host "  Tool     : $7z" -ForegroundColor Gray
 
 if (Test-Path $TempZip) { Remove-Item $TempZip -Force }
 if (Test-Path $OutApbx) { Remove-Item $OutApbx -Force }
 
 Push-Location $StagingDir
-& $7z a -tzip -p"malte" -mem=AES256 $TempZip "." | Out-Null
+& $7z a -tzip -p"malte" -mem=ZipCrypto $TempZip "." | Out-Null
 $exitCode = $LASTEXITCODE
 Pop-Location
 
@@ -211,7 +211,7 @@ if ($testNoPass -match "Wrong password|Cannot open encrypted") {
 $listResult = & $7z l -p"malte" $OutApbx 2>&1 | Out-String
 
 $checks = @(
-    "playbook.yaml",
+    "playbook.conf",
     "entries/01-preflight.yaml",
     "entries/rollback.yaml",
     "scripts/preflight-check.ps1",
@@ -230,7 +230,7 @@ Remove-Item $StagingDir -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "`n  ╔══════════════════════════════════════════╗" -ForegroundColor Green
 Write-Host "  ║  BUILD COMPLETE                          ║" -ForegroundColor Green
 Write-Host "  ║  Output  : ArizenOS.apbx                ║" -ForegroundColor Green
-Write-Host "  ║  Encrypt : AES-256  password = malte    ║" -ForegroundColor Green
+Write-Host "  ║  Encrypt : ZipCrypto  password = malte  ║" -ForegroundColor Green
 Write-Host "  ║  Size    : $sizeMB MB$((' ' * (27 - "$sizeMB MB".Length)))║" -ForegroundColor Green
 Write-Host "  ╚══════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host "`n  Test: AME Wizard > Open Playbook > ArizenOS.apbx" -ForegroundColor Cyan
