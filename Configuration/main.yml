@@ -1,0 +1,25 @@
+title: ArizenOS
+actions:
+  - !status: {status: 'Creating system restore point...'}
+  - !task: {path: 'Tasks\01-restore-point.yml', option: 'restore-point'}
+
+  - !status: {status: 'Applying ArizenOS OEM branding...'}
+  - !task: {path: 'Tasks\02-oem-branding.yml', option: 'oem-branding'}
+
+  - !status: {status: 'Applying dark theme & accent color...'}
+  - !task: {path: 'Tasks\03-dark-theme.yml'}
+
+  - !status: {status: 'Enabling transparency & acrylic effects...'}
+  - !task: {path: 'Tasks\04-transparency.yml'}
+
+  - !status: {status: 'Removing telemetry & bloatware...'}
+  - !task: {path: 'Tasks\05-debloat.yml'}
+
+  - !status: {status: 'Deploying ArizenOS wallpapers...'}
+  - !task: {path: 'Tasks\06-wallpaper.yml', option: 'wallpaper'}
+
+  - !status: {status: 'Setting up developer environment...'}
+  - !task: {path: 'Tasks\07-developer.yml', option: 'developer-mode'}
+
+  - !status: {status: 'Finalizing installation...'}
+  - !task: {path: 'Tasks\08-finalize.yml'}
