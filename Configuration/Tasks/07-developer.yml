@@ -1,24 +1,19 @@
 title: Developer Environment Setup
-tasks:
+actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock', value: 'AllowDevelopmentWithoutDevLicense', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', value: 'HideFileExt', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', value: 'Hidden', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\FileSystem', value: 'LongPathsEnabled', type: REG_DWORD, data: '1'}
-
   - !powerShell:
       command: >-
         Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -ErrorAction SilentlyContinue
-
   - !powerShell:
       command: >-
         Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -NoRestart -ErrorAction SilentlyContinue
-
   - !service: {name: 'WSearch', operation: change, startup: Manual}
   - !service: {name: 'WSearch', operation: stop}
-
   - !run:
       exe: 'powershell.exe'
       args: '-ExecutionPolicy Bypass -File "Executables\developer-setup.ps1"'
-
   - !powerShell:
       command: 'wsl --set-default-version 2 2>$null'
