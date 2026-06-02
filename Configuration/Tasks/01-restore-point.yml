@@ -1,5 +1,5 @@
 title: Create System Restore Point
-actions:
+tasks:
   - !powerShell:
       command: >-
         Enable-ComputerRestore -Drive "$env:SystemDrive" -ErrorAction SilentlyContinue;
