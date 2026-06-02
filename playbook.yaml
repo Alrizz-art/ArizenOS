@@ -12,7 +12,7 @@ details: |
 
   Supports: Windows 10 (22H2+) | Windows 11 (22H2, 23H2, 24H2)
 
-version: "2.0.0"
+version: "0.1.0"
 minWindowsBuild: 19045
 updateWeight: 2
 
@@ -21,9 +21,9 @@ configuration:
     description: "Choose your Windows edition target."
     options:
       - name: Windows 10 (22H2+)
-        image: assets/logos/arizenOS_w10.png
+        image: assets/logos/arizenOS_logo_oem.bmp
       - name: Windows 11 (22H2+)
-        image: assets/logos/arizenOS_w11.png
+        image: assets/logos/arizenOS_logo_oem.bmp
 
   - name: DeveloperMode
     description: "Enable full developer environment setup (WSL2, WinGet, Git, VS Code, Node.js)."
@@ -63,11 +63,13 @@ requirements:
     type: optional
 
 entries:
-  - !include: entries/restore-point.yaml
-  - !include: entries/oem-branding.yaml
-  - !include: entries/dark-theme.yaml
-  - !include: entries/transparency.yaml
-  - !include: entries/debloat.yaml
-  - !include: entries/wallpaper.yaml
-  - !include: entries/developer-setup.yaml
-  - !include: entries/final-cleanup.yaml
+  - !include: entries/01-preflight.yaml
+  - !include: entries/02-safety-net.yaml
+  - !include: entries/03-asset-deploy.yaml
+  - !include: entries/04-oem-branding.yaml
+  - !include: entries/05-lock-screen.yaml
+  - !include: entries/06-theme.yaml
+  - !include: entries/07-transparency.yaml
+  - !include: entries/08-performance.yaml
+  - !include: entries/09-developer.yaml
+  - !include: entries/10-finalize.yaml
