@@ -1,5 +1,5 @@
 title: Finalize and Cleanup
-actions:
+tasks:
   # ── Performance Registry ──────────────────────────────────────────
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\FileSystem', value: 'NtfsDisableLastAccessUpdate', type: REG_DWORD, data: '2147483651'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile', value: 'NetworkThrottlingIndex', type: REG_DWORD, data: '4294967295'}
