@@ -5,15 +5,19 @@ actions:
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced', value: 'Hidden', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKLM\SYSTEM\CurrentControlSet\Control\FileSystem', value: 'LongPathsEnabled', type: REG_DWORD, data: '1'}
   - !powerShell:
+      wait: true
       command: >-
-        Enable-WindowsOptionalFeature -Online -FeatureName "Microsoft-Windows-Subsystem-Linux" -NoRestart -ErrorAction SilentlyContinue
+        Enable-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Windows-Subsystem-Linux' -NoRestart -ErrorAction SilentlyContinue
   - !powerShell:
+      wait: true
       command: >-
-        Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -NoRestart -ErrorAction SilentlyContinue
+        Enable-WindowsOptionalFeature -Online -FeatureName 'VirtualMachinePlatform' -NoRestart -ErrorAction SilentlyContinue
   - !service: {name: 'WSearch', operation: change, startup: 3}
   - !service: {name: 'WSearch', operation: stop}
-  - !run:
-      exe: 'powershell.exe'
-      args: '-ExecutionPolicy Bypass -File "Executables\developer-setup.ps1"'
   - !powerShell:
-      command: 'wsl --set-default-version 2 2>$null'
+      exeDir: true
+      wait: true
+      command: '& ".\Executables\developer-setup.ps1"'
+  - !powerShell:
+      wait: true
+      command: 'wsl --set-default-version 2 2>$null; exit 0'
