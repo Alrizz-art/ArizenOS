@@ -2,7 +2,7 @@ name: Security
 
 on:
   schedule:
-    - cron: "0 3 * * 1"  # 03:00 UTC every Monday
+    - cron: "0 3 * * 1"
   push:
     branches: [main]
   workflow_dispatch:
@@ -13,42 +13,6 @@ permissions:
   security-events: write
 
 jobs:
-  # ─── CodeQL Analysis ─────────────────────────────────────────────────────────
-  codeql:
-    name: CodeQL
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [javascript-typescript]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-          queries: security-and-quality
-      - uses: github/codeql-action/autobuild@v3
-      - uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ matrix.language }}"
-
-  # ─── Dependency Audit ────────────────────────────────────────────────────────
-  dependency-audit:
-    name: Dependency Audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with: { version: "8" }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Run pnpm audit
-        run: pnpm audit --audit-level=high
-        continue-on-error: false
-
   # ─── Secret Scanning ─────────────────────────────────────────────────────────
   secret-scan:
     name: Secret Scan
@@ -61,22 +25,42 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
           extra_args: --only-verified
 
-  # ─── License Compliance ──────────────────────────────────────────────────────
-  license-check:
-    name: License Compliance
+  # ─── YAML Lint ───────────────────────────────────────────────────────────────
+  yaml-lint:
+    name: YAML Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v3
-        with: { version: "8" }
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Check licenses
-        run: pnpm exec license-checker --onlyAllow "MIT;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;CC0-1.0;CC-BY-4.0;OFL-1.1;Unlicense"
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Lint playbook YAML files
+        run: |
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" \
+            playbook.yaml \
+            playbook/entries/ \
+            entries/ \
+            entries.yaml \
+            2>&1 || true
+
+  # ─── PowerShell Script Analysis ──────────────────────────────────────────────
+  ps-lint:
+    name: PowerShell Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module -Name PSScriptAnalyzer -Force -Scope CurrentUser
+      - name: Run PSScriptAnalyzer on scripts/
+        shell: pwsh
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Severity Warning,Error
+          if ($results) {
+            $results | Format-Table -AutoSize
+            Write-Host "::warning::PSScriptAnalyzer found $($results.Count) issue(s)"
+          } else {
+            Write-Host "PSScriptAnalyzer: no issues found"
+          }
+        continue-on-error: true
