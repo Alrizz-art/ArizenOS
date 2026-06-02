@@ -13,14 +13,14 @@ actions:
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\System', value: 'PublishUserActivities', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config', value: 'AutoConnectAllowedOEM', type: REG_DWORD, data: '0'}
   # ── Telemetry Services ────────────────────────────────────────────
-  - !service: {name: 'DiagTrack', operation: change, startup: Disabled}
+  - !service: {name: 'DiagTrack', operation: change, startup: 4}
   - !service: {name: 'DiagTrack', operation: stop}
-  - !service: {name: 'dmwappushservice', operation: change, startup: Disabled}
+  - !service: {name: 'dmwappushservice', operation: change, startup: 4}
   - !service: {name: 'dmwappushservice', operation: stop}
-  - !service: {name: 'WerSvc', operation: change, startup: Manual}
-  - !service: {name: 'RetailDemo', operation: change, startup: Disabled}
-  - !service: {name: 'MapsBroker', operation: change, startup: Disabled}
-  - !service: {name: 'RemoteRegistry', operation: change, startup: Disabled}
+  - !service: {name: 'WerSvc', operation: change, startup: 3}
+  - !service: {name: 'RetailDemo', operation: change, startup: 4}
+  - !service: {name: 'MapsBroker', operation: change, startup: 4}
+  - !service: {name: 'RemoteRegistry', operation: change, startup: 4}
   # ── Scheduled Tasks ───────────────────────────────────────────────
   - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser', operation: disable}
   - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\ProgramDataUpdater', operation: disable}
