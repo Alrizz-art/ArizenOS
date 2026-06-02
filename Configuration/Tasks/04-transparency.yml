@@ -1,5 +1,5 @@
 title: Enable Transparency and Acrylic Effects
-actions:
+tasks:
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'EnableTransparency', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'EnableBlurBehind', type: REG_DWORD, data: '1'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\DWM', value: 'Composition', type: REG_DWORD, data: '1'}
