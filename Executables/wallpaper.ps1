@@ -5,7 +5,7 @@
 .DESCRIPTION
     Deploys ArizenOS branded wallpapers to system directory and sets
     the active wallpaper for current user. Also configures lock screen.
-.VERSION 2.0.0
+.VERSION 2.1.0
 #>
 
 Add-Type -TypeDefinition @"
@@ -20,8 +20,9 @@ public class WallpaperHelper {
 }
 "@
 
-$WallpaperSrc  = "$PSScriptRoot\..\assets\wallpapers"
-$WallpaperDst  = "$env:SystemDrive\ArizenOS\Wallpapers"
+# PSScriptRoot = Executables\ so assets are at Executables\assets\wallpapers
+$WallpaperSrc  = "$PSScriptRoot\assets\wallpapers"
+$WallpaperDst  = "C:\ArizenOS\Wallpapers"
 $DefaultWall   = "$WallpaperDst\arizenOS_default.jpg"
 
 New-Item -ItemType Directory -Force -Path $WallpaperDst | Out-Null
@@ -34,23 +35,30 @@ if (Test-Path $WallpaperSrc) {
 }
 
 if (Test-Path $DefaultWall) {
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name Wallpaper -Value $DefaultWall
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "10"  # Fill
-    Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name TileWallpaper -Value "0"
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name Wallpaper -Value $DefaultWall
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10'
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0'
     [WallpaperHelper]::SystemParametersInfo(
         [WallpaperHelper]::SPI_SETDESKWALLPAPER, 0, $DefaultWall,
         [WallpaperHelper]::SPIF_UPDATEINIFILE -bor [WallpaperHelper]::SPIF_SENDCHANGE
     ) | Out-Null
     Write-Host "[OK] Wallpaper set: $DefaultWall"
+} else {
+    Write-Host "[WARN] Default wallpaper not found at: $DefaultWall"
 }
 
+# Disable Windows Spotlight on lock screen
+$cdmPath = 'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'
+Set-ItemProperty -Path $cdmPath -Name 'RotatingLockScreenEnabled' -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+Set-ItemProperty -Path $cdmPath -Name 'RotatingLockScreenOverlayEnabled' -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+
 # Lock Screen via Group Policy
-$LockScreenKey = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization"
+$LockScreenKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization'
 New-Item -Path $LockScreenKey -Force | Out-Null
 $LockImg = "$WallpaperDst\arizenOS_lockscreen.jpg"
 if (Test-Path $LockImg) {
-    Set-ItemProperty -Path $LockScreenKey -Name "LockScreenImage" -Value $LockImg -Type String -Force
-    Set-ItemProperty -Path $LockScreenKey -Name "LockScreenOverlaysDisabled" -Value 1 -Type DWord -Force
+    Set-ItemProperty -Path $LockScreenKey -Name 'LockScreenImage' -Value $LockImg -Type String -Force
+    Set-ItemProperty -Path $LockScreenKey -Name 'LockScreenOverlaysDisabled' -Value 1 -Type DWord -Force
     Write-Host "[OK] Lock screen set: $LockImg"
 }
 
