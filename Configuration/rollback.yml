@@ -1,7 +1,7 @@
 ---
 title: Rollback
 description: Restore system to pre-ArizenOS state
-actions:
+tasks:
   - !writeStatus: {status: 'ArizenOS — Running rollback...'}
   - !powerShell:
       command: '.\scripts\rollback.ps1'
