@@ -1,0 +1,69 @@
+title: Remove Telemetry and Bloatware
+actions:
+  # ── Telemetry Registry Policies ──────────────────────────────────
+  - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection', value: 'MaxTelemetryAllowed', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo', value: 'DisabledByGroupPolicy', type: REG_DWORD, data: '1'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy', value: 'TailoredExperiencesWithDiagnosticDataEnabled', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\InputPersonalization', value: 'RestrictImplicitInkCollection', type: REG_DWORD, data: '1'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\InputPersonalization', value: 'RestrictImplicitTextCollection', type: REG_DWORD, data: '1'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search', value: 'AllowCortana', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\System', value: 'EnableActivityFeed', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\System', value: 'PublishUserActivities', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config', value: 'AutoConnectAllowedOEM', type: REG_DWORD, data: '0'}
+
+  # ── Telemetry Services ────────────────────────────────────────────
+  - !service: {name: 'DiagTrack', operation: change, startup: Disabled}
+  - !service: {name: 'DiagTrack', operation: stop}
+  - !service: {name: 'dmwappushservice', operation: change, startup: Disabled}
+  - !service: {name: 'dmwappushservice', operation: stop}
+  - !service: {name: 'WerSvc', operation: change, startup: Manual}
+  - !service: {name: 'RetailDemo', operation: change, startup: Disabled}
+  - !service: {name: 'MapsBroker', operation: change, startup: Disabled}
+  - !service: {name: 'RemoteRegistry', operation: change, startup: Disabled}
+
+  # ── Scheduled Tasks ───────────────────────────────────────────────
+  - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser', operation: disable}
+  - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\ProgramDataUpdater', operation: disable}
+  - !scheduledTask: {path: '\Microsoft\Windows\Customer Experience Improvement Program\Consolidator', operation: disable}
+  - !scheduledTask: {path: '\Microsoft\Windows\Customer Experience Improvement Program\UsbCeip', operation: disable}
+  - !scheduledTask: {path: '\Microsoft\Windows\Feedback\Siuf\DmClient', operation: disable}
+  - !scheduledTask: {path: '\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload', operation: disable}
+  - !scheduledTask: {path: '\Microsoft\Windows\Windows Error Reporting\QueueReporting', operation: disable}
+
+  # ── AppX Removal (Safe Level) ─────────────────────────────────────
+  - !appx: {operation: remove, name: '*Microsoft.BingNews*'}
+  - !appx: {operation: remove, name: '*Microsoft.BingWeather*'}
+  - !appx: {operation: remove, name: '*Microsoft.BingFinance*'}
+  - !appx: {operation: remove, name: '*Microsoft.WindowsFeedbackHub*'}
+  - !appx: {operation: remove, name: '*Microsoft.WindowsMaps*'}
+  - !appx: {operation: remove, name: '*Microsoft.ZuneMusic*'}
+  - !appx: {operation: remove, name: '*Microsoft.ZuneVideo*'}
+  - !appx: {operation: remove, name: '*Microsoft.MixedReality.Portal*'}
+  - !appx: {operation: remove, name: '*Microsoft.GetHelp*'}
+  - !appx: {operation: remove, name: '*Microsoft.Getstarted*'}
+  - !appx: {operation: remove, name: '*Microsoft.YourPhone*'}
+  - !appx: {operation: remove, name: '*MicrosoftTeams*'}
+  - !appx: {operation: remove, name: '*Clipchamp.Clipchamp*'}
+  - !appx: {operation: remove, name: '*Microsoft.549981C3F5F10*'}
+  - !appx: {operation: remove, name: '*Microsoft.3DBuilder*'}
+  - !appx: {operation: remove, name: '*Microsoft.Print3D*'}
+  - !appx: {operation: remove, name: '*Microsoft.MicrosoftSolitaireCollection*'}
+  - !appx: {operation: remove, name: '*king.com.CandyCrushSaga*'}
+  - !appx: {operation: remove, name: '*king.com.CandyCrushFriends*'}
+  - !appx: {operation: remove, name: '*Facebook.Facebook*'}
+  - !appx: {operation: remove, name: '*Microsoft.Xbox.TCUI*'}
+  - !appx: {operation: remove, name: '*Microsoft.XboxApp*'}
+  - !appx: {operation: remove, name: '*Microsoft.XboxGameOverlay*'}
+  - !appx: {operation: remove, name: '*Microsoft.XboxGamingOverlay*'}
+  - !appx: {operation: remove, name: '*Microsoft.XboxIdentityProvider*'}
+  - !appx: {operation: remove, name: '*Microsoft.SkypeApp*'}
+  - !appx: {operation: remove, name: '*Microsoft.Todos*'}
+  - !appx: {operation: remove, name: '*Microsoft.MicrosoftOfficeHub*'}
+  - !appx: {operation: remove, name: '*Microsoft.OutlookForWindows*'}
+
+  # ── Clear AppX Cache ──────────────────────────────────────────────
+  - !appx: {operation: clearCache, name: '*Client.CBS*'}
+  - !appx: {operation: clearCache, name: '*StartMenuExperienceHost*'}
+  - !appx: {operation: clearCache, name: '*Windows.Search*'}
