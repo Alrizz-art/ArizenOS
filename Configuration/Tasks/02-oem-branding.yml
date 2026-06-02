@@ -1,8 +1,9 @@
 title: Apply ArizenOS OEM Branding
 actions:
-  - !run:
-      exe: 'powershell.exe'
-      args: '-ExecutionPolicy Bypass -File "Executables\oem-branding.ps1"'
+  - !powerShell:
+      exeDir: true
+      wait: true
+      command: '& ".\Executables\oem-branding.ps1"'
 
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation', value: 'Manufacturer', type: REG_SZ, data: 'ArizenOS Project'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation', value: 'Model', type: REG_SZ, data: 'ArizenOS Edition'}
