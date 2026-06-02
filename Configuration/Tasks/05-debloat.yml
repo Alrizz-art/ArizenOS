@@ -17,6 +17,7 @@ actions:
   - !registryValue: {path: 'HKCU\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot', value: 'TurnOffWindowsCopilot', type: REG_DWORD, data: '1'}
   # ── Disable Windows Spotlight / Lock Screen Ads ──────────────────
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', value: 'RotatingLockScreenEnabled', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', value: 'RotatingLockScreenOverlayEnabled', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', value: 'SubscribedContent-338393Enabled', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', value: 'SubscribedContent-353694Enabled', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager', value: 'SubscribedContent-353696Enabled', type: REG_DWORD, data: '0'}
@@ -44,6 +45,17 @@ actions:
   - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\StartupAppTask', operation: disable}
   - !scheduledTask: {path: '\Microsoft\Windows\CloudExperienceHost\CreateObjectTask', operation: disable}
   - !scheduledTask: {path: '\Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector', operation: disable}
+  # ── Remove OneDrive ───────────────────────────────────────────────
+  - !powerShell:
+      wait: true
+      command: >-
+        Stop-Process -Name OneDrive -Force -ErrorAction SilentlyContinue;
+        Start-Sleep -Seconds 1;
+        $u1 = "$env:SystemRoot\SysWOW64\OneDriveSetup.exe";
+        $u2 = "$env:SystemRoot\System32\OneDriveSetup.exe";
+        if (Test-Path $u1) { & $u1 /uninstall 2>$null } elseif (Test-Path $u2) { & $u2 /uninstall 2>$null };
+        Remove-Item "$env:USERPROFILE\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue;
+        Remove-Item "$env:LOCALAPPDATA\Microsoft\OneDrive" -Recurse -Force -ErrorAction SilentlyContinue
   # ── AppX Removal ─────────────────────────────────────────────────
   # Advertising / Junk
   - !appx: {operation: remove, name: '*Microsoft.BingNews*'}
@@ -65,6 +77,7 @@ actions:
   - !appx: {operation: remove, name: '*Clipchamp.Clipchamp*'}
   # Social
   - !appx: {operation: remove, name: '*Microsoft.LinkedIn*'}
+  - !appx: {operation: remove, name: '*LinkedIn*'}
   - !appx: {operation: remove, name: '*Microsoft.SkypeApp*'}
   - !appx: {operation: remove, name: '*MicrosoftTeams*'}
   - !appx: {operation: remove, name: '*Microsoft.YourPhone*'}
@@ -77,6 +90,7 @@ actions:
   - !appx: {operation: remove, name: '*Microsoft.XboxSpeechToTextOverlay*'}
   # Productivity bloat
   - !appx: {operation: remove, name: '*Microsoft.Todos*'}
+  - !appx: {operation: remove, name: '*Microsoft.MicrosoftToDo*'}
   - !appx: {operation: remove, name: '*Microsoft.MicrosoftOfficeHub*'}
   - !appx: {operation: remove, name: '*Microsoft.OutlookForWindows*'}
   - !appx: {operation: remove, name: '*Microsoft.GetHelp*'}
@@ -87,12 +101,15 @@ actions:
   - !appx: {operation: remove, name: '*Microsoft.3DBuilder*'}
   - !appx: {operation: remove, name: '*Microsoft.Print3D*'}
   - !appx: {operation: remove, name: '*Microsoft.Microsoft3DViewer*'}
+  - !appx: {operation: remove, name: '*Microsoft.MSPaint*'}
   - !appx: {operation: remove, name: '*Microsoft.MicrosoftStickyNotes*'}
   - !appx: {operation: remove, name: '*Microsoft.Alarms*'}
   - !appx: {operation: remove, name: '*Microsoft.WindowsAlarms*'}
   - !appx: {operation: remove, name: '*Microsoft.WindowsCamera*'}
   - !appx: {operation: remove, name: '*Microsoft.Office.OneNote*'}
   - !appx: {operation: remove, name: '*Microsoft.OneConnect*'}
+  - !appx: {operation: remove, name: '*Microsoft.Windows.Photos*'}
+  - !appx: {operation: remove, name: '*Microsoft.OneDriveSync*'}
   # ── Clear AppX Cache ──────────────────────────────────────────────
   - !appx: {operation: clearCache, name: '*Client.CBS*'}
   - !appx: {operation: clearCache, name: '*StartMenuExperienceHost*'}
