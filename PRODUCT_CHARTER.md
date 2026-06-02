@@ -4,7 +4,26 @@
 
 ---
 
+## Repository Scope
+
+This repository contains **two domains**:
+
+1. **ArizenOS Platform** *(Primary Product)* — An AI-first desktop experience layer for Windows 10 and Windows 11. This is what ships to users.
+2. **ArizenOS Kernel Research** *(Experimental)* — A bare-metal x86_64 OS prototype in early research. Located at `research/kernel/`. Not yet a shipping product.
+
+This charter governs the **primary product**. For kernel research governance, see [GOVERNANCE.md](GOVERNANCE.md) and [ADR-0004](docs/architecture/ADR-0004-kernel-research-strategy.md).
+
+---
+
 ## 1. Vision
+
+We believe the personal computer is the most powerful tool humanity has ever created — and that it has been criminally under-reimagined for the last two decades.
+
+Windows is infrastructure. It is stable, ubiquitous, and deeply entrenched. But it was designed for a world that no longer exists — a world before AI, before ambient computing, before the expectation that software should think alongside you, not just execute your commands.
+
+**ArizenOS is the experience layer Windows was never built to be.**
+
+We envision a future where your desktop is not a file cabinet — it is a collaborator. Where the interface disappears when you don't need it and surfaces exactly what you do. Where glass, light, and intelligence are not aesthetic choices but functional ones. Where the gap between intention and action collapses to zero.
 
 We believe the personal computer is the most powerful tool humanity has ever created — and that it has been criminally under-reimagined for the last two decades.
 

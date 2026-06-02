@@ -1,171 +1,49 @@
 <div align="center">
+  <img src="assets/logos/arizenOS_logo_dark.png" alt="ArizenOS Logo" width="200" />
 
-<br/>
+  <h1>ArizenOS</h1>
+  <p><em>"The desktop, reimagined for the age of intelligence."</em></p>
 
-```
-    ___         _                    ___  _____
-   / _ \  _ __ (_) ____ ___  _ __  / _ \/ ___|
-  / /_\ \| '__|| ||_  // _ \| '_ \| | | \___ \
- / /   \ | |   | | / /|  __/| | | | |_| |___) |
-/_/     \_|_|  |_|/_/  \___||_| |_|\___/|____/
-```
-
-**A Modern, Open-Source Operating System Built from Scratch**
-
-<br/>
-
-[![Build Status](https://github.com/Alrizz-art/ArizenOS/actions/workflows/ci.yml/badge.svg)](https://github.com/Alrizz-art/ArizenOS/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/Alrizz-art/ArizenOS?include_prereleases&color=blue)](https://github.com/Alrizz-art/ArizenOS/releases)
-[![License](https://img.shields.io/github/license/Alrizz-art/ArizenOS?color=green)](LICENSE)
-[![Issues](https://img.shields.io/github/issues/Alrizz-art/ArizenOS)](https://github.com/Alrizz-art/ArizenOS/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Milestone](https://img.shields.io/badge/milestone-v0.1.0_Foundation-orange)](https://github.com/Alrizz-art/ArizenOS/milestones)
-[![Architecture](https://img.shields.io/badge/arch-x86__64-lightgrey)](docs/architecture/overview.md)
-[![Conventional Commits](https://img.shields.io/badge/commits-conventional-fe5196)](https://www.conventionalcommits.org)
-
-<br/>
-
-[📖 Documentation](docs/) · [🐛 Report Bug](https://github.com/Alrizz-art/ArizenOS/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/Alrizz-art/ArizenOS/issues/new?template=feature_request.md) · [🔒 Security Policy](SECURITY.md) · [💬 Discussions](https://github.com/Alrizz-art/ArizenOS/discussions)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+  [![GitHub Stars](https://img.shields.io/github/stars/Alrizz-art/ArizenOS?style=social)](https://github.com/Alrizz-art/ArizenOS/stargazers)
+  [![GitHub Issues](https://img.shields.io/github/issues/Alrizz-art/ArizenOS)](https://github.com/Alrizz-art/ArizenOS/issues)
 
 </div>
 
 ---
 
-## Overview
+## What is ArizenOS?
 
-**ArizenOS** is an open-source, x86_64 operating system built entirely from scratch — designed for learning, research, and eventually real-world use. It is engineered with clarity, correctness, and international open-source standards at its core.
+**ArizenOS** is an AI-first desktop experience platform for **Windows 10 and Windows 11**.
 
-> *"An operating system built not just to run, but to be understood."*
-
-### Goals
-
-- **Correctness over speed** — every design decision is documented and justified
-- **Minimal dependencies** — custom implementations over third-party code where practical
-- **Open development** — all design decisions happen in the open via issues and discussions
-- **POSIX-compatible** where it makes sense — familiar syscall interface from day one
+It is not a new operating system — it is the experience layer Windows was never built to be. ArizenOS sits on top of Windows and transforms the desktop into an intelligent, fluid, glass-rendered workspace where AI is a first-class citizen.
 
 ---
 
-## Current Status
+## Primary Product
 
-> ⚠️ **ArizenOS is in early development (pre-alpha).** It does not yet boot a full userspace. See the [roadmap](#roadmap) for what's planned.
+ArizenOS ships as a suite of integrated Windows applications:
 
-| Component       | Status         | Milestone       |
-|-----------------|----------------|-----------------|
-| Build System    | 🔨 In Progress | v0.1.0          |
-| Bootloader      | 🔨 In Progress | v0.1.0          |
-| Kernel Entry    | 🔨 In Progress | v0.1.0          |
-| Memory Manager  | 📋 Planned     | v0.2.0          |
-| Process Sched.  | 📋 Planned     | v0.3.0          |
-| Syscall Layer   | 📋 Planned     | v0.3.0          |
-| Network Stack   | 📋 Planned     | v0.4.0          |
-| Shell           | 📋 Planned     | v0.3.0          |
+| Component | Description |
+|---|---|
+| **Launcher** | AI-powered application launcher and command palette |
+| **Assistant** | Conversational AI assistant with full desktop context |
+| **Voice** | Voice-activated desktop control |
+| **Agent** | Autonomous task agent with tool access |
+| **Hub** | Extension manager and integration center |
 
----
+### Platform Roadmap
 
-## Architecture
-
-ArizenOS targets **x86_64** (64-bit) and is designed as a **monolithic kernel** with modular subsystems.
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         USERSPACE                               │
-│   [ Shell ]  [ Init ]  [ Utilities ]  [ Future Applications ]  │
-├─────────────────────────────────────────────────────────────────┤
-│                    SYSCALL INTERFACE                             │
-├──────────────┬──────────────┬───────────────┬───────────────────┤
-│   SCHEDULER  │    MEMORY    │  FILESYSTEM   │    NETWORKING     │
-│  (Round-Rob) │  (Paging +   │  (VFS + ext2/ │  (TCP/IP Stack)  │
-│              │   Heap Alloc)│   tmpfs)      │                  │
-├──────────────┴──────────────┴───────────────┴───────────────────┤
-│                      KERNEL CORE                                 │
-│     [ GDT/IDT ]  [ IRQ Routing ]  [ Timer ]  [ Syscall Disp ] │
-├─────────────────────────────────────────────────────────────────┤
-│                        DRIVERS                                   │
-│    [ VGA/Framebuffer ]  [ PS/2 Keyboard ]  [ AHCI ]  [ NVMe ] │
-├─────────────────────────────────────────────────────────────────┤
-│                       BOOTLOADER                                 │
-│          [ BIOS Stage 1 → Stage 2 → Long Mode → Kernel ]       │
-└─────────────────────────────────────────────────────────────────┘
-                         HARDWARE (x86_64)
-```
-
-See [Architecture Overview](docs/architecture/overview.md) for the full design document.
-
----
-
-## Roadmap
-
-| Milestone | Version | Target | Description |
-|-----------|---------|--------|-------------|
-| Foundation | `v0.1.0` | Jul 2026 | Build system, bootloader, kernel entry, VGA output |
-| Core Systems | `v0.2.0` | Sep 2026 | Paging, heap allocator, IRQ handling, keyboard driver |
-| Userspace Alpha | `v0.3.0` | Nov 2026 | Scheduler, syscalls, ELF loader, basic shell |
-| Networking & Storage | `v0.4.0` | Jan 2027 | NVMe/AHCI, TCP/IP stack, persistent filesystem |
-| Beta | `v0.5.0` | Mar 2027 | Feature freeze, security hardening, full CI |
-| **Stable** | **`v1.0.0`** | **Jun 2027** | **First stable public release** |
-
-→ [Full release schedule](RELEASE_SCHEDULE.md) · [All milestones](https://github.com/Alrizz-art/ArizenOS/milestones)
-
----
-
-## Getting Started
-
-### Prerequisites
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| `x86_64-elf-gcc` | ≥ 13.0 | Cross-compiler |
-| `nasm` | ≥ 2.15 | x86 assembler |
-| `qemu-system-x86_64` | ≥ 8.0 | Emulator for testing |
-| `make` | ≥ 4.3 | Build orchestration |
-| `xorriso` | ≥ 1.5 | ISO image creation |
-| `grub-pc-bin` | Any | Bootloader tools |
-
-### Install Dependencies (Ubuntu / Debian)
-
-```bash
-sudo apt-get update
-sudo apt-get install -y \
-    build-essential nasm xorriso \
-    grub-pc-bin grub-common mtools \
-    qemu-system-x86
-```
-
-For the cross-compiler, see [Toolchain Setup](docs/contributing/development-setup.md#toolchain).
-
-### Build & Run
-
-```bash
-# Clone the repository
-git clone https://github.com/Alrizz-art/ArizenOS.git
-cd ArizenOS
-
-# Build the OS
-make all
-
-# Run in QEMU
-make run
-
-# Build an ISO image
-make iso
-
-# Run tests
-make test
-```
-
-### QEMU Options
-
-```bash
-# Run with serial output to terminal
-make run QEMU_EXTRA="-serial stdio"
-
-# Run with 512MB RAM
-make run QEMU_EXTRA="-m 512M"
-
-# Run with KVM acceleration (Linux only)
-make run QEMU_EXTRA="-enable-kvm"
-```
+- [x] ArizenOS Playbook (`.apbx`) — declarative desktop configuration system
+- [x] Branding System — design tokens, logo system, icon set
+- [x] Wallpaper System — curated wallpaper collection with light/dark variants
+- [x] OEM Branding — partner customization layer
+- [ ] Desktop Experience Layer — glass rendering, blur, motion
+- [ ] Launcher — AI command palette
+- [ ] Assistant — conversational desktop AI
+- [ ] Voice — voice control layer
+- [ ] Agent — autonomous agent runtime
+- [ ] LM Studio Integration — local AI model backend
 
 ---
 
@@ -173,119 +51,91 @@ make run QEMU_EXTRA="-enable-kvm"
 
 ```
 ArizenOS/
-├── arch/                    # Architecture-specific code
-│   └── x86_64/
-│       ├── boot/            # Bootloader (Stage 1, Stage 2, UEFI)
-│       ├── kernel/          # Arch-specific kernel code (GDT, IDT, paging)
-│       └── include/         # Arch-specific headers
-├── kernel/                  # Architecture-independent kernel
-│   ├── core/                # Core kernel (main, panic, printk)
-│   ├── mm/                  # Memory management
-│   ├── sched/               # Process scheduler
-│   ├── fs/                  # VFS layer
-│   ├── net/                 # Network stack
-│   ├── security/            # Security subsystem
-│   └── include/             # Kernel headers
-├── drivers/                 # Hardware drivers
-│   ├── display/             # VGA / framebuffer
-│   ├── input/               # Keyboard, mouse
-│   ├── storage/             # AHCI, NVMe
-│   └── net/                 # Network interface drivers
-├── fs/                      # Filesystem implementations
-│   ├── vfs/                 # Virtual Filesystem core
-│   ├── tmpfs/               # In-memory filesystem
-│   └── ext2/                # ext2 read/write support
-├── lib/                     # Shared libraries
-│   ├── libk/                # Kernel-only runtime library
-│   └── libc/                # Minimal C standard library (for userspace)
-├── userspace/               # Userspace programs
-│   ├── init/                # Init process (PID 1)
-│   ├── shell/               # ArizenSH — the system shell
-│   └── utils/               # Core utilities (ls, cat, echo, ps)
-├── tests/                   # Test suite
-│   ├── unit/                # Unit tests (per subsystem)
-│   └── integration/         # Boot and integration tests
+├── apps/                    # End-user Windows applications
+│   ├── launcher/
+│   ├── assistant/
+│   ├── voice/
+│   ├── hub/
+│   └── agent/
+│
+├── packages/                # Shared platform libraries (@arizen/*)
+│   ├── core/                # Core types and utilities
+│   ├── glass/               # Glass rendering engine
+│   ├── mind/                # AI/LLM integration layer
+│   ├── shell/               # Desktop shell integration
+│   ├── ui/                  # Component library
+│   ├── skin/                # Design token system
+│   ├── flow/                # Animation and transitions
+│   ├── sync/                # State synchronization
+│   ├── widgets/             # Widget framework
+│   └── agent-sdk/           # Agent plugin SDK
+│
+├── branding/                # Brand assets, design tokens, wallpapers
+├── docs/                    # Architecture docs, ADRs, guides
+├── playbook/                # ArizenOS Playbook system (.apbx)
+├── scripts/                 # Build, release, and maintenance scripts
 ├── tools/                   # Developer tooling
-│   ├── toolchain/           # Cross-compiler setup scripts
-│   └── debug/               # GDB helpers, QEMU debug scripts
-├── scripts/                 # Build and CI scripts
-│   ├── build/               # Build helpers
-│   └── ci/                  # CI-specific scripts
-├── docs/                    # Documentation
-│   ├── architecture/        # System design documents
-│   ├── kernel/              # Kernel subsystem references
-│   ├── contributing/        # Contributor guides
-│   ├── playbooks/           # Operational playbooks
-│   └── api/                 # Syscall and API reference
-├── branding/                # Brand assets
-│   ├── logo/                # Logo files (SVG, PNG)
-│   └── assets/              # Screenshots, banners
-├── .github/                 # GitHub configuration
-│   ├── workflows/           # GitHub Actions
-│   ├── ISSUE_TEMPLATE/      # Issue templates
-│   └── assets/              # GitHub-specific images
-├── Makefile                 # Top-level build system
-├── README.md
-├── CHANGELOG.md
-├── VERSIONING.md
-├── RELEASE_SCHEDULE.md
-├── CONTRIBUTING.md
-├── SECURITY.md
-├── CODE_OF_CONDUCT.md
-└── LICENSE                  # MIT License
+│
+└── research/                # ⚗️ Experimental research
+    └── kernel/              # Bare-metal OS kernel prototype (x86_64)
 ```
+
+> **Two domains, one repository.** The `research/kernel/` directory contains an experimental bare-metal OS prototype — separate from the Windows platform product. See [ADR-0004](docs/architecture/ADR-0004-kernel-research-strategy.md) for the full rationale.
+
+---
+
+## Getting Started
+
+### System Requirements
+
+- Windows 10 (build 19041+) or Windows 11
+- Node.js 18+
+- pnpm 8+
+
+### Development Setup
+
+```bash
+git clone https://github.com/Alrizz-art/ArizenOS.git
+cd ArizenOS
+pnpm install
+pnpm build
+```
+
+> **Kernel research setup** is documented separately at [`research/kernel/README.md`](research/kernel/README.md) and requires a different toolchain (cross-compiler, NASM, QEMU).
 
 ---
 
 ## Contributing
 
-We welcome contributions of all kinds — code, documentation, testing, design, and ideas.
+We welcome contributions to both domains. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR.
 
-1. Read the [Contributing Guide](CONTRIBUTING.md)
-2. Check [open issues](https://github.com/Alrizz-art/ArizenOS/issues) or [discussions](https://github.com/Alrizz-art/ArizenOS/discussions)
-3. Fork → Branch → Commit (following [Conventional Commits](https://www.conventionalcommits.org)) → PR
+- **Platform contributions** — TypeScript, React, design tokens, Windows shell APIs
+- **Kernel research contributions** — C, Assembly, systems programming
 
-All commits must pass CI and receive at least one review before merging.
-
-→ [Development Setup](docs/contributing/development-setup.md) · [Code Style Guide](docs/contributing/code-style.md)
+Each domain has its own maintainers and review process. See [GOVERNANCE.md](GOVERNANCE.md) for details.
 
 ---
 
-## Community
+## Architecture
 
-| Channel | Purpose |
-|---------|---------|
-| [GitHub Issues](https://github.com/Alrizz-art/ArizenOS/issues) | Bug reports, feature requests |
-| [GitHub Discussions](https://github.com/Alrizz-art/ArizenOS/discussions) | General questions, ideas, announcements |
-| [Security Advisories](https://github.com/Alrizz-art/ArizenOS/security/advisories) | Private vulnerability reports |
+See [ARCHITECTURE.md](ARCHITECTURE.md) for the full architecture document, including:
 
-Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
+- Package dependency graph
+- CI/CD pipelines
+- Release structure
+- Design token system
+
+Architecture decisions are recorded as ADRs in [`docs/architecture/`](docs/architecture/):
+
+| ADR | Decision |
+|---|---|
+| [ADR-0001](docs/architecture/ADR-0001-monorepo.md) | Monorepo structure |
+| [ADR-0002](docs/architecture/ADR-0002-glass-rendering.md) | Glass rendering engine |
+| [ADR-0003](docs/architecture/ADR-0003-local-ai.md) | Local-first AI |
+| [ADR-0004](docs/architecture/ADR-0004-kernel-research-strategy.md) | Kernel research separation |
 
 ---
 
 ## License
 
-ArizenOS is released under the **MIT License**.
-See [LICENSE](LICENSE) for the full text.
-
----
-
-## Acknowledgments
-
-ArizenOS is inspired by and learns from:
-
-- [OSDev Wiki](https://wiki.osdev.org/) — the canonical open-source OS development reference
-- [Linux Kernel](https://kernel.org/) — the gold standard for kernel engineering
-- [SerenityOS](https://github.com/SerenityOS/serenity) — proving that ambitious OS projects can happen in the open
-- [xv6](https://github.com/mit-pdos/xv6-riscv) — clarity and simplicity in kernel design
-- [MINIX 3](https://www.minix3.org/) — microkernel design principles
-
----
-
-<div align="center">
-
-Built with dedication by [@Alrizz-art](https://github.com/Alrizz-art) and [contributors](https://github.com/Alrizz-art/ArizenOS/graphs/contributors)
-
-**[⬆ Back to Top](#arizenos)**
-
-</div>
+[MIT](LICENSE) — Copyright © 2026 ArizenOS Contributors

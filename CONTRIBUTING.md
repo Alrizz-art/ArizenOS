@@ -1,19 +1,19 @@
 # Contributing to ArizenOS
 
-Thank you for your interest in contributing to **ArizenOS** — an open-source operating system built from scratch.
+Thank you for contributing to ArizenOS. This guide covers both contribution domains in this repository.
 
 ---
 
-## Table of Contents
+## Two Domains — Two Workflows
 
-1. [Code of Conduct](#code-of-conduct)
-2. [Getting Started](#getting-started)
-3. [How to Contribute](#how-to-contribute)
-4. [Branch Naming](#branch-naming)
-5. [Commit Message Convention](#commit-message-convention)
-6. [Pull Request Process](#pull-request-process)
-7. [Issue Guidelines](#issue-guidelines)
-8. [Labels Reference](#labels-reference)
+This repository contains two distinct domains:
+
+| Domain | Location | Language | Audience |
+|---|---|---|---|
+| **ArizenOS Platform** | `apps/`, `packages/`, `branding/`, `playbook/` | TypeScript, React | Platform developers |
+| **Kernel Research** | `research/kernel/` | C, Assembly | Systems programmers |
+
+**Read the relevant section below for your domain.** The toolchains, review processes, and maintainers are different.
 
 ---
 
@@ -24,68 +24,75 @@ Be respectful, inclusive, and constructive. Harassment of any kind will not be t
 
 ---
 
-## Getting Started
+## Platform Contributions (TypeScript / Windows)
 
 ### Prerequisites
 
-- `x86_64-elf` cross-compiler (GCC or Clang)
-- `nasm` or `gas` assembler
-- `QEMU` for testing
-- `make` / `cmake`
-- `git`
+- Node.js 18+
+- pnpm 8+
+- Windows 10 (build 19041+) or Windows 11 (for app testing)
 
 ### Setup
 
 ```bash
 git clone https://github.com/Alrizz-art/ArizenOS.git
 cd ArizenOS
-# Follow build instructions in README.md
-make all
-make run   # Launches in QEMU
+pnpm install
+pnpm build
 ```
+
+### How to Contribute
+
+1. Check [existing issues](https://github.com/Alrizz-art/ArizenOS/issues) first
+2. Fork the repository
+3. Create a branch from `develop` (see [Branch Naming](#branch-naming))
+4. Make your changes
+5. Ensure the build passes: `pnpm build`
+6. Open a Pull Request against `develop`
 
 ---
 
-## How to Contribute
+## Kernel Research Contributions (C / Assembly)
 
-### Reporting Bugs
+### Prerequisites
 
-1. Check [existing issues](https://github.com/Alrizz-art/ArizenOS/issues) first
-2. Open a new issue with label `type: bug`
-3. Include: OS version, steps to reproduce, expected vs actual behavior
-4. Attach logs or screenshots if applicable
+- `x86_64-elf-gcc` cross-compiler
+- `nasm` assembler
+- `QEMU` (x86_64)
+- `make`
 
-### Suggesting Features
+All kernel research code lives in `research/kernel/`. See [`research/kernel/README.md`](research/kernel/README.md) for the full setup guide.
 
-1. Open an issue with label `type: feature`
-2. Describe the problem it solves and proposed solution
-3. A maintainer will triage and assign a milestone
+### How to Contribute
 
-### Submitting Code
-
-1. Fork the repository
-2. Create a branch from `develop` (see [Branch Naming](#branch-naming))
-3. Make your changes
-4. Ensure the build passes: `make all`
-5. Open a Pull Request against `develop`
+1. All kernel PRs **must target** the `research/kernel/` subtree — do not modify platform code in a kernel PR
+2. Kernel PRs require review from a **Kernel Research Maintainer** (see [GOVERNANCE.md](GOVERNANCE.md))
+3. Use `kernel:` commit scope prefix (e.g., `feat(kernel/mm): add page frame allocator`)
 
 ---
 
 ## Branch Naming
 
 ```
-<type>/<short-description>
+<type>/<scope>/<short-description>
 ```
 
-| Prefix      | Use for                                       |
-|-------------|-----------------------------------------------|
-| `feature/`  | New features (`feature/virtual-memory`)       |
-| `fix/`      | Bug fixes (`fix/keyboard-irq-handler`)        |
-| `hotfix/`   | Critical fixes on stable (`hotfix/cve-2027-x`)|
-| `chore/`    | Tooling, CI, docs (`chore/update-makefile`)   |
-| `docs/`     | Documentation only (`docs/syscall-reference`) |
-| `refactor/` | Code restructuring (`refactor/vfs-layer`)     |
-| `release/`  | Release prep (`release/v0.2.0`)               |
+| Prefix | Use for |
+|---|---|
+| `feature/` | New features |
+| `fix/` | Bug fixes |
+| `hotfix/` | Critical fixes on stable |
+| `chore/` | Tooling, CI, maintenance |
+| `docs/` | Documentation only |
+| `refactor/` | Code restructuring |
+| `release/` | Release preparation |
+| `research/` | Kernel research work |
+
+Examples:
+- `feature/launcher/spotlight-redesign`
+- `fix/assistant/context-overflow`
+- `research/kernel/mm-page-allocator`
+- `docs/kernel/scheduler-design`
 
 ---
 
@@ -105,117 +112,83 @@ ArizenOS uses **Conventional Commits** ([conventionalcommits.org](https://www.co
 
 ### Types
 
-| Type       | When to use                                |
-|------------|--------------------------------------------|
-| `feat`     | New feature or capability                  |
-| `fix`      | Bug fix                                    |
-| `docs`     | Documentation changes only                 |
-| `style`    | Code style (whitespace, formatting)        |
-| `refactor` | Code restructuring, no behavior change     |
-| `perf`     | Performance improvement                    |
-| `test`     | Adding or fixing tests                     |
-| `build`    | Build system or toolchain changes          |
-| `ci`       | CI/CD pipeline changes                     |
-| `chore`    | Other maintenance tasks                    |
-| `revert`   | Reverting a previous commit                |
-| `security` | Security fix or hardening                  |
+| Type | When to use |
+|---|---|
+| `feat` | New feature or capability |
+| `fix` | Bug fix |
+| `docs` | Documentation changes only |
+| `style` | Code style / formatting |
+| `refactor` | Restructuring, no behavior change |
+| `perf` | Performance improvement |
+| `test` | Adding or fixing tests |
+| `build` | Build system changes |
+| `ci` | CI/CD pipeline changes |
+| `chore` | Maintenance tasks |
+| `revert` | Reverting a previous commit |
+| `security` | Security fix or hardening |
 
-### Scopes
+### Platform Scopes
 
-| Scope         | Area                         |
-|---------------|------------------------------|
-| `kernel`      | Core kernel                  |
-| `bootloader`  | Boot process                 |
-| `drivers`     | Hardware drivers             |
-| `fs`          | Filesystem                   |
-| `mm`          | Memory management            |
-| `net`         | Networking                   |
-| `userspace`   | Userspace and applications   |
-| `shell`       | Shell and CLI                |
-| `ui`          | Display / UI layer           |
-| `security`    | Security subsystem           |
-| `build`       | Build system                 |
-| `ci`          | CI/CD                        |
+`launcher`, `assistant`, `voice`, `hub`, `agent`, `glass`, `mind`, `shell`, `ui`, `skin`, `core`, `flow`, `sync`, `branding`, `playbook`, `ci`, `build`
+
+### Kernel Research Scopes
+
+`kernel`, `kernel/mm`, `kernel/sched`, `kernel/net`, `bootloader`, `drivers`, `fs`, `userspace`
 
 ### Examples
 
 ```
-feat(kernel): add round-robin process scheduler
+feat(launcher): add AI-powered spotlight search
 
-fix(drivers): resolve PS/2 keyboard IRQ conflict with PIC
+fix(glass): resolve compositor flicker on multi-monitor
 
-docs(fs): document VFS mount/unmount interface
+feat(kernel/mm): add physical page frame allocator
 
-security(mm): add stack-smashing protection to kernel heap
+docs(kernel): document VFS mount interface design
 
-BREAKING CHANGE: syscall numbers renumbered for POSIX alignment
-```
-
-### Breaking Changes
-
-Append `BREAKING CHANGE:` in the commit footer or add `!` after the type:
-
-```
-feat(kernel)!: renumber syscall table for POSIX alignment
-
-BREAKING CHANGE: all syscall numbers have changed. Userspace binaries
-must be recompiled against the new headers.
+BREAKING CHANGE: playbook schema v2 replaces v1 entry format
 ```
 
 ---
 
 ## Pull Request Process
 
-1. **Target branch**: always `develop` (never `main` directly, except hotfixes)
-2. **Title**: follow commit convention (`feat(kernel): add scheduler`)
-3. **Description**: fill in the PR template — what, why, how tested
-4. **Labels**: apply appropriate `type:`, `scope:`, and `size:` labels
-5. **Milestone**: link to the appropriate milestone
-6. **Review**: at least one maintainer approval required
-7. **CI**: all checks must pass before merge
-8. **Squash or rebase** preferred over merge commits
+1. **Target branch**: always `develop` (never `main` directly)
+2. **Title**: follow Conventional Commits format
+3. **Description**: fill in the PR template
+4. **Labels**: apply `type:`, `scope:`, and `size:` labels
+5. **Review**: at least one maintainer approval required
+   - Platform PRs → Platform Maintainer
+   - Kernel PRs → Kernel Research Maintainer
+6. **CI**: all checks must pass before merge
 
 ---
 
 ## Issue Guidelines
 
-### Issue Title Format
+### Title Format
 
 ```
-[type] Short description of the problem or feature
+[type][scope] Short description
 ```
 
 Examples:
-- `[bug] Kernel panics on APIC init with multiple CPUs`
-- `[feature] Add ext4 filesystem read support`
-- `[docs] Missing syscall reference for sys_read`
-
-### Required Information
-
-For bugs:
-- ArizenOS version or commit hash
-- Architecture (x86_64)
-- Steps to reproduce
-- Expected vs actual behavior
-- QEMU command used (if applicable)
-- Kernel log output
+- `[bug][launcher] Crashes on Windows 10 with multiple displays`
+- `[feature][assistant] Support multi-turn context in chat`
+- `[research][kernel/mm] Design for physical memory manager`
 
 ---
 
 ## Labels Reference
 
-| Label                   | Meaning                                     |
-|-------------------------|---------------------------------------------|
-| `type: bug`             | Something isn't working                     |
-| `type: feature`         | New feature or request                      |
-| `type: security`        | Security issue                              |
-| `priority: critical`    | Must fix immediately                        |
-| `priority: high`        | Fix soon                                    |
-| `status: in-progress`   | Being worked on                             |
-| `status: needs-review`  | Waiting for review                          |
-| `status: blocked`       | Blocked by dependency                       |
-| `scope: kernel`         | Kernel component                            |
-| `scope: drivers`        | Hardware drivers                            |
-| `size: xs/s/m/l/xl`     | Estimated effort                            |
-
-See all labels at: [github.com/Alrizz-art/ArizenOS/labels](https://github.com/Alrizz-art/ArizenOS/labels)
+| Label | Meaning |
+|---|---|
+| `type: bug` | Something isn't working |
+| `type: feature` | New feature request |
+| `type: research` | Kernel/OS research item |
+| `domain: platform` | Platform (Windows) domain |
+| `domain: kernel` | Kernel research domain |
+| `priority: critical` | Must fix immediately |
+| `priority: high` | Fix soon |
+| `status: in-progress` | Being worked on |
+| `size: xs/s/m/l/xl` | Estimated effort |
