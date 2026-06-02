@@ -1,5 +1,5 @@
 title: Deploy ArizenOS Wallpapers
-actions:
+tasks:
   - !cmd: {command: 'mkdir "%SystemDrive%\ArizenOS\Wallpapers" 2>nul'}
 
   - !cmd: {command: 'xcopy /Y /Q "Executables\assets\wallpapers\arizenOS_default.jpg" "%SystemDrive%\ArizenOS\Wallpapers\" >nul 2>&1'}
