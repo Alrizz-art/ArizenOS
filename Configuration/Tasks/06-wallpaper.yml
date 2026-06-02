@@ -1,17 +1,14 @@
 title: Deploy ArizenOS Wallpapers
-tasks:
+actions:
   - !cmd: {command: 'mkdir "%SystemDrive%\ArizenOS\Wallpapers" 2>nul'}
-
   - !cmd: {command: 'xcopy /Y /Q "Executables\assets\wallpapers\arizenOS_default.jpg" "%SystemDrive%\ArizenOS\Wallpapers\" >nul 2>&1'}
   - !cmd: {command: 'xcopy /Y /Q "Executables\assets\wallpapers\arizenOS_lockscreen.jpg" "%SystemDrive%\ArizenOS\Wallpapers\" >nul 2>&1'}
   - !cmd: {command: 'xcopy /Y /Q "Executables\assets\wallpapers\arizenOS_dark.jpg" "%SystemDrive%\ArizenOS\Wallpapers\" >nul 2>&1'}
-
   - !registryValue: {path: 'HKCU\Control Panel\Desktop', value: 'Wallpaper', type: REG_SZ, data: 'C:\ArizenOS\Wallpapers\arizenOS_default.jpg'}
   - !registryValue: {path: 'HKCU\Control Panel\Desktop', value: 'WallpaperStyle', type: REG_SZ, data: '10'}
   - !registryValue: {path: 'HKCU\Control Panel\Desktop', value: 'TileWallpaper', type: REG_SZ, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization', value: 'LockScreenImage', type: REG_SZ, data: 'C:\ArizenOS\Wallpapers\arizenOS_lockscreen.jpg'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization', value: 'LockScreenOverlaysDisabled', type: REG_DWORD, data: '1'}
-
   - !run:
       exe: 'powershell.exe'
       args: '-ExecutionPolicy Bypass -File "Executables\wallpaper.ps1"'
