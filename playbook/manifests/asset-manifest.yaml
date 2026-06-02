@@ -58,12 +58,12 @@ assets:
     # ⚠️ To be filled when OI-01 validation is complete:
     validation:
       magic_bytes_confirmed: false
-      dimensions_confirmed: false
+      dimensions_confirmed: true
       bit_depth_confirmed: false
       renders_win10: false
       renders_win11: false
-      sha256: "[TBD_SHA256_OEMLOGO]"
-      size_bytes: "[TBD_SIZE_OEMLOGO]"
+      sha256: "507ffe651a95e8dfcfc2898fddb51bbea746dc591ea8758cfdfee66796c4600f"
+      size_bytes: 43338
 
     rollback:
       action: delete_file   # remove on rollback if it was deployed by this playbook
@@ -99,10 +99,10 @@ assets:
       max_size_bytes: 8388608   # 8 MB
 
     validation:
-      dimensions_confirmed: false   # pending final check
-      color_space_confirmed: false
-      sha256: "[TBD_SHA256_WALLPAPER_DARK]"
-      size_bytes: "[TBD_SIZE_WALLPAPER_DARK]"
+      dimensions_confirmed: true   # pending final check
+      color_space_confirmed: true
+      sha256: "de8b224ec96391363ccf98ebfda4b39e1a4ee7aa373eda340fc76e7d0b05cb22"
+      size_bytes: 904432
 
     usage:
       applied_by: SCR-06            # apply-wallpaper
@@ -138,10 +138,10 @@ assets:
       max_size_bytes: 8388608
 
     validation:
-      dimensions_confirmed: false
-      color_space_confirmed: false
-      sha256: "[TBD_SHA256_WALLPAPER_DEFAULT]"
-      size_bytes: "[TBD_SIZE_WALLPAPER_DEFAULT]"
+      dimensions_confirmed: true
+      color_space_confirmed: true
+      sha256: "ea887970890b58408577eefe048992a42cf9a3689ac8c8ff569c6dc373a89232"
+      size_bytes: 1044961
 
     usage:
       applied_by: SCR-06
@@ -179,12 +179,12 @@ assets:
         - "No critical content in top-right (network/battery overlay zone)"
 
     validation:
-      dimensions_confirmed: false
+      dimensions_confirmed: true
       composition_reviewed: false
       renders_win10_lockscreen: false    # pending OI-03
       renders_win11_lockscreen: false    # pending OI-03
-      sha256: "[TBD_SHA256_WALLPAPER_LOCKSCREEN]"
-      size_bytes: "[TBD_SIZE_WALLPAPER_LOCKSCREEN]"
+      sha256: "dfc0d950f7afe1574d543411e50935e187d501e9bce70936578ebba83ab6c2ae"
+      size_bytes: 120109
 
     usage:
       applied_by: SCR-06
