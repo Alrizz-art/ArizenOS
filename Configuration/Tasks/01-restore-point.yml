@@ -1,0 +1,9 @@
+title: Create System Restore Point
+actions:
+  - !powerShell:
+      command: >-
+        Enable-ComputerRestore -Drive "$env:SystemDrive" -ErrorAction SilentlyContinue;
+        Checkpoint-Computer -Description "ArizenOS Pre-Install" -RestorePointType "MODIFY_SETTINGS";
+        $logDir = "$env:SystemDrive\ArizenOS\Logs";
+        New-Item -ItemType Directory -Force -Path $logDir | Out-Null;
+        "[$(Get-Date -f 'yyyy-MM-dd HH:mm:ss')] [INFO] Restore point created: ArizenOS Pre-Install" | Add-Content "$logDir\install.log"
