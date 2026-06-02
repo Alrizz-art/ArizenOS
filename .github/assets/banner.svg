@@ -1,0 +1,164 @@
+<svg width="1280" height="320" viewBox="0 0 1280 320" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#050709"/>
+      <stop offset="50%"  stop-color="#080d14"/>
+      <stop offset="100%" stop-color="#050709"/>
+    </linearGradient>
+    <!-- Blue glow left -->
+    <radialGradient id="glowLeft" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 160) scale(320 260)">
+      <stop offset="0%"   stop-color="#2563eb" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Accent glow right -->
+    <radialGradient id="glowRight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1050 140) scale(280 200)">
+      <stop offset="0%"   stop-color="#6366f1" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Logo glow -->
+    <radialGradient id="logoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#3b82f6" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Top line gradient -->
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#1d4ed8" stop-opacity="0"/>
+      <stop offset="30%"  stop-color="#3b82f6" stop-opacity="0.8"/>
+      <stop offset="70%"  stop-color="#6366f1" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Bottom line gradient -->
+    <linearGradient id="lineGrad2" x1="0" y1="0" x2="1280" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#6366f1" stop-opacity="0"/>
+      <stop offset="40%"  stop-color="#3b82f6" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Grid clip -->
+    <clipPath id="gridClip">
+      <rect width="1280" height="320"/>
+    </clipPath>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+    <filter id="logoShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="20" flood-color="#3b82f6" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="320" fill="url(#bg)"/>
+
+  <!-- Grid pattern (subtle) -->
+  <g clip-path="url(#gridClip)" opacity="0.04">
+    <line x1="0"    y1="0" x2="0"    y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="80"   y1="0" x2="80"   y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="160"  y1="0" x2="160"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="240"  y1="0" x2="240"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="320"  y1="0" x2="320"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="400"  y1="0" x2="400"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="480"  y1="0" x2="480"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="560"  y1="0" x2="560"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="640"  y1="0" x2="640"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="720"  y1="0" x2="720"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="800"  y1="0" x2="800"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="880"  y1="0" x2="880"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="960"  y1="0" x2="960"  y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="1040" y1="0" x2="1040" y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="1120" y1="0" x2="1120" y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="1200" y1="0" x2="1200" y2="320" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="1280" y1="0" x2="1280" y2="320" stroke="#ffffff" stroke-width="0.5"/>
+
+    <line x1="0" y1="0"   x2="1280" y2="0"   stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="0" y1="53"  x2="1280" y2="53"  stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="0" y1="107" x2="1280" y2="107" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="0" y1="160" x2="1280" y2="160" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="0" y1="213" x2="1280" y2="213" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="0" y1="267" x2="1280" y2="267" stroke="#ffffff" stroke-width="0.5"/>
+    <line x1="0" y1="320" x2="1280" y2="320" stroke="#ffffff" stroke-width="0.5"/>
+  </g>
+
+  <!-- Glow blobs -->
+  <ellipse cx="260" cy="160" rx="320" ry="220" fill="url(#glowLeft)"  filter="url(#blur)"/>
+  <ellipse cx="1050" cy="150" rx="260" ry="180" fill="url(#glowRight)" filter="url(#blur)"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1280" height="1.5" fill="url(#lineGrad)"/>
+  <!-- Bottom accent line -->
+  <rect x="0" y="318.5" width="1280" height="1.5" fill="url(#lineGrad2)"/>
+
+  <!-- Left vertical accent -->
+  <rect x="0" y="0" width="1" height="320" fill="url(#lineGrad)" opacity="0.5"/>
+
+  <!-- Logo area — circle bg glow -->
+  <circle cx="200" cy="160" r="88" fill="url(#logoGlow)" filter="url(#blur)"/>
+  <!-- Logo border ring -->
+  <circle cx="200" cy="160" r="72" fill="none" stroke="#3b82f6" stroke-width="0.75" opacity="0.35"/>
+  <circle cx="200" cy="160" r="80" fill="none" stroke="#6366f1" stroke-width="0.5"  opacity="0.15"/>
+
+  <!-- Logo image -->
+  <image href="https://raw.githubusercontent.com/Alrizz-art/ArizenOS/main/assets/logos/arizenOS_logo_white.png"
+         x="140" y="100" width="120" height="120" filter="url(#logoShadow)"/>
+
+  <!-- Divider line between logo and text -->
+  <line x1="330" y1="72" x2="330" y2="248" stroke="#ffffff" stroke-width="0.5" opacity="0.12"/>
+
+  <!-- Main wordmark -->
+  <text x="372" y="154"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-size="68" font-weight="700" letter-spacing="-2"
+        fill="url(#wordmarkGrad)">
+    <defs>
+      <linearGradient id="wordmarkGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%"   stop-color="#f8fafc"/>
+        <stop offset="60%"  stop-color="#e2e8f0"/>
+        <stop offset="100%" stop-color="#94a3b8"/>
+      </linearGradient>
+    </defs>
+    <tspan fill="url(#wordmarkGrad)">Arizen</tspan><tspan fill="#3b82f6">OS</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="374" y="195"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+        font-size="18" font-weight="400" letter-spacing="0.2"
+        fill="#64748b">
+    The desktop, reimagined for the age of intelligence.
+  </text>
+
+  <!-- Pills row -->
+  <!-- Pill 1: Windows -->
+  <rect x="374" y="220" width="108" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="0.75"/>
+  <text x="418" y="237.5" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#94a3b8" text-anchor="middle">Windows 10/11</text>
+
+  <!-- Pill 2: AME Wizard -->
+  <rect x="492" y="220" width="104" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="0.75"/>
+  <text x="544" y="237.5" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#94a3b8" text-anchor="middle">AME Wizard</text>
+
+  <!-- Pill 3: PowerShell -->
+  <rect x="606" y="220" width="98" height="26" rx="13" fill="#1e293b" stroke="#334155" stroke-width="0.75"/>
+  <text x="655" y="237.5" font-family="system-ui, sans-serif" font-size="11" font-weight="500" fill="#94a3b8" text-anchor="middle">PowerShell</text>
+
+  <!-- Pill 4: v0.1.0-alpha -->
+  <rect x="714" y="220" width="110" height="26" rx="13" fill="#172554" stroke="#1d4ed8" stroke-width="0.75"/>
+  <text x="769" y="237.5" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#60a5fa" text-anchor="middle">v0.1.0-alpha</text>
+
+  <!-- Corner decoration dots -->
+  <circle cx="1220" cy="40"  r="1.5" fill="#3b82f6" opacity="0.6"/>
+  <circle cx="1240" cy="40"  r="1.5" fill="#6366f1" opacity="0.4"/>
+  <circle cx="1260" cy="40"  r="1.5" fill="#8b5cf6" opacity="0.3"/>
+  <circle cx="1220" cy="280" r="1.5" fill="#3b82f6" opacity="0.3"/>
+  <circle cx="1240" cy="280" r="1.5" fill="#6366f1" opacity="0.2"/>
+
+  <!-- Subtle right watermark / decoration -->
+  <text x="1190" y="172"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="11" fill="#1e3a5f" text-anchor="end" letter-spacing="1">
+    EXPERIENCE LAYER
+  </text>
+  <text x="1190" y="188"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="11" fill="#1e3a5f" text-anchor="end" letter-spacing="1">
+    FOR WINDOWS
+  </text>
+</svg>
