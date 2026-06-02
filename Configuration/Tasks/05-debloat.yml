@@ -1,5 +1,5 @@
 title: Remove Telemetry and Bloatware
-tasks:
+actions:
   # ── Telemetry Registry Policies ──────────────────────────────────
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
@@ -12,7 +12,6 @@ tasks:
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\System', value: 'EnableActivityFeed', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\System', value: 'PublishUserActivities', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config', value: 'AutoConnectAllowedOEM', type: REG_DWORD, data: '0'}
-
   # ── Telemetry Services ────────────────────────────────────────────
   - !service: {name: 'DiagTrack', operation: change, startup: Disabled}
   - !service: {name: 'DiagTrack', operation: stop}
@@ -22,7 +21,6 @@ tasks:
   - !service: {name: 'RetailDemo', operation: change, startup: Disabled}
   - !service: {name: 'MapsBroker', operation: change, startup: Disabled}
   - !service: {name: 'RemoteRegistry', operation: change, startup: Disabled}
-
   # ── Scheduled Tasks ───────────────────────────────────────────────
   - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser', operation: disable}
   - !scheduledTask: {path: '\Microsoft\Windows\Application Experience\ProgramDataUpdater', operation: disable}
@@ -31,8 +29,7 @@ tasks:
   - !scheduledTask: {path: '\Microsoft\Windows\Feedback\Siuf\DmClient', operation: disable}
   - !scheduledTask: {path: '\Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload', operation: disable}
   - !scheduledTask: {path: '\Microsoft\Windows\Windows Error Reporting\QueueReporting', operation: disable}
-
-  # ── AppX Removal (Safe Level) ─────────────────────────────────────
+  # ── AppX Removal ─────────────────────────────────────────────────
   - !appx: {operation: remove, name: '*Microsoft.BingNews*'}
   - !appx: {operation: remove, name: '*Microsoft.BingWeather*'}
   - !appx: {operation: remove, name: '*Microsoft.BingFinance*'}
@@ -62,7 +59,6 @@ tasks:
   - !appx: {operation: remove, name: '*Microsoft.Todos*'}
   - !appx: {operation: remove, name: '*Microsoft.MicrosoftOfficeHub*'}
   - !appx: {operation: remove, name: '*Microsoft.OutlookForWindows*'}
-
   # ── Clear AppX Cache ──────────────────────────────────────────────
   - !appx: {operation: clearCache, name: '*Client.CBS*'}
   - !appx: {operation: clearCache, name: '*StartMenuExperienceHost*'}
