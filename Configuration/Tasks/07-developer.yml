@@ -10,7 +10,7 @@ actions:
   - !powerShell:
       command: >-
         Enable-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform" -NoRestart -ErrorAction SilentlyContinue
-  - !service: {name: 'WSearch', operation: change, startup: Manual}
+  - !service: {name: 'WSearch', operation: change, startup: 3}
   - !service: {name: 'WSearch', operation: stop}
   - !run:
       exe: 'powershell.exe'
