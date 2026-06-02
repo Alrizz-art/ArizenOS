@@ -1,0 +1,68 @@
+# entries/04-oem-branding.yaml
+# Phase: OEM_BRANDING | Script: SCR-05
+# Hive: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation
+
+- !registryKeyAction
+  id: REG_OEM_KEY
+  hive: HKLM
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInformation"
+  action: create_if_absent
+
+- !registryValueAction
+  id: REG_OEM_MANUFACTURER
+  hive: HKLM
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInformation"
+  value_name: "Manufacturer"
+  value_type: REG_SZ
+  value_data: "ArizenOS"
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_OEM_MODEL
+  hive: HKLM
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInformation"
+  value_name: "Model"
+  value_type: REG_SZ
+  value_data: "ArizenOS Experience Layer v0.1"
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_OEM_URL
+  hive: HKLM
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInformation"
+  value_name: "SupportURL"
+  value_type: REG_SZ
+  value_data: "https://github.com/Alrizz-art/ArizenOS"
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_OEM_PHONE
+  hive: HKLM
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInformation"
+  value_name: "SupportPhone"
+  value_type: REG_SZ
+  value_data: ""
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_OEM_HOURS
+  hive: HKLM
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OEMInformation"
+  value_name: "SupportHours"
+  value_type: REG_SZ
+  value_data: ""
+  on_fail: log_and_continue
+
+- !runScriptAction
+  id: REG_OEM_LOGO
+  name: "Write OEM Logo Path (env-expanded)"
+  script: scripts/apply-oem-branding.ps1
+  args: ["-Action", "WriteLogo"]
+  on_fail: log_and_continue
+
+- !runScriptAction
+  id: VERIFY_OEM
+  name: "Verify OEM Branding (read-back)"
+  script: scripts/apply-oem-branding.ps1
+  args: ["-Action", "Verify"]
+  on_exit_1: log_warning

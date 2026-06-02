@@ -1,0 +1,41 @@
+# entries/02-safety-net.yaml
+# Phase: SAFETY_NET | Scripts: SCR-02, SCR-03 | Abort if backup fails
+
+- !messageAction
+  id: MSG_SAFETY_START
+  title: "Creating Safety Net"
+  body: >
+    ArizenOS will now create a System Restore Point and export a full
+    registry backup. These are your rollback mechanisms. Installation
+    will not proceed without the registry backup.
+  button: "Create Safety Net"
+
+- !restorePointAction
+  id: RP_CREATE
+  description: "Before ArizenOS v0.1"
+  type: APPLICATION_INSTALL
+  on_fail: prompt
+  message_on_fail: >
+    System Restore Point creation failed (System Restore may be disabled).
+    ArizenOS can continue using the registry backup as the rollback mechanism.
+    Continue without a Restore Point?
+
+- !runScriptAction
+  id: REG_BACKUP
+  name: "Export Registry Backup"
+  script: scripts/backup-registry.ps1
+  args: ["-OutputPath", "%APPDATA%\\ArizenOS\\backup\\registry-backup.reg"]
+  on_exit_1: abort
+  log: true
+  message_on_fail: >
+    Registry backup creation failed. Installation cannot proceed without a
+    backup. Verify %APPDATA%\ArizenOS\backup\ is writable and retry.
+
+- !messageAction
+  id: MSG_SAFETY_DONE
+  title: "Safety Net Created"
+  body: >
+    Restore point and registry backup created.
+    Backup: %APPDATA%\ArizenOS\backup\registry-backup.reg
+    You can roll back at any time from the Start Menu shortcut.
+  button: "Continue"

@@ -1,0 +1,61 @@
+# entries/01-preflight.yaml
+# Phase: PREFLIGHT | Script: SCR-01 | Abort on failure: YES
+
+- !messageAction
+  id: MSG_WELCOME
+  title: "Welcome to ArizenOS"
+  body: >
+    ArizenOS v0.1 applies branding, dark mode, transparency, and performance
+    optimizations to your Windows installation. A System Restore Point and
+    registry backup are created before any changes are made.
+  button: "Continue"
+
+- !runScriptAction
+  id: CHK_OS_BUILD
+  name: "Verify OS Build (min 19045)"
+  script: scripts/preflight-check.ps1
+  args: ["-Check", "OsBuild", "-MinBuild", "19045"]
+  on_exit_1: abort
+  on_exit_2: prompt
+  message_on_fail: "ArizenOS requires Windows 10 22H2 (build 19045) or later."
+
+- !runScriptAction
+  id: CHK_ELEVATION
+  name: "Verify Administrator Privileges"
+  script: scripts/preflight-check.ps1
+  args: ["-Check", "Elevation"]
+  on_exit_1: abort
+  message_on_fail: "ArizenOS must be run as Administrator."
+
+- !runScriptAction
+  id: CHK_S_MODE
+  name: "Verify Not Windows S Mode"
+  script: scripts/preflight-check.ps1
+  args: ["-Check", "SMode"]
+  on_exit_1: abort
+  message_on_fail: "ArizenOS cannot be installed on Windows S Mode."
+
+- !runScriptAction
+  id: CHK_DISK_HARD
+  name: "Verify Disk Space (500 MB hard minimum)"
+  script: scripts/preflight-check.ps1
+  args: ["-Check", "DiskSpace", "-MinMB", "500"]
+  on_exit_1: abort
+  on_exit_2: prompt
+  message_on_warn: "Less than 1 GB free. Minimum is 500 MB. Proceed with caution."
+
+- !runScriptAction
+  id: CHK_DOMAIN
+  name: "Check Domain-Join Status"
+  script: scripts/preflight-check.ps1
+  args: ["-Check", "DomainJoined"]
+  on_exit_2: prompt
+  message_on_warn: >
+    Domain-joined machine detected. Group Policy Objects may override some
+    ArizenOS settings. Warning only — installation can proceed.
+
+- !messageAction
+  id: MSG_PREFLIGHT_PASS
+  title: "Preflight Complete"
+  body: "All checks passed. ArizenOS is ready to install."
+  button: "Proceed"

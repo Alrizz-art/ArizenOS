@@ -1,0 +1,57 @@
+# entries/06-theme.yaml
+# Phase: THEME | Script: SCR-07
+# Hive: HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize
+
+- !registryValueAction
+  id: REG_APPS_DARK
+  name: "Dark Mode -- Apps"
+  hive: HKCU
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+  value_name: "AppsUseLightTheme"
+  value_type: REG_DWORD
+  value_data: 0
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_SYSTEM_DARK
+  name: "Dark Mode -- System (Taskbar + Start)"
+  hive: HKCU
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+  value_name: "SystemUsesLightTheme"
+  value_type: REG_DWORD
+  value_data: 0
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_TRANSPARENCY
+  name: "Enable Transparency Effects"
+  hive: HKCU
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+  value_name: "EnableTransparency"
+  value_type: REG_DWORD
+  value_data: 1
+  on_fail: log_and_continue
+
+- !registryValueAction
+  id: REG_NO_ACCENT
+  name: "Disable Accent Color on Taskbar"
+  hive: HKCU
+  path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+  value_name: "ColorPrevalence"
+  value_type: REG_DWORD
+  value_data: 0
+  on_fail: log_and_continue
+
+- !runScriptAction
+  id: SET_WALLPAPER
+  name: "Set Desktop Wallpaper via SystemParametersInfo"
+  script: scripts/apply-wallpaper.ps1
+  args: ["-Action", "SetDesktopWallpaper", "-Asset", "arizenOS_dark.jpg"]
+  on_fail: log_and_continue
+
+- !runScriptAction
+  id: VERIFY_THEME
+  name: "Verify Theme Settings (read-back)"
+  script: scripts/apply-theme.ps1
+  args: ["-Action", "Verify"]
+  on_exit_1: log_warning

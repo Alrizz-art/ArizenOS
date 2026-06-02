@@ -1,0 +1,67 @@
+# entries/rollback.yaml
+# On-demand rollback -- triggered manually or on fatal install error
+# Script: SCR-13
+
+- !messageAction
+  id: MSG_CONFIRM
+  title: "Roll Back ArizenOS"
+  body: >
+    This restores your registry and settings to their state before
+    ArizenOS was installed. Files and applications are not affected.
+  confirm_button: "Roll Back"
+  cancel_button: "Cancel"
+  on_cancel: exit_3
+
+- !runScriptAction
+  id: VERIFY_BACKUP
+  name: "Verify Registry Backup Exists"
+  script: scripts/rollback.ps1
+  args: ["-Action", "VerifyBackup"]
+  on_exit_1: abort
+  message_on_fail: >
+    Registry backup not found. Use Windows System Restore instead:
+    Control Panel > Recovery > Open System Restore
+
+- !runScriptAction
+  id: IMPORT_BACKUP
+  name: "Restore Registry from Backup"
+  script: scripts/rollback.ps1
+  args: ["-Action", "ImportRegistry"]
+  on_exit_1: abort
+  log: true
+
+- !messageAction
+  id: MSG_REMOVE_ASSETS
+  title: "Remove ArizenOS Files?"
+  body: "Remove ArizenOS wallpaper and branding files from ProgramData?"
+  confirm_button: "Remove Files"
+  cancel_button: "Keep Files"
+  result_variable: remove_assets
+
+- !runScriptAction
+  id: REMOVE_ASSETS
+  name: "Remove Asset Files (if selected)"
+  script: scripts/rollback.ps1
+  args: ["-Action", "RemoveAssets", "-Confirm", "$(remove_assets)"]
+  on_exit_1: log_warning
+
+- !runScriptAction
+  id: REVERT_DEV
+  name: "Revert Developer Settings (if applied)"
+  script: scripts/rollback.ps1
+  args: ["-Action", "RevertDeveloper"]
+  condition: features_applied_contains_developer_setup
+  on_exit_1: log_warning
+
+- !runScriptAction
+  id: CLEANUP
+  name: "Remove ArizenOS Start Menu Entries"
+  script: scripts/rollback.ps1
+  args: ["-Action", "Cleanup"]
+  on_exit_1: log_warning
+
+- !messageAction
+  id: MSG_DONE
+  title: "Rollback Complete"
+  body: "ArizenOS removed. Previous settings restored. A restart is required."
+  restart_prompt: true

@@ -1,0 +1,36 @@
+# entries/10-finalize.yaml
+# Phase: FINALIZE | Scripts: SCR-10, SCR-11, SCR-12
+
+- !runScriptAction
+  id: WRITE_MANIFEST
+  name: "Write Installation Manifest"
+  script: scripts/write-manifest.ps1
+  args: ["-Version", "0.1.0", "-Channel", "alpha"]
+  on_exit_1: log_warning
+
+- !runScriptAction
+  id: REGISTER_ROLLBACK
+  name: "Register Rollback Start Menu Shortcut"
+  script: scripts/register-rollback.ps1
+  on_exit_1: log_warning
+
+- !runScriptAction
+  id: FINALIZE_LOG
+  name: "Write Final Installation Log Entry"
+  script: scripts/finalize.ps1
+  args: ["-Version", "0.1.0"]
+  on_exit_1: log_warning
+
+- !messageAction
+  id: MSG_COMPLETE
+  title: "ArizenOS Installation Complete"
+  body: >
+    ArizenOS v0.1 has been installed.
+
+    Applied: OEM branding, wallpapers, dark mode, transparency,
+    visual effects, Aero Peek.
+
+    To roll back: Start Menu > ArizenOS > Rollback ArizenOS
+
+    A restart is recommended to fully apply all changes.
+  restart_prompt: true
