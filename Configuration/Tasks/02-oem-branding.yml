@@ -1,5 +1,5 @@
 title: Apply ArizenOS OEM Branding
-actions:
+tasks:
   - !run:
       exe: 'powershell.exe'
       args: '-ExecutionPolicy Bypass -File "Executables\oem-branding.ps1"'
