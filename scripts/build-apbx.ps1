@@ -64,7 +64,7 @@ Write-OK "7-Zip: $7z"
 Write-Host "`n[1/5] Validating source structure..." -ForegroundColor White
 
 $requiredSources = @{
-    "playbook.yaml"                                   = "APBX root entry point"
+    "playbook.conf"                                   = "APBX root entry point"
     "playbook\entries\01-preflight.yaml"              = "SCR-01 phase"
     "playbook\entries\02-safety-net.yaml"             = "SCR-02/03 phase"
     "playbook\entries\03-asset-deploy.yaml"           = "SCR-04 phase"
@@ -123,8 +123,8 @@ $null = New-Item -ItemType Directory -Force -Path "$StagingDir\assets\wallpapers
 $null = New-Item -ItemType Directory -Force -Path "$StagingDir\manifests"
 
 # Root playbook.yaml
-Copy-Item "$RepoRoot\playbook.yaml" "$StagingDir\playbook.conf" -Force
-Write-OK "Staged: playbook.conf  (renamed from playbook.yaml for AME Wizard Beta)"
+Copy-Item "$RepoRoot\playbook.conf" "$StagingDir\playbook.conf" -Force
+Write-OK "Staged: playbook.conf  (XML descriptor for AME Wizard Beta)"
 
 # Entries (playbook/entries/ -> entries/)
 Get-ChildItem "$RepoRoot\playbook\entries\*.yaml" | ForEach-Object {
