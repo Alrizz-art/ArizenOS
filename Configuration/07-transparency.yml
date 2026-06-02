@@ -1,0 +1,16 @@
+---
+title: Transparency Effects
+description: Configure window transparency and DWM settings
+actions:
+  - !writeStatus: {status: 'ArizenOS — Configuring transparency...'}
+  - !registryValue:
+      path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+      value: 'EnableTransparency'
+      data: '1'
+      type: REG_DWORD
+  - !powerShell:
+      command: '.\scripts\apply-theme.ps1 -Transparency'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !writeStatus: {status: 'ArizenOS — Transparency configured'}

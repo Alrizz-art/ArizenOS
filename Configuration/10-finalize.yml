@@ -1,0 +1,23 @@
+---
+title: Finalize
+description: Write manifest, register rollback, and complete installation
+actions:
+  - !writeStatus: {status: 'ArizenOS — Writing installation manifest...'}
+  - !powerShell:
+      command: '.\scripts\write-manifest.ps1'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !writeStatus: {status: 'ArizenOS — Registering rollback mechanism...'}
+  - !powerShell:
+      command: '.\scripts\register-rollback.ps1'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !writeStatus: {status: 'ArizenOS — Finalizing installation...'}
+  - !powerShell:
+      command: '.\scripts\finalize.ps1'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !writeStatus: {status: 'ArizenOS — Installation complete!'}

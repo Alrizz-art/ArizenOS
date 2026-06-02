@@ -1,0 +1,26 @@
+---
+title: Performance Optimizations
+description: Apply performance and privacy registry tweaks
+actions:
+  - !writeStatus: {status: 'ArizenOS — Applying performance optimizations...'}
+  - !powerShell:
+      command: '.\scripts\apply-performance.ps1'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !registryValue:
+      path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects'
+      value: 'VisualFXSetting'
+      data: '3'
+      type: REG_DWORD
+  - !registryValue:
+      path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection'
+      value: 'AllowTelemetry'
+      data: '0'
+      type: REG_DWORD
+  - !registryValue:
+      path: 'HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile'
+      value: 'SystemResponsiveness'
+      data: '10'
+      type: REG_DWORD
+  - !writeStatus: {status: 'ArizenOS — Performance optimizations applied'}

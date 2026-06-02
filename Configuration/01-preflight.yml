@@ -1,0 +1,26 @@
+---
+title: Preflight Checks
+description: Verify system requirements before installation
+actions:
+  - !writeStatus: {status: 'ArizenOS — Running preflight checks...'}
+  - !powerShell:
+      command: '.\scripts\preflight-check.ps1 -Check OsBuild -MinBuild 19045'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !powerShell:
+      command: '.\scripts\preflight-check.ps1 -Check Elevation'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !powerShell:
+      command: '.\scripts\preflight-check.ps1 -Check SMode'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !powerShell:
+      command: '.\scripts\preflight-check.ps1 -Check DiskSpace -MinMB 500'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !writeStatus: {status: 'ArizenOS — Preflight checks passed'}

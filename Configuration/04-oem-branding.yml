@@ -1,0 +1,26 @@
+---
+title: OEM Branding
+description: Apply ArizenOS OEM identity to System Info and About page
+actions:
+  - !writeStatus: {status: 'ArizenOS — Applying OEM branding...'}
+  - !powerShell:
+      command: '.\scripts\apply-oem-branding.ps1'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !registryValue:
+      path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation'
+      value: 'Manufacturer'
+      data: 'ArizenOS'
+      type: REG_SZ
+  - !registryValue:
+      path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation'
+      value: 'SupportURL'
+      data: 'https://github.com/Alrizz-art/ArizenOS'
+      type: REG_SZ
+  - !registryValue:
+      path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation'
+      value: 'Logo'
+      data: '%ProgramData%\ArizenOS\branding\oemlogo.bmp'
+      type: REG_SZ
+  - !writeStatus: {status: 'ArizenOS — OEM branding applied'}

@@ -1,0 +1,16 @@
+---
+title: Developer Environment
+description: Enable developer mode and configure dev tools
+actions:
+  - !writeStatus: {status: 'ArizenOS — Setting up developer environment...'}
+  - !powerShell:
+      command: '.\scripts\apply-developer.ps1'
+      exeDir: true
+      wait: true
+      runas: currentUserElevated
+  - !registryValue:
+      path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock'
+      value: 'AllowDevelopmentWithoutDevLicense'
+      data: '1'
+      type: REG_DWORD
+  - !writeStatus: {status: 'ArizenOS — Developer environment configured'}
