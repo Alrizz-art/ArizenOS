@@ -5,11 +5,15 @@
 
   [ ] AME Wizard (latest) installed on build machine
   [ ] PowerShell 5.1 or higher
+  [ ] 7-Zip installed (https://www.7-zip.org/ or: winget install 7zip.7zip)
+      REQUIRED: AME Wizard mandates AES-256 encryption -- 7-Zip is the only
+      tool that can produce it from PowerShell. System.IO.Compression.ZipFile
+      does NOT support password-protected ZIPs.
   [ ] Repository cloned to local machine
   [ ] OI-01 resolved: arizenOS_logo_oem.bmp committed (120x120 24-bit BMP validated)
   [ ] OI-02 resolved: scripts/apply-performance.ps1 has real UserPreferencesMask hex
   [ ] OI-03 resolved: scripts/apply-wallpaper.ps1 has confirmed lock screen paths
-  [ ] All 13 PowerShell scripts written and committed to playbook/scripts/
+  [ ] All 13 PowerShell scripts written and committed to scripts/
   [ ] All 4 asset files committed to assets/
 
 ## Step 1 -- Confirm Zero [TBD] Placeholders
@@ -29,16 +33,22 @@
 
 ## Step 3 -- Copy Files to Staging
 
-  # Root entry point (rename playbook-manifest.yaml -> playbook.yaml)
-  Copy-Item ".\playbook\manifests\playbook-manifest.yaml" "$s\playbook.yaml"
+  # Root entry point
+  Copy-Item ".\playbook.yaml" "$s\playbook.yaml"
 
   # Entry files (11 YAML files)
   Copy-Item ".\playbook\entries\*.yaml" "$s\entries\"
 
-  # Scripts (13 PS1 files)
-  Copy-Item ".\playbook\scripts\*.ps1" "$s\scripts\"
+  # Scripts (13 PS1 files -- SCR-01 through SCR-13 only)
+  $scripts = @(
+    "preflight-check.ps1","create-restore-point.ps1","backup-registry.ps1",
+    "deploy-assets.ps1","apply-oem-branding.ps1","apply-wallpaper.ps1",
+    "apply-theme.ps1","apply-performance.ps1","apply-developer.ps1",
+    "write-manifest.ps1","register-rollback.ps1","finalize.ps1","rollback.ps1"
+  )
+  foreach ($scr in $scripts) { Copy-Item ".\scripts\$scr" "$s\scripts\" }
 
-  # Assets
+  # Assets (OEM logo only -- dark/white PNGs are repo-only, not in APBX)
   Copy-Item ".\assets\logos\arizenOS_logo_oem.bmp"       "$s\assets\logos\"
   Copy-Item ".\assets\wallpapers\arizenOS_dark.jpg"       "$s\assets\wallpapers\"
   Copy-Item ".\assets\wallpapers\arizenOS_default.jpg"    "$s\assets\wallpapers\"
@@ -80,16 +90,31 @@
   if ($missing) { Write-Error "MISSING FILES:"; $missing; exit 1 }
   else { Write-Host "All required files present -- safe to package" }
 
-## Step 6 -- Package as ZIP and Rename to .apbx
+## Step 6 -- Package as AES-256 Encrypted ZIP and Rename to .apbx
 
-  Add-Type -Assembly "System.IO.Compression.FileSystem"
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │  AME Wizard REQUIRES AES-256 encryption with password "malte".     │
+  │  Use 7-Zip -- System.IO.Compression.ZipFile produces plain ZIPs    │
+  │  with no encryption and will cause the load error:                  │
+  │  "Playbook must be encrypted using 'malte' as the password"         │
+  └─────────────────────────────────────────────────────────────────────┘
+
+  $7z  = "C:\Program Files\7-Zip\7z.exe"
   $zip = ".\build\ArizenOS-v0.1.0.zip"
-  [System.IO.Compression.ZipFile]::CreateFromDirectory(
-    (Resolve-Path $s).Path, $zip,
-    [System.IO.Compression.CompressionLevel]::Optimal, $false
-  )
-  Rename-Item $zip "ArizenOS-v0.1.0.apbx"
-  Write-Host "Archive: .\build\ArizenOS-v0.1.0.apbx"
+
+  Push-Location $s
+  & $7z a -tzip -p"malte" -mem=AES256 (Resolve-Path "..\ArizenOS-v0.1.0.zip" -ErrorAction SilentlyContinue ?? "$PWD\..\ArizenOS-v0.1.0.zip") "."
+  Pop-Location
+
+  # Simpler one-liner from repo root after staging:
+  Push-Location $s
+  & "C:\Program Files\7-Zip\7z.exe" a -tzip -p"malte" -mem=AES256 "..\ArizenOS-v0.1.0.zip" "."
+  Pop-Location
+  Rename-Item ".\build\ArizenOS-v0.1.0.zip" "ArizenOS-v0.1.0.apbx"
+  Write-Host "Archive: .\build\ArizenOS-v0.1.0.apbx  (AES-256, password: malte)"
+
+  # Or simply run the automated build script (handles all steps):
+  #   .\scripts\build-apbx.ps1
 
 ## Step 7 -- Compute .apbx SHA256
 
@@ -102,9 +127,9 @@
 
   [ ] Open AME Wizard
   [ ] Open Playbook > select ArizenOS-v0.1.0.apbx
-  [ ] Verify: name = "ArizenOS", version = "0.1.0"
+  [ ] Verify: title = "ArizenOS", version = "0.1.0" -- loads without error
   [ ] Verify: all 10 phases listed, no YAML parse errors
-  [ ] Navigate Phase 1 (Preflight) -- confirm 5 checks visible
+  [ ] Navigate Phase 1 (Preflight) -- confirm checks visible
   [ ] DO NOT INSTALL -- smoke test only
 
 ## Step 9 -- Save and Tag Release
@@ -123,12 +148,17 @@
 ## Build Output
 
   build/
-  +-- ArizenOS-v0.1.0.apbx
+  +-- ArizenOS-v0.1.0.apbx           (AES-256 encrypted, password: malte)
   +-- ArizenOS-v0.1.0.apbx.sha256
 
   releases/v0.1.0/
   +-- ArizenOS-v0.1.0.apbx
   +-- ArizenOS-v0.1.0.apbx.sha256
 
-Remaining blockers before Step 1: OI-01, OI-02, OI-03, OI-05
-Expected build time after blockers resolved: ~1 hour
+## Recommended: Use the Automated Build Script
+
+  The build script handles all steps above automatically:
+    .\scripts\build-apbx.ps1
+
+  It validates sources, stages files, encrypts with 7-Zip (AES-256, password: malte),
+  and verifies the archive. Requires 7-Zip installed.

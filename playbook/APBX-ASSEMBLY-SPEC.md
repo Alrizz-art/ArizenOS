@@ -1,11 +1,11 @@
 # ArizenOS v0.1 -- APBX Assembly Specification
-# Format: AME Wizard Playbook Bundle (.apbx = ZIP renamed)
+# Format: AME Wizard Playbook Bundle (.apbx = AES-256 encrypted ZIP)
 
 ## 1. Archive Folder Structure
 
-  ArizenOS.apbx  (ZIP root)
+  ArizenOS.apbx  (AES-256 encrypted ZIP, password: malte)
   |
-  +-- playbook.yaml                     <-- ROOT (renamed from playbook-manifest.yaml)
+  +-- playbook.yaml                     <-- ROOT (from repo root playbook.yaml)
   |
   +-- entries/
   |   +-- 01-preflight.yaml
@@ -52,17 +52,15 @@
 ## 2. Root Entry Point
 
 AME Wizard reads ONLY playbook.yaml at the archive root.
-Source: playbook/manifests/playbook-manifest.yaml
-Action: copy and rename to playbook.yaml during assembly Step 2.
-
+Source: repo root playbook.yaml
 Required fields (AME Wizard rejects without these):
-  name, title, version, author, description
+  title, description, username, version, entries
 
 ## 3. Manifest Placement
 
   Source (repo)                              | Archive path
   -------------------------------------------|-------------------------------
-  playbook/manifests/playbook-manifest.yaml  | playbook.yaml (root)
+  playbook.yaml (repo root)                  | playbook.yaml (root)
   playbook/entries/*.yaml (11 files)         | entries/
   playbook/manifests/registry-manifest.yaml  | manifests/ (reference)
   playbook/manifests/asset-manifest.yaml     | manifests/ (reference)
@@ -77,6 +75,9 @@ Required fields (AME Wizard rejects without these):
   assets/wallpapers/arizenOS_default.jpg     | assets/wallpapers/
   assets/wallpapers/arizenOS_lockscreen.jpg  | assets/wallpapers/
 
+  NOTE: Only arizenOS_logo_oem.bmp goes into the APBX.
+        arizenOS_logo_dark.png and arizenOS_logo_white.png are repo-only assets.
+
 Compute SHA256 for each asset after staging (Step 3) and update
 [TBD_SHA256_*] fields in asset-manifest.yaml before release commit.
 
@@ -88,8 +89,18 @@ Compute SHA256 for each asset after staging (Step 3) and update
 
 ## 6. Packaging Requirements
 
-  Archive format:          ZIP (PKZIP deflate)
-  File extension:          .apbx (renamed from .zip)
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║  ENCRYPTION IS MANDATORY -- AME Wizard will reject any APBX that   ║
+  ║  is not encrypted with AES-256 using the password "malte".          ║
+  ║  Error without it: "Playbook must be encrypted using 'malte' as     ║
+  ║  the password"                                                       ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+
+  Archive format:          ZIP with AES-256 encryption (WinZip method 99)
+  Encryption password:     malte  <-- HARDCODED by AME Wizard, never change
+  Encryption tool:         7-Zip: 7z a -tzip -p"malte" -mem=AES256 out.zip .
+  DO NOT USE:              System.IO.Compression.ZipFile -- no password support
+  File extension:          .apbx (renamed from .zip after packaging)
   Internal path separator: Forward slash in ZIP TOC entries
   YAML encoding:           UTF-8, no BOM
   PS1 encoding:            UTF-8, no BOM, LF endings
