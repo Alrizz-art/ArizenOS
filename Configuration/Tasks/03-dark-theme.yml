@@ -1,0 +1,18 @@
+title: Apply Dark Theme
+actions:
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'AppsUseLightTheme', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'SystemUsesLightTheme', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'AppsUseLightTheme', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'SystemUsesLightTheme', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize', value: 'ColorPrevalence', type: REG_DWORD, data: '0'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\DWM', value: 'UseWindowsDarkMode', type: REG_DWORD, data: '1'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\DWM', value: 'AccentColor', type: REG_DWORD, data: '0xFF1E293B'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\DWM', value: 'AccentColorInactive', type: REG_DWORD, data: '0xFF0F172A'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\DWM', value: 'ColorizationColor', type: REG_DWORD, data: '0xC41E293B'}
+  - !registryValue: {path: 'HKCU\SOFTWARE\Microsoft\Windows\DWM', value: 'EnableAeroPeek', type: REG_DWORD, data: '1'}
+
+  - !powerShell:
+      command: >-
+        $mask = [byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00);
+        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name "UserPreferencesMask" -Value $mask -Type Binary -Force;
+        Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Value 3 -Type DWord -Force -ErrorAction SilentlyContinue
