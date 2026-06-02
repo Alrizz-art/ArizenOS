@@ -10,48 +10,29 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 ### Added
-- Initial repository structure
-- Build system scaffolding (Makefile + toolchain config)
-- CI/CD pipeline skeleton (GitHub Actions)
-- Contributing guidelines and code of conduct
+- Initial playbook release
 
 ---
 
-## [0.1.0] — Unreleased (Target: 2026-07-31)
+## [0.1.0] — 2026-06-02
 
 ### Added
-- Bootloader entry point (x86_64, BIOS/UEFI)
-- Kernel entry point and long mode setup
-- Basic VGA text-mode output
-- GDT and IDT initialization
-- Build system: cross-compiler toolchain (GCC or Clang)
-- GitHub project management: labels, milestones, project boards
+- `playbook.conf` — AME Wizard playbook manifest (supports Windows 10 22H2, 11 22H2/23H2/24H2)
+- `Configuration/main.yml` — Main task orchestration with 8 modular stages
+- `Configuration/Tasks/01-restore-point.yml` — System restore point creation before any changes
+- `Configuration/Tasks/02-oem-branding.yml` — ArizenOS OEM identity (System Info, About page)
+- `Configuration/Tasks/03-dark-theme.yml` — System-wide dark mode with ArizenOS accent
+- `Configuration/Tasks/04-transparency.yml` — Acrylic transparency across the shell
+- `Configuration/Tasks/05-debloat.yml` — Telemetry removal, bloatware uninstall, service hardening
+- `Configuration/Tasks/06-wallpaper.yml` — ArizenOS wallpapers for desktop and lock screen
+- `Configuration/Tasks/07-developer.yml` — Optional developer environment (WSL2, WinGet, Git, VS Code)
+- `Configuration/Tasks/08-finalize.yml` — Cleanup and post-install finalization
+- `Configuration/rollback.yml` — Full rollback to pre-ArizenOS system state
+- `Executables/` — PowerShell scripts for branding, wallpaper, developer setup, and security audit
+- Interactive debloat selection (Safe vs Minimal) via AME Wizard FeaturePage
+- Optional restore point, OEM branding, wallpaper, and developer mode via user choice
 
 ---
 
-<!-- Template for future releases:
-
-## [X.Y.Z] — YYYY-MM-DD
-
-### Added
-- New features
-
-### Changed
-- Changes to existing functionality
-
-### Deprecated
-- Features that will be removed in a future release
-
-### Removed
-- Features removed in this release
-
-### Fixed
-- Bug fixes
-
-### Security
-- Security patches and vulnerability fixes
-
--->
-
-[Unreleased]: https://github.com/Alrizz-art/ArizenOS/compare/HEAD...HEAD
+[Unreleased]: https://github.com/Alrizz-art/ArizenOS/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Alrizz-art/ArizenOS/releases/tag/v0.1.0

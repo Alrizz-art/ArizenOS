@@ -1,0 +1,20 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# PowerShell
+*.ps1 text eol=crlf
+
+# YAML
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Windows registry
+*.reg text eol=crlf
+
+# Binary assets
+*.apbx binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.bmp binary
+*.svg text

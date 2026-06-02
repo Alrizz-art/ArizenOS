@@ -1,7 +1,0 @@
-{
-  "_comment": "Updated on each stable release. Points to the latest stable .apbx download.",
-  "latest": "0.1.0",
-  "channel": "stable",
-  "latestURL": "https://github.com/Alrizz-art/ArizenOS/releases/latest/download/ArizenOS.apbx",
-  "updatedAt": "TBD"
-}
