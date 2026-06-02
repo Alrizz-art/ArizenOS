@@ -1,5 +1,5 @@
 title: Remove Telemetry and Bloatware
-actions:
+tasks:
   # ── Telemetry Registry Policies ──────────────────────────────────
   - !registryValue: {path: 'HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
   - !registryValue: {path: 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection', value: 'AllowTelemetry', type: REG_DWORD, data: '0'}
